@@ -21,7 +21,7 @@ install_dev:
 	@adb -d install -r bin/$(APPNAME).apk
 
 debug:
-	@ndk-build BUILD_TYPE=debug USLEEP=-DUSLEEP=240000
+	@ndk-build BUILD_TYPE=debug USLEEP=-DUSLEEP=240000 V=1
 	@ant clean
 	@ant debug
 
