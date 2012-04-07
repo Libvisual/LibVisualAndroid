@@ -5,7 +5,7 @@ WARNING_CFLAGS := -Wall -Wstrict-aliasing -Wcast-align -Waddress -Wmissing-brace
 LV_C_INCLUDES  := jni/libvisual/libvisual
 LV_CFLAGS      := $(WARNING_CFLAGS)
 LV_CXXFLAGS    :=
-LV_CPPFLAGS    := -std=gnu++0x
+LV_CPPFLAGS    := -std=gnu++0x -fexceptions
 
 
 
