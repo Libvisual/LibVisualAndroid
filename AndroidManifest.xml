@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="org.libvisual.android"
+      android:versionCode="1"
+      android:versionName="0.1">
+    <application 
+        android:label="@string/app_name" 
+        android:debuggable="false" 
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent">
+
+        <!-- Main activity -->
+        <activity android:name="LibVisual"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+    <!-- Indicate minimum and target sdk versions. -->
+    <uses-sdk android:minSdkVersion="8" 
+              android:targetSdkVersion="8" />
+
+    <!-- Request perms for audio. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+</manifest> 
