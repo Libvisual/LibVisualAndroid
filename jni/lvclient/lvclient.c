@@ -37,8 +37,8 @@
 
 
 
-
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderPlasma(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms)
+/** LibVisualView.render() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_render(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms)
 {
     AndroidBitmapInfo  info;
     void*              pixels;

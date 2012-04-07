@@ -52,7 +52,7 @@ class LibVisualView extends View
 
     @Override protected void onDraw(Canvas canvas) {
         //canvas.drawColor(0xFFCCCCCC);
-        renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
+        render(mBitmap, System.currentTimeMillis() - mStartTime);
         canvas.drawBitmap(mBitmap, 0, 0, null);
         // force a redraw, with a different time-based pattern.
         invalidate();
