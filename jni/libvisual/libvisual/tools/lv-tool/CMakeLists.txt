@@ -1,0 +1,51 @@
+SET(INCLUDE_DIRS
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+)
+
+SET(SOURCES
+  lv-tool.cpp
+  display/display.cpp
+  display/display_driver_factory.cpp
+  display/stdout_driver.cpp
+)
+
+SET(LINK_LIBS "")
+
+# SDL driver
+IF(SDL_FOUND)
+  LIST(APPEND INCLUDE_DIRS ${SDL_INCLUDE_DIR})
+  LIST(APPEND SOURCES display/sdl_driver.cpp)
+  LIST(APPEND LINK_LIBS ${SDL_LIBRARY})
+ENDIF(SDL_FOUND)
+
+# GLX driver
+IF(HAVE_GLX)
+  LIST(APPEND SOURCES
+    display/glx_driver.cpp
+    display/lv_x11_key.cpp
+  )
+
+  LIST(APPEND INCLUDE_DIRS
+    ${X11_INCLUDE_DIR}
+    ${X11_xf86vmode_INCLUDE_PATH}
+    ${OPENGL_INCLUDE_DIR}
+  )
+
+  LIST(APPEND LINK_LIBS
+    ${X11_LIBRARIES}
+    ${X11_Xxf86vm_LIB}
+    ${OPENGL_gl_LIBRARY}
+  )
+ENDIF()
+
+INCLUDE_DIRECTORIES(${INCLUDE_DIRS})
+
+ADD_EXECUTABLE(lv-tool ${SOURCES})
+
+TARGET_LINK_LIBRARIES(lv-tool
+  libvisual
+  ${LINK_LIBS}
+)
+
+INSTALL(TARGETS lv-tool RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

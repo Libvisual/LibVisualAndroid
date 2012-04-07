@@ -1,0 +1,17 @@
+CMakeCache.txt
+CMakeOutput.log
+CMakeFiles
+cmake_install.cmake
+cmake_uninstall.cmake
+CPack*Config.cmake
+Makefile
+
+po/Makefile
+po/Makefile.in
+po/*.pot
+po/Rules-quot
+po/*.sed
+po/*.sin
+po/en@boldquot.header
+po/en@quot.header
+po/stamp-po
