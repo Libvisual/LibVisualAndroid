@@ -37,7 +37,7 @@ class LibVisualView extends View
     private long mStartTime;
 
     /* implementend by libplasma.so */
-    private static native void renderPlasma(Bitmap  bitmap, long time_ms);
+    private static native void renderVisual(Bitmap  bitmap, long time_ms);
 
     public LibVisualView(Context context) 
     {
@@ -50,11 +50,13 @@ class LibVisualView extends View
         mStartTime = System.currentTimeMillis();
     }
 
-    @Override protected void onDraw(Canvas canvas) {
+    @Override protected void onDraw(Canvas canvas) 
+    {
         //canvas.drawColor(0xFFCCCCCC);
-        render(mBitmap, System.currentTimeMillis() - mStartTime);
+        renderVisual(mBitmap, System.currentTimeMillis() - mStartTime);
         canvas.drawBitmap(mBitmap, 0, 0, null);
         // force a redraw, with a different time-based pattern.
         invalidate();
     }
+
 }

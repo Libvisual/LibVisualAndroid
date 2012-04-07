@@ -39,7 +39,7 @@ public class LibVisual extends Activity
         super.onCreate(state);
         setContentView(new LibVisualView(this));
     }
-
+        
     /* load our native library */
     static 
     {
