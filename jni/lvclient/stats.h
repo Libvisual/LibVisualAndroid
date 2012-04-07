@@ -21,30 +21,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.libvisual.android;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.content.Context;
+#ifndef _LV_STATS_H
+#define _LV_STATS_H
 
 
+#define  MAX_FRAME_STATS  200
+#define  MAX_PERIOD_MS    1500
 
 
-public class LibVisual extends Activity
+typedef struct
 {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle state)
-    {
-        super.onCreate(state);
-        setContentView(new LibVisualView(this));
-    }
+    double  renderTime;
+    double  frameTime;
+}FrameStats;
 
-    /* load our native library */
-    static 
-    {
-        System.loadLibrary("lvclient");
-    }
-}
+typedef struct 
+{
+    double  firstTime;
+    double  lastTime;
+    double  frameTime;
+
+    int         firstFrame;
+    int         numFrames;
+    FrameStats  frames[ MAX_FRAME_STATS ];
+}Stats;
 
 
+
+void stats_init( Stats*  s );
+void stats_startFrame( Stats*  s );
+void stats_endFrame( Stats*  s );
+
+#endif /* _LV_STATS_H */

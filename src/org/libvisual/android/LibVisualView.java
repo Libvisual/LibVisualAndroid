@@ -23,28 +23,38 @@
 
 package org.libvisual.android;
 
-import android.app.Activity;
-import android.os.Bundle;
 import android.content.Context;
+import android.view.View;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 
 
 
-public class LibVisual extends Activity
+class LibVisualView extends View 
 {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle state)
+    private Bitmap mBitmap;
+    private long mStartTime;
+
+    /* implementend by libplasma.so */
+    private static native void renderPlasma(Bitmap  bitmap, long time_ms);
+
+    public LibVisualView(Context context) 
     {
-        super.onCreate(state);
-        setContentView(new LibVisualView(this));
+        super(context);
+
+        final int W = 200;
+        final int H = 200;
+
+        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.RGB_565);
+        mStartTime = System.currentTimeMillis();
     }
 
-    /* load our native library */
-    static 
-    {
-        System.loadLibrary("lvclient");
+    @Override protected void onDraw(Canvas canvas) {
+        //canvas.drawColor(0xFFCCCCCC);
+        renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
+        canvas.drawBitmap(mBitmap, 0, 0, null);
+        // force a redraw, with a different time-based pattern.
+        invalidate();
     }
 }
-
-

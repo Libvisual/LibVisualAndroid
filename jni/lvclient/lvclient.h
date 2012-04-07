@@ -21,30 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.libvisual.android;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.content.Context;
+#ifndef _LV_CLIENT_H
+#define _LV_CLIENT_H
 
 
 
+#define  LOG_TAG    "libvisual"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
-public class LibVisual extends Activity
-{
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle state)
-    {
-        super.onCreate(state);
-        setContentView(new LibVisualView(this));
-    }
-
-    /* load our native library */
-    static 
-    {
-        System.loadLibrary("lvclient");
-    }
-}
+/* Set to 1 to enable debug log traces. */
+#define DEBUG 1
 
 
+
+
+#endif /* _LV_CLIENT_H */
