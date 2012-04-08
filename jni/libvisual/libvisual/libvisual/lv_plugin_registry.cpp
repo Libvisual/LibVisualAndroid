@@ -49,10 +49,10 @@ namespace LV {
     {
         output.clear ();
 
-        copy_if (input.begin(),
+        /*copy_if (input.begin(),
                  input.end (),
                  std::back_insert_iterator<PluginList> (output),
-                 PluginHasType (type));
+                 PluginHasType (type));*/
     }
 
   } // Internal namespace
@@ -213,7 +213,8 @@ namespace LV {
 
       struct dirent **namelist;
 
-      int n = scandir (dir.c_str (), &namelist, NULL, alphasort);
+      //int n = scandir (dir.c_str (), &namelist, NULL, alphasort);
+      int n=0;
       if (n < 0)
           return;
 

@@ -26,22 +26,79 @@ package org.libvisual.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 
 
 public class LibVisual extends Activity
 {
     private final static String TAG = "LibVisual";
+        
+    /** object to hold all our permanent settings */
+    private static LibVisualSettings s;
 
+
+        
         
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle state)
     {
         super.onCreate(state);
+
+        /* create new settings-object */
+        s = new LibVisualSettings(this);
+
+        /* set our libvisual view */
         setContentView(new LibVisualView(this));
     }
+
+
+    /** options menu */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.libvisual, menu);
+            return true;
+    }
+
+    
+    /** item from options menu selected */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+            switch (item.getItemId())
+            {
+                    /** About */
+                    case R.id.about:
+                    {
+                            //startActivity(new Intent(this, AboutActivity.class));
+                            return true;
+                    }
+                            
+                    /** Preferences */
+                    case R.id.settings:
+                    {
+                            startActivity(new Intent(this, LibVisualPreferences.class));
+                            return true;
+                    }
+
+                    /** wtf? */
+                    default:
+                    {
+                            Log.w(TAG, "Unhandled menu-item. This is a bug!");
+                            break;
+                    }
+            }
+
+            return false;
+    }
+
         
     /* load our native library */
     static 
