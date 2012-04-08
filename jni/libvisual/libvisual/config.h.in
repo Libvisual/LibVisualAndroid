@@ -16,16 +16,12 @@
 #cmakedefine LOCALE_DIR        "@CMAKE_INSTALL_FULL_LOCALEDIR@"
 #cmakedefine HAVE_SDL          1
 #cmakedefine HAVE_GL           1
-#cmakedefine HAVE_X11          1
-#cmakedefine HAVE_GLX          1
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1
 #cmakedefine HAVE_FCNTL_H      1
 #cmakedefine HAVE_INTTYPES_H   1
 #cmakedefine HAVE_SCHED_H      1
-#cmakedefine HAVE_STRDUP       1
-#cmakedefine HAVE_STRNDUP      1
 #cmakedefine HAVE_SYSCONF      1
 #cmakedefine HAVE_SYS_SCHED_H  1
 #cmakedefine HAVE_SYS_SELECT_H 1
@@ -44,8 +40,6 @@
 #define SIZEOF_LONG            @SIZEOF_LONG@
 #define SIZEOF_SHORT           @SIZEOF_SHORT@
 #define SIZEOF_SIZE_T          @SIZEOF_SIZE_T@
-
-#cmakedefine LV_HAVE_GTHREAD2 1
 
 #ifndef __cplusplus
 #cmakedefine HAVE_C_INLINE

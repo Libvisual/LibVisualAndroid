@@ -41,8 +41,6 @@
 
 #if HAVE_SDL
 # define DEFAULT_DRIVER "sdl"
-#elif HAVE_GLX
-# define DEFAULT_DRIVER "glx"
 #else
 # define DEFAULT_DRIVER "stdout"
 #endif
@@ -73,7 +71,7 @@ static void _print_plugin_info(VisPluginInfo const& info)
         "\tversion:\t%s\n"
         "\tlicense:\t%s\n"
         "%s\n"
-        "\%s\n\n",
+        "%s\n\n",
         info.name, info.plugname,
         info.author, info.version, info.license,
         info.about, info.help);
@@ -323,30 +321,20 @@ int main (int argc, char **argv)
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
-        // handle depth?
+        // Pick the best display depth
+
+        int depthflag = visual_actor_get_supported_depth (actor);
 
         VisVideoDepth depth;
-        int depthflag;
 
-        if ((depthflag = visual_actor_get_supported_depth (actor)) == VISUAL_VIDEO_DEPTH_GL)
-        {
+        if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
             depth = visual_video_depth_get_highest (depthflag);
-            visual_bin_set_depth (bin, VISUAL_VIDEO_DEPTH_GL);
         }
-        else
-        {
-            depth = visual_video_depth_get_highest_nogl(depthflag);
-            if ((bin->depthflag & depth) > 0)
-            {
-                visual_bin_set_depth(bin, depth);
-            }
-            else
-            {
-                visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
-            }
+        else {
+            depth = visual_video_depth_get_highest_nogl (depthflag);
         }
 
-        bin->depthforcedmain = bin->depth;
+        visual_bin_set_depth (bin, depth);
 
         VisVideoAttributeOptions const* vidoptions =
             visual_actor_get_video_attribute_options(actor);
