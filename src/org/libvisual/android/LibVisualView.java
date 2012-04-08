@@ -89,6 +89,7 @@ class LibVisualView extends View
         mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
 
         /* initialize the libvisual view */
+        /** @todo message + quit on failure */
         init(mBitmap);
     }
 

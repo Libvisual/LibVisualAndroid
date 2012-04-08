@@ -68,9 +68,9 @@ public class LibVisual extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.libvisual, menu);
-            return true;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.libvisual, menu);
+        return true;
     }
 
     
@@ -78,31 +78,59 @@ public class LibVisual extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-            switch (item.getItemId())
+        switch (item.getItemId())
+        {
+            /* About App */
+            case R.id.about_libvisual_android:
             {
-                    /** About */
-                    case R.id.about:
-                    {
-                            //startActivity(new Intent(this, AboutActivity.class));
-                            return true;
-                    }
-                            
-                    /** Preferences */
-                    case R.id.settings:
-                    {
-                            startActivity(new Intent(this, LibVisualPreferences.class));
-                            return true;
-                    }
-
-                    /** wtf? */
-                    default:
-                    {
-                            Log.w(TAG, "Unhandled menu-item. This is a bug!");
-                            break;
-                    }
+                startActivity(new Intent(this, LibVisualAboutApp.class));
+                return true;
             }
 
-            return false;
+            /* About Lib */
+            case R.id.about_libvisual:
+            {
+                startActivity(new Intent(this, LibVisualAboutLib.class));
+                return true;
+            }
+
+            /* About actor */
+            case R.id.about_actor:
+            {
+                startActivity(new Intent(this, LibVisualAboutActor.class));
+                return true;
+            }
+
+            /* About input */
+            case R.id.about_input:
+            {
+                startActivity(new Intent(this, LibVisualAboutInput.class));
+                return true;
+            }
+
+            /* About morph */
+            case R.id.about_morph:
+            {
+                startActivity(new Intent(this, LibVisualAboutMorph.class));
+                return true;
+            }
+                    
+            /* Preferences */
+            case R.id.settings:
+            {
+                    startActivity(new Intent(this, LibVisualPreferences.class));
+                    return true;
+            }
+
+            /* wtf? */
+            default:
+            {
+                    Log.w(TAG, "Unhandled menu-item. This is a bug!");
+                    break;
+            }
+        }
+
+        return false;
     }
 
 

@@ -21,35 +21,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_FPS_H
-#define _LV_FPS_H
+package org.libvisual.android;
 
 
-#define  MAX_FRAME_STATS  32
-#define  MAX_PERIOD_MS    3000
+import android.app.Activity;
+import android.os.Bundle;
 
 
-
-typedef struct 
+public class LibVisualAboutLib extends Activity
 {
-    double  firstTime;
-    double  lastTime;
-    double  frameTime;
-
-    int         firstFrame;
-    int         numFrames;
-    struct
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
-        double  renderTime;
-        double  frameTime;
-    }frames[MAX_FRAME_STATS];
-}Fps;
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.about_lib);
+    }
+}
 
-
-
-void fps_init(Fps* s);
-void fps_startFrame(Fps* s);
-void fps_endFrame(Fps* s);
-
-
-#endif /* _LV_FPS_H */

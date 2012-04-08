@@ -52,6 +52,36 @@
               android:label="@string/preferences_name">
         </activity>
 
+        <!-- about app activity -->
+        <activity 
+              android:name="LibVisualAboutApp" 
+              android:label="@string/about_app_name">
+        </activity>
+
+        <!-- about lib activity -->
+        <activity 
+              android:name="LibVisualAboutLib" 
+              android:label="@string/about_lib_name">
+        </activity>
+
+        <!-- about actor activity -->
+        <activity 
+              android:name="LibVisualAboutActor" 
+              android:label="@string/about_actor_name">
+        </activity>
+
+        <!-- about input activity -->
+        <activity 
+              android:name="LibVisualAboutInput" 
+              android:label="@string/about_input_name">
+        </activity>
+
+        <!-- about morph activity -->
+        <activity 
+              android:name="LibVisualAboutMorph" 
+              android:label="@string/about_morph_name">
+        </activity>
+
     </application>
 
     <!-- Indicate minimum and target sdk versions. -->

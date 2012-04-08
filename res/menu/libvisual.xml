@@ -24,6 +24,51 @@
  
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:visible="true" android:id="@+id/settings" android:enabled="true" android:title="@string/menu_settings" android:icon="@android:drawable/ic_menu_preferences"></item>
-    <item android:visible="true" android:id="@+id/about" android:enabled="true" android:title="@string/menu_about" android:icon="@android:drawable/ic_menu_info_details"></item>
+    <item 
+      android:visible="true" 
+      android:id="@+id/settings" 
+      android:enabled="true" 
+      android:title="@string/menu_settings" 
+      android:icon="@android:drawable/ic_menu_preferences">
+    </item>
+
+    <item
+      android:id="@+id/about"
+      android:title="@string/menu_about"
+      android:icon="@android:drawable/ic_menu_info_details">
+    
+        <menu>
+            <item 
+              android:id="@+id/about_libvisual_android" 
+              android:enabled="true" 
+              android:title="@string/menu_about_libvisual_android">
+            </item>
+
+            <item 
+              android:id="@+id/about_libvisual" 
+              android:enabled="true" 
+              android:title="@string/menu_about_libvisual">
+            </item>
+
+            <item 
+              android:id="@+id/about_input" 
+              android:enabled="true" 
+              android:title="@string/menu_about_input">
+            </item>
+
+            <item 
+              android:id="@+id/about_actor" 
+              android:enabled="true" 
+              android:title="@string/menu_about_actor">
+            </item>
+
+            <item 
+              android:id="@+id/about_morph" 
+              android:enabled="true" 
+              android:title="@string/menu_about_morph">
+            </item>
+
+        </menu>
+    </item>
+
 </menu>
