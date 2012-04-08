@@ -11,8 +11,8 @@ LOCAL_MODULE           := visual
 LOCAL_SRC_FILES        := \
 	$(addprefix /, $(notdir $(wildcard $(LOCAL_PATH)/*.c) $(wildcard $(LOCAL_PATH)/*.cpp))) \
 	$(addprefix /private/, $(notdir $(wildcard $(LOCAL_PATH)/private/*.c) $(wildcard $(LOCAL_PATH)/private/*.cpp)))
-LOCAL_LDLIBS           := -ldl -lm -llog -ljnigraphics
-LOCAL_SHARED_LIBRARIES := cpufeatures
+LOCAL_LDLIBS           += -ldl -lm -llog -ljnigraphics
+LOCAL_SHARED_LIBRARIES += cpufeatures
 
 include $(BUILD_SHARED_LIBRARY)
 $(call import-module,cpufeatures)
