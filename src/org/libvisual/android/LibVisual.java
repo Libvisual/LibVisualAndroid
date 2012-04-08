@@ -44,8 +44,8 @@ public class LibVisual extends Activity
 
         
     /* implementend by liblvclient.so */
-    private static native void init();
-
+    private static native boolean init();
+    private static native void deinit();
         
     /** Called when the activity is first created. */
     @Override
@@ -103,6 +103,17 @@ public class LibVisual extends Activity
             }
 
             return false;
+    }
+
+
+    /* called when activity is destroyed */
+    @Override
+    public void onDestroy()
+    {
+        /* deinitialize libvisual */
+        deinit();
+            
+        super.onDestroy();
     }
 
         

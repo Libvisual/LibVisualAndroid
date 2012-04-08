@@ -41,19 +41,19 @@ static void _log_handler(VisLogSeverity severity, const char *msg, const VisLogS
     switch(severity)
     {
         case VISUAL_LOG_DEBUG:
-            LOGI("lvDEBUG: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            LOGI("lvDEBUG: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
             break;
         case VISUAL_LOG_INFO:
-            LOGI("lvINFO: %s: %s\n", __lv_progname, msg);
+            LOGI("lvINFO: %s: %s", __lv_progname, msg);
             break;
         case VISUAL_LOG_WARNING:
-            LOGW("lvWARNING: %s: %s\n", __lv_progname, msg);
+            LOGW("lvWARNING: %s: %s", __lv_progname, msg);
             break;
         case VISUAL_LOG_ERROR:
-            LOGE("lvERROR: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            LOGE("lvERROR: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
             break;
         case VISUAL_LOG_CRITICAL:
-            LOGE("lvCRITICAL: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            LOGE("lvCRITICAL: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
             break;
     }
 }
@@ -63,64 +63,103 @@ static void _log_handler(VisLogSeverity severity, const char *msg, const VisLogS
  ******************************************************************************/
 
 /** LibVisual.init() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * env, jobject  obj)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * env, jobject  obj)
 {
     if(visual_is_initialized())
-                return;
+                return JNI_TRUE;
+
+    LOGI("LibVisual.init()");
+
+#ifndef NDEBUG
+    /* endless loop to wait for debugger to attach */
+    int foo = 1;
+    while(foo);
+#endif
         
-    /*visual_init_path_add("/data/data/org.libvisual.android/lib");
-    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+    //visual_init_path_add("/data/data/org.libvisual.android/lib");
     visual_log_set_handler(VISUAL_LOG_DEBUG, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_INFO, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_WARNING, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_CRITICAL, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_ERROR, _log_handler, NULL);
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 
-    visual_init (0, NULL);*/
+    /* initialize libvisual */
+    char *v[] = { "lvclient", NULL };
+    char **argv = v;
+    int argc=1;
+    visual_init(&argc,  &argv);
+        
+    return JNI_TRUE;
+}
+
+
+/** LibVisual.deinit() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env, jobject  obj)
+{
+    LOGI("LibVisual.deinit()");
+    visual_quit();
 }
 
 
 /** LibVisualView.init() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, jobject  obj, jobject bitmap)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, jobject  obj, jobject bitmap)
+{
+    LOGI("LibVisualView.init()");
+
+    /* get BitmapInfo */
+    AndroidBitmapInfo  info;
+    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed");
+        return JNI_FALSE;
+    }
+
+    if (info.format != ANDROID_BITMAP_FORMAT_RGB_565) {
+        LOGE("Bitmap format is not RGB_565 !");
+        return JNI_FALSE;
+    }
+
+    return JNI_TRUE;
+}
+
+
+/** LibVisualView.deinit() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * env, jobject  obj)
 {
 
 }
 
+
 /** LibVisualView.renderVisual() */
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
 {
-    AndroidBitmapInfo  info;
     void*              pixels;
     int                ret;
     static Stats       stats;
     static int         init;
 
-    if (!init) {
-        //init_tables();
+    if (!init) 
+    {
+        /* initialize framerate stats */
         stats_init(&stats);
         init = 1;
     }
 
-    if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0) {
-        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
-        return;
-    }
-
-    if (info.format != ANDROID_BITMAP_FORMAT_RGB_565) {
-        LOGE("Bitmap format is not RGB_565 !");
-        return;
-    }
-
+    
+    /* lock bitmap for drawing */
     if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
     }
 
+    /* start fps timing */
     stats_startFrame(&stats);
 
     /* Now fill the values with a nice little plasma */
     //fill_plasma(&info, pixels, time_ms );
 
+    /* unlock bitmap */
     AndroidBitmap_unlockPixels(env, bitmap);
 
+    /* stop fps timing */
     stats_endFrame(&stats);
 }

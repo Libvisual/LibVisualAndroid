@@ -210,11 +210,14 @@ namespace LV {
 
       FindClose (hList);
 #else
+      // NOTE: This typecast is needed for glibc versions that define
+      // alphasort() as taking const void * arguments
+
+      typedef int (*ScandirCompareFunc) (const struct dirent **, const struct dirent **);
 
       struct dirent **namelist;
 
-      //int n = scandir (dir.c_str (), &namelist, NULL, alphasort);
-      int n=0;
+      int n = scandir (dir.c_str (), &namelist, NULL, ScandirCompareFunc (alphasort));
       if (n < 0)
           return;
 

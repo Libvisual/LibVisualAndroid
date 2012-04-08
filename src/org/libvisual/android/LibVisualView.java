@@ -41,8 +41,9 @@ class LibVisualView extends View
 
 
     /* implementend by liblvclient.so */
-    private static native void init(Bitmap  bitmap);
-    private static native void renderVisual(Bitmap  bitmap);
+    private static native boolean init(Bitmap bitmap);
+    private static native boolean deinit();
+    private static native void renderVisual(Bitmap bitmap);
 
         
     public LibVisualView(Context context) 
@@ -71,7 +72,9 @@ class LibVisualView extends View
         init(mBitmap);
     }
 
-    @Override protected void onDraw(Canvas canvas) 
+        
+    @Override 
+    protected void onDraw(Canvas canvas) 
     {
         /* render */
         //canvas.drawColor(0xFFCCCCCC);
@@ -81,5 +84,13 @@ class LibVisualView extends View
         /* force a redraw, with a different time-based pattern. */
         invalidate();
     }
+
+    @Override
+    public void onDetachedFromWindow()
+    {
+        /** deinitialize libvisual view */
+        deinit();
+        super.onDetachedFromWindow();
+    }            
 
 }
