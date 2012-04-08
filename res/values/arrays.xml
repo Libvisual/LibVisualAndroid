@@ -38,6 +38,7 @@
     <string-array name="actor_plugins">
         <item>lv_analyzer</item>
         <item>lv_scope</item>
+        <item>infinite</item>
     </string-array>
     
 </resources>

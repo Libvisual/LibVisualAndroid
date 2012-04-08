@@ -24,8 +24,8 @@
  
 -->
 <resources>
-    <string name="plugin_input">debug</string>
-    <string name="plugin_actor">lv_analyzer</string>
-    <string name="plugin_morph">slide_left</string>
-    <string name="do_morph">false</string>
+    <string name="default_plugin_input">debug</string>
+    <string name="default_plugin_actor">lv_analyzer</string>
+    <string name="default_plugin_morph">slide_left</string>
+    <string name="default_do_morph">false</string>
 </resources>

@@ -27,12 +27,16 @@ import android.content.Context;
 import android.view.View;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 
 
 
 
 class LibVisualView extends View 
 {
+    private final static String TAG = "LibVisual/View";
+        
+    private LibVisualSettings s;
     private Bitmap mBitmap;
     private long mStartTime;
 
@@ -43,19 +47,36 @@ class LibVisualView extends View
     {
         super(context);
 
+        /* get settings */
+        s = new LibVisualSettings(context);
+
+        //String doMorphString = s.getString("prefs_do_morph", 
+          //                      context.getString(R.string.default_do_morph));
+        //Boolean doMorph = (doMorphString == "true");
+        String input = s.getString("prefs_input", context.getString(R.string.default_plugin_input));
+        String actor = s.getString("prefs_actor", context.getString(R.string.default_plugin_actor));
+        String morph = s.getString("prefs_morph", context.getString(R.string.default_plugin_morph));
+            
+        Log.v(TAG, "Input: \""+input+"\" Morph: \""+morph+"\" Actor: \""+actor);
+            
+              
+        /* create bitmap */
         final int W = 200;
         final int H = 200;
-
         mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.RGB_565);
+
+        /* sample start time */
         mStartTime = System.currentTimeMillis();
     }
 
     @Override protected void onDraw(Canvas canvas) 
     {
+        /* render */
         //canvas.drawColor(0xFFCCCCCC);
         renderVisual(mBitmap, System.currentTimeMillis() - mStartTime);
         canvas.drawBitmap(mBitmap, 0, 0, null);
-        // force a redraw, with a different time-based pattern.
+            
+        /* force a redraw, with a different time-based pattern. */
         invalidate();
     }
 

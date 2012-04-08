@@ -27,11 +27,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 
 
 public class LibVisualSettings
 {
+        private final static String TAG = "LibVisual/Settings";
+        
         /** our context */
         Context _c;
         /** our preferences */

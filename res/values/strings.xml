@@ -33,7 +33,9 @@
     <string name="prefs_title_morph_settings">Morph plugin</string>
     <string name="prefs_title_actor_settings">Actor plugin</string>
     <string name="prefs_title_do_morph">Enable</string>
+    <string name="prefs_summary_input">Choose audio input plugin</string>
     <string name="prefs_summary_input_settings">Sound input settings</string>
+    <string name="prefs_summary_morph">Choose default morph plugin</string>
     <string name="prefs_summary_morph_settings">Settings for morphing between actors</string>
     <string name="prefs_summary_do_morph">Use morph plugin when changing actors</string>   
     <string name="prefs_summary_actor_settings">Actor plugin settings</string>

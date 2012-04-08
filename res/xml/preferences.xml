@@ -34,6 +34,14 @@
                         android:title="@string/prefs_title_input_settings"
                         android:summary="@string/prefs_summary_input_settings">
 
+                <ListPreference
+                                android:key="prefs_input"
+                                android:title="@string/prefs_title_input"
+                                android:summary="@string/prefs_summary_input"
+                                android:entries="@array/input_plugins"
+                                android:entryValues="@array/input_plugins"
+                                android:defaultValue="@string/default_plugin_input"/>
+
                 <!--<EditTextPreference
                         android:key="birthdays_scan_interval"
                         android:summary="@string/prefs_summary_scan"
@@ -58,16 +66,16 @@
                                 android:key="prefs_do_morph" 
                                 android:title="@string/prefs_title_do_morph"
                                 android:summary="@string/prefs_summary_do_morph"
-                                android:defaultValue="@string/do_morph"
+                                android:defaultValue="@string/default_do_morph"
                                 android:enabled="true"/>
                                 
-                        <!--<ListPreference
-                                android:key="birthdroid_sort_method"
-                                android:title="@string/prefs_title_sort_method"
-                                android:summary="@string/prefs_summary_sort_method"
-                                android:entries="@array/sort_method_entries"
-                                android:entryValues="@array/sort_method_values"
-                                android:defaultValue="@string/birthdroid_sort_method"/>-->
+                        <ListPreference
+                                android:key="prefs_morph"
+                                android:title="@string/prefs_title_morph"
+                                android:summary="@string/prefs_summary_morph"
+                                android:entries="@array/morph_plugins"
+                                android:entryValues="@array/morph_plugins"
+                                android:defaultValue="@string/default_plugin_morph"/>
                                 
                 </PreferenceScreen>
         </PreferenceCategory>
@@ -88,7 +96,7 @@
                                 android:summary="@string/prefs_summary_actor"
                                 android:entries="@array/actor_plugins"
                                 android:entryValues="@array/actor_plugins"
-                                android:defaultValue="@string/plugin_actor"/>
+                                android:defaultValue="@string/default_plugin_actor"/>
 
                        <!-- <CheckBoxPreference
                                 android:key="widget_avartars" 
