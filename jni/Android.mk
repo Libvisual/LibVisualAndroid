@@ -4,12 +4,12 @@ WARNING_CFLAGS := -Wall -Wstrict-aliasing -Wcast-align -Waddress -Wmissing-brace
 LV_C_INCLUDES  := jni/libvisual/libvisual
 LV_CFLAGS      := $(WARNING_CFLAGS)
 LV_CXXFLAGS    :=
-LV_CPPFLAGS    := -fexceptions
+LV_CPPFLAGS    := -std=gnu++0x
 
 
 
 ifeq ($(TARGET_ARCH_ABI),armeabi)
-#    LV_CFLAGS += -march=armv6 -mfp=vfp -D__ARM_ARCH_6__ $(WARNING_FLAGS)
+#    LV_CFLAGS += -march=armv6 -mfp=vfp -D__ARM_ARCH_6__
 endif
         
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)

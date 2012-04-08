@@ -1,20 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ Libvisual - The audio visualisation framework.
+  
+  Copyright (C) 2004-2006 Dennis Smit <ds@nerds-incorporated.org>
+  Copyright (C) 2012 Daniel Hiepler <daniel-lva@niftylight.de>         
+ 
+  Authors: Dennis Smit <ds@nerds-incorporated.org>
+           Daniel Hiepler <daniel-lva@niftylight.de>
+ 
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation; either version 2.1
+  of the License, or (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+ 
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ 
+-->
+<manifest 
+      xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.libvisual.android"
       android:versionCode="1"
       android:versionName="0.1">
+
+    <!-- main application -->
     <application 
         android:label="@string/app_name" 
         android:layout_width="fill_parent" 
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:debuggable="false">
 
         <!-- Main activity -->
-        <activity android:name="LibVisual"
-                  android:label="@string/app_name">
+        <activity 
+              android:name="LibVisual"
+              android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!-- preferences activity -->
+        <activity 
+              android:name="LibVisualPreferences" 
+              android:label="@string/preferences_name">
+        </activity>
+
+        <!-- about app activity -->
+        <activity 
+              android:name="LibVisualAboutApp" 
+              android:label="@string/about_app_name">
+        </activity>
+
+        <!-- about lib activity -->
+        <activity 
+              android:name="LibVisualAboutLib" 
+              android:label="@string/about_lib_name">
+        </activity>
+
+        <!-- about actor activity -->
+        <activity 
+              android:name="LibVisualAboutActor" 
+              android:label="@string/about_actor_name">
+        </activity>
+
+        <!-- about input activity -->
+        <activity 
+              android:name="LibVisualAboutInput" 
+              android:label="@string/about_input_name">
+        </activity>
+
+        <!-- about morph activity -->
+        <activity 
+              android:name="LibVisualAboutMorph" 
+              android:label="@string/about_morph_name">
         </activity>
 
     </application>

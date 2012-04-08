@@ -26,22 +26,124 @@ package org.libvisual.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 
 
 public class LibVisual extends Activity
 {
     private final static String TAG = "LibVisual";
+        
+    /** object to hold all our permanent settings */
+    private static LibVisualSettings s;
 
+
+        
+    /* implementend by liblvclient.so */
+    private static native boolean init();
+    private static native void deinit();
         
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle state)
     {
         super.onCreate(state);
+
+        /* create new settings-object */
+        s = new LibVisualSettings(this);
+
+        /* initialize libvisual */
+        init();
+            
+        /* set our libvisual view */
         setContentView(new LibVisualView(this));
     }
+
+
+    /** options menu */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.libvisual, menu);
+        return true;
+    }
+
+    
+    /** item from options menu selected */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            /* About App */
+            case R.id.about_libvisual_android:
+            {
+                startActivity(new Intent(this, LibVisualAboutApp.class));
+                return true;
+            }
+
+            /* About Lib */
+            case R.id.about_libvisual:
+            {
+                startActivity(new Intent(this, LibVisualAboutLib.class));
+                return true;
+            }
+
+            /* About actor */
+            case R.id.about_actor:
+            {
+                startActivity(new Intent(this, LibVisualAboutActor.class));
+                return true;
+            }
+
+            /* About input */
+            case R.id.about_input:
+            {
+                startActivity(new Intent(this, LibVisualAboutInput.class));
+                return true;
+            }
+
+            /* About morph */
+            case R.id.about_morph:
+            {
+                startActivity(new Intent(this, LibVisualAboutMorph.class));
+                return true;
+            }
+                    
+            /* Preferences */
+            case R.id.settings:
+            {
+                    startActivity(new Intent(this, LibVisualPreferences.class));
+                    return true;
+            }
+
+            /* wtf? */
+            default:
+            {
+                    Log.w(TAG, "Unhandled menu-item. This is a bug!");
+                    break;
+            }
+        }
+
+        return false;
+    }
+
+
+    /* called when activity is destroyed */
+    @Override
+    public void onDestroy()
+    {
+        /* deinitialize libvisual */
+        deinit();
+            
+        super.onDestroy();
+    }
+
         
     /* load our native library */
     static 

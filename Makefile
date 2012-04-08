@@ -7,7 +7,7 @@ ACTIVITY = LibVisual
 TARGET = android-8
 
 all:
-	@ndk-build BUILD_TYPE=release
+	@ndk-build APP_OPTIM=release
 	@ant clean
 	@ant release
 
@@ -21,12 +21,12 @@ install_dev:
 	@adb -d install -r bin/$(APPNAME).apk
 
 debug:
-	@ndk-build BUILD_TYPE=debug USLEEP=-DUSLEEP=240000 V=1
+	@ndk-build NDK_DEBUG=1 APP_OPTIM=debug V=1
 	@ant clean
 	@ant debug
 
 debug_emu:
-	@ndk-build BUILD_TYPE=debug USLEEP=-DUSLEEP=240000
+	@ndk-build NDK_DEBUG=1 APP_OPTIM=debug V=1
 	@adb -e install -r bin/$(APPNAME)-debug.apk
 
 install_debug: 
@@ -55,11 +55,11 @@ sign:
 	@zipalign -v 4 bin/$(ACTIVITY)-release-unsigned.apk bin/$(APPNAME).apk
 
 log:
-	@adb pull /data/data/com.starlon.starvisuals/lib/ lyrical/data/data/com.starlon.starvisuals/
-	@/opt/arm-2011.09/bin/arm-none-linux-gnueabi-objdump -S obj/local/armeabi/libvisual.so > libstarvisuals.asm
+	@adb pull /data/data/org.libvisual.android/lib/ lyrical/data/data/org.libvisual.android/
+	@/opt/arm-2011.09/bin/arm-none-linux-gnueabi-objdump -S obj/local/armeabi/libvisual.so > libvisual.asm
 	@adb shell logcat -d > test.log
 	@./tools/stack.py --symbols-dir=./lyrical/ ./test.log 
-	#@./tools/parse_stack.py ./libstarvisuals.asm ./test.log
+	#@./tools/parse_stack.py ./libvisual.asm ./test.log
 	@adb shell dumpsys meminfo -h > meminfo.txt
 
 gdb:
@@ -98,16 +98,16 @@ mem20:
 	@adb shell start
 
 start:
-	@adb shell am start -n com.starlon.starvisuals/.StarVisuals
+	@adb shell am start -n org.libvisual.android/.LibVisual
 
 start_dev:
-	@adb -d shell am start -n com.starlon.starvisuals/.StarVisuals
+	@adb -d shell am start -n org.libvisual.android/.LibVisual
 
 start_emu:
-	@adb -e shell am start -n com.starlon.starvisuals/.StarVisuals
+	@adb -e shell am start -n org.libvisual.android/.LibVisual
 
 valgrind:
-	@adb shell setprop wrap.com.starlon.starvisuals "logwrapper valgrind"
+	@adb shell setprop wrap.org.libvisual.android "logwrapper valgrind"
 
 redirect:
 	@adb shell stop

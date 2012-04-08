@@ -49,10 +49,10 @@ namespace LV {
     {
         output.clear ();
 
-        copy_if (input.begin(),
+        /*copy_if (input.begin(),
                  input.end (),
                  std::back_insert_iterator<PluginList> (output),
-                 PluginHasType (type));
+                 PluginHasType (type));*/
     }
 
   } // Internal namespace
