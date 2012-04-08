@@ -28,17 +28,66 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <libvisual/libvisual.h>
 #include "lvclient.h"
 #include "stats.h"
 
 
 
+/** VisLog -> android Log glue */
+static void _log_handler(VisLogSeverity severity, const char *msg, const VisLogSource *source, void *priv)
+{
+
+    switch(severity)
+    {
+        case VISUAL_LOG_DEBUG:
+            LOGI("lvDEBUG: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            break;
+        case VISUAL_LOG_INFO:
+            LOGI("lvINFO: %s: %s\n", __lv_progname, msg);
+            break;
+        case VISUAL_LOG_WARNING:
+            LOGW("lvWARNING: %s: %s\n", __lv_progname, msg);
+            break;
+        case VISUAL_LOG_ERROR:
+            LOGE("lvERROR: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            break;
+        case VISUAL_LOG_CRITICAL:
+            LOGE("lvCRITICAL: (%s) line # %d (%s) : %s\n", source->file, source->line, source->func, msg);
+            break;
+    }
+}
 
 
+/******************************************************************************
+ ******************************************************************************/
+
+/** LibVisual.init() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * env, jobject  obj)
+{
+    if(visual_is_initialized())
+                return;
+        
+    /*visual_init_path_add("/data/data/org.libvisual.android/lib");
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+    visual_log_set_handler(VISUAL_LOG_DEBUG, _log_handler, NULL);
+    visual_log_set_handler(VISUAL_LOG_INFO, _log_handler, NULL);
+    visual_log_set_handler(VISUAL_LOG_WARNING, _log_handler, NULL);
+    visual_log_set_handler(VISUAL_LOG_CRITICAL, _log_handler, NULL);
+    visual_log_set_handler(VISUAL_LOG_ERROR, _log_handler, NULL);
+
+    visual_init (0, NULL);*/
+}
 
 
-/** LibVisualView.render() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms)
+/** LibVisualView.init() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, jobject  obj, jobject bitmap)
+{
+
+}
+
+/** LibVisualView.renderVisual() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
 {
     AndroidBitmapInfo  info;
     void*              pixels;

@@ -38,11 +38,13 @@ class LibVisualView extends View
         
     private LibVisualSettings s;
     private Bitmap mBitmap;
-    private long mStartTime;
 
-    /* implementend by libplasma.so */
-    private static native void renderVisual(Bitmap  bitmap, long time_ms);
 
+    /* implementend by liblvclient.so */
+    private static native void init(Bitmap  bitmap);
+    private static native void renderVisual(Bitmap  bitmap);
+
+        
     public LibVisualView(Context context) 
     {
         super(context);
@@ -65,15 +67,15 @@ class LibVisualView extends View
         final int H = 200;
         mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.RGB_565);
 
-        /* sample start time */
-        mStartTime = System.currentTimeMillis();
+        /* initialize the libvisual view */
+        init(mBitmap);
     }
 
     @Override protected void onDraw(Canvas canvas) 
     {
         /* render */
         //canvas.drawColor(0xFFCCCCCC);
-        renderVisual(mBitmap, System.currentTimeMillis() - mStartTime);
+        renderVisual(mBitmap);
         canvas.drawBitmap(mBitmap, 0, 0, null);
             
         /* force a redraw, with a different time-based pattern. */

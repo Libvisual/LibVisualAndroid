@@ -43,6 +43,9 @@ public class LibVisual extends Activity
 
 
         
+    /* implementend by liblvclient.so */
+    private static native void init();
+
         
     /** Called when the activity is first created. */
     @Override
@@ -53,6 +56,9 @@ public class LibVisual extends Activity
         /* create new settings-object */
         s = new LibVisualSettings(this);
 
+        /* initialize libvisual */
+        init();
+            
         /* set our libvisual view */
         setContentView(new LibVisualView(this));
     }
