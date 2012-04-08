@@ -7,9 +7,9 @@ LOCAL_CXXFLAGS   += $(LV_CXXFLAGS)
 LOCAL_CPPFLAGS   += $(LV_CPPFLAGS)
 
 
-LOCAL_MODULE           += lvclient
-LOCAL_SRC_FILES        += lvclient.c stats.c
-LOCAL_SHARED_LIBRARIES += visual
+LOCAL_MODULE           := lvclient
+LOCAL_SRC_FILES        := $(addprefix /, $(notdir $(wildcard $(LOCAL_PATH)/*.c) $(wildcard $(LOCAL_PATH)/*.cpp)))
+LOCAL_SHARED_LIBRARIES := visual
 LOCAL_LDLIBS           += -lm -llog -ljnigraphics
 
 include $(BUILD_SHARED_LIBRARY)

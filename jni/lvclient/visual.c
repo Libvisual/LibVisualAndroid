@@ -29,25 +29,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include <libvisual/libvisual.h>
-#include "lvclient.h"
-#include "stats.h"
+#include "visual.h"
+
 
 
 /** local variables */
 static struct
 {
-    /* used to count FPS */
-    Stats fps_stats;
-    /* libvisual video object */
-    VisVideo *video;
-    /* libvisual palette object */
-    VisPalette *palette;
-    /* libvisual bin object */
-    VisBin *bin;
-    /* plugin names */
-    const char *actor_name;
-    const char *input_name;
-    const char *morph_name;
+
 }_l;
 
 
@@ -111,12 +100,6 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     /* add our plugin search path */
     visual_init_path_add("/data/data/org.libvisual.android/lib");
         
-    /* default plugins */
-    _l.actor_name = DEFAULT_ACTOR;
-    _l.input_name = DEFAULT_INPUT;
-    _l.morph_name = DEFAULT_MORPH;
-
-        
     return JNI_TRUE;
 }
 
@@ -128,98 +111,3 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env,
 }
 
 
-/** LibVisualView.init() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, jobject  obj, jobject bitmap)
-{
-    LOGI("LibVisualView.init()");
-
-    /* get BitmapInfo */
-    AndroidBitmapInfo  info;
-    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) {
-        LOGE("AndroidBitmap_getInfo() failed");
-        return JNI_FALSE;
-    }
-
-    if (info.format != ANDROID_BITMAP_FORMAT_RGB_565) {
-        LOGE("Bitmap format is not RGB_565 !");
-        return JNI_FALSE;
-    }
-
-    /* create new VisBin */
-    if(!(_l.bin = visual_bin_new()))
-                return JNI_FALSE;
-
-    visual_bin_set_supported_depth(_l.bin, VISUAL_VIDEO_DEPTH_ALL);
-    visual_bin_set_preferred_depth(_l.bin, VISUAL_VIDEO_DEPTH_32BIT);
-
-        
-    /* initialize framerate stats */
-    stats_init(&_l.fps_stats);
-        
-    return JNI_TRUE;
-}
-
-
-/** LibVisualView.deinit() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * env, jobject  obj)
-{
-    LOGI("LibVisualView.deinit()");
-
-    if(_l.video)
-    {
-        visual_video_free_buffer(_l.video);
-        visual_object_unref(VISUAL_OBJECT(_l.video));
-        _l.video = NULL;
-    }
-
-    if(_l.bin)
-    {
-        if(_l.bin->actor)
-            visual_object_unref(VISUAL_OBJECT(_l.bin->actor));      
-            
-        if(_l.bin->input)
-            visual_object_unref(VISUAL_OBJECT(_l.bin->input));
-
-        visual_object_unref(VISUAL_OBJECT(_l.bin));
-        _l.bin = NULL;
-    }
-
-    if(_l.palette)
-    {
-        visual_object_unref(VISUAL_OBJECT(_l.palette));
-        _l.palette = NULL;
-    }
-        
-    if(visual_is_initialized())
-        visual_quit();
-}
-
-
-/** LibVisualView.renderVisual() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
-{
-    void*              pixels;
-    int                ret;
-    static int         init;
-
-    if(!visual_is_initialized())
-                return;
-        
-    
-    /* lock bitmap for drawing */
-    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
-        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
-    }
-
-    /* start fps timing */
-    stats_startFrame(&_l.fps_stats);
-
-    /* Now fill the values with a nice little plasma */
-    //fill_plasma(&info, pixels, time_ms );
-
-    /* unlock bitmap */
-    AndroidBitmap_unlockPixels(env, bitmap);
-
-    /* stop fps timing */
-    stats_endFrame(&_l.fps_stats);
-}

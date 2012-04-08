@@ -44,27 +44,49 @@ class LibVisualView extends View
     private static native boolean init(Bitmap bitmap);
     private static native boolean deinit();
     private static native void renderVisual(Bitmap bitmap);
+    private static native boolean setActor(String name);
+    private static native void getActor();
+    private static native boolean setMorph(String name);
+    private static native void getMorph();
+    private static native boolean setInput(String name);
+    private static native void getInput();
 
         
     public LibVisualView(Context context) 
     {
         super(context);
 
-        /* get settings */
+        /* get preferences */
         s = new LibVisualSettings(context);
 
-        Boolean doMorph = s.getBoolean("prefs_do_morph", (context.getString(R.string.default_do_morph) == "true" ? true : false));
-        String input = s.getString("prefs_input", context.getString(R.string.default_plugin_input));
-        String actor = s.getString("prefs_actor", context.getString(R.string.default_plugin_actor));
-        String morph = s.getString("prefs_morph", context.getString(R.string.default_plugin_morph));
+        /* get defaults */
+        String default_do_morph = context.getString(R.string.default_do_morph);
+        String default_morph = context.getString(R.string.default_plugin_morph);
+        String default_input = context.getString(R.string.default_plugin_input);
+        String default_actor = context.getString(R.string.default_plugin_actor);
             
+        /* read prefs values */
+        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == 
+                                                          "true" ? 
+                                                          true : 
+                                                          false));
+        String input = s.getString("prefs_input", default_input);
+        String actor = s.getString("prefs_actor", default_actor);
+        String morph = s.getString("prefs_morph", default_morph);
+
         Log.v(TAG, "Input: \""+input+"\" Morph: \""+morph+"\" Actor: \""+actor);
+
             
-              
+        /* set initial plugins from preferences */
+        setInput(input);
+        setMorph(morph);
+        setActor(actor);
+
+            
         /* create bitmap */
         final int W = 200;
         final int H = 200;
-        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.RGB_565);
+        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
 
         /* initialize the libvisual view */
         init(mBitmap);

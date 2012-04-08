@@ -23,8 +23,8 @@
 
 #include <time.h>
 #include <android/log.h>
-#include "lvclient.h"
-#include "stats.h"
+#include "visual.h"
+#include "fps.h"
 
 
 /* simple framerate stats management */
@@ -36,7 +36,7 @@
 
 
 /* Return current time in milliseconds */
-static double now_ms(void)
+static double _now_ms(void)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -44,24 +44,24 @@ static double now_ms(void)
 }
 
 
-void stats_init( Stats*  s )
+void fps_init(Fps* s)
 {
-    s->lastTime = now_ms();
+    s->lastTime = _now_ms();
     s->firstTime = 0.;
     s->firstFrame = 0;
     s->numFrames  = 0;
 }
 
 
-void stats_startFrame( Stats*  s )
+void fps_startFrame(Fps* s)
 {
-    s->frameTime = now_ms();
+    s->frameTime = _now_ms();
 }
 
 
-void stats_endFrame( Stats*  s )
+void fps_endFrame(Fps* s)
 {
-    double now = now_ms();
+    double now = _now_ms();
     double renderTime = now - s->frameTime;
     double frameTime  = now - s->lastTime;
     int nn;

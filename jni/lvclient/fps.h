@@ -21,19 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_STATS_H
-#define _LV_STATS_H
+#ifndef _LV_FPS_H
+#define _LV_FPS_H
 
 
-#define  MAX_FRAME_STATS  200
+#define  MAX_FRAME_STATS  32
 #define  MAX_PERIOD_MS    1500
 
 
-typedef struct
-{
-    double  renderTime;
-    double  frameTime;
-}FrameStats;
 
 typedef struct 
 {
@@ -43,13 +38,18 @@ typedef struct
 
     int         firstFrame;
     int         numFrames;
-    FrameStats  frames[ MAX_FRAME_STATS ];
-}Stats;
+    struct
+    {
+        double  renderTime;
+        double  frameTime;
+    }frames[MAX_FRAME_STATS];
+}Fps;
 
 
 
-void stats_init( Stats*  s );
-void stats_startFrame( Stats*  s );
-void stats_endFrame( Stats*  s );
+void fps_init(Fps* s);
+void fps_startFrame(Fps* s);
+void fps_endFrame(Fps* s);
 
-#endif /* _LV_STATS_H */
+
+#endif /* _LV_FPS_H */

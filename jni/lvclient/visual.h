@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_CLIENT_H
-#define _LV_CLIENT_H
+#ifndef _VISUAL_H
+#define _VISUAL_H
 
 
 #define  LOG_TAG    "libvisual"
@@ -41,4 +41,4 @@
 
 
 
-#endif /* _LV_CLIENT_H */
+#endif /* _VISUAL_H */
