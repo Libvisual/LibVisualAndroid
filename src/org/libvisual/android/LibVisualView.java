@@ -53,9 +53,7 @@ class LibVisualView extends View
         /* get settings */
         s = new LibVisualSettings(context);
 
-        //String doMorphString = s.getString("prefs_do_morph", 
-          //                      context.getString(R.string.default_do_morph));
-        //Boolean doMorph = (doMorphString == "true");
+        Boolean doMorph = s.getBoolean("prefs_do_morph", (context.getString(R.string.default_do_morph) == "true" ? true : false));
         String input = s.getString("prefs_input", context.getString(R.string.default_plugin_input));
         String actor = s.getString("prefs_actor", context.getString(R.string.default_plugin_actor));
         String morph = s.getString("prefs_morph", context.getString(R.string.default_plugin_morph));

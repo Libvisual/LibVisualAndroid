@@ -33,6 +33,24 @@
 #include "stats.h"
 
 
+/** local variables */
+static struct
+{
+    /* used to count FPS */
+    Stats fps_stats;
+    /* libvisual video object */
+    VisVideo *video;
+    /* libvisual palette object */
+    VisPalette *palette;
+    /* libvisual bin object */
+    VisBin *bin;
+    /* plugin names */
+    const char *actor_name;
+    const char *input_name;
+    const char *morph_name;
+}_l;
+
+
 
 /** VisLog -> android Log glue */
 static void _log_handler(VisLogSeverity severity, const char *msg, const VisLogSource *source, void *priv)
@@ -41,19 +59,19 @@ static void _log_handler(VisLogSeverity severity, const char *msg, const VisLogS
     switch(severity)
     {
         case VISUAL_LOG_DEBUG:
-            LOGI("lvDEBUG: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
+            LOGI("(debug) %s(): %s", source->func, msg);
             break;
         case VISUAL_LOG_INFO:
-            LOGI("lvINFO: %s: %s", __lv_progname, msg);
+            LOGI("(info) %s", msg);
             break;
         case VISUAL_LOG_WARNING:
-            LOGW("lvWARNING: %s: %s", __lv_progname, msg);
+            LOGW("(WARNING) %s", msg);
             break;
         case VISUAL_LOG_ERROR:
-            LOGE("lvERROR: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
+            LOGE("(ERROR) (%s:%d) %s(): %s", source->file, source->line, source->func, msg);
             break;
         case VISUAL_LOG_CRITICAL:
-            LOGE("lvCRITICAL: (%s) line # %d (%s) : %s", source->file, source->line, source->func, msg);
+            LOGE("(CRITICAL) (%s:%d) %s(): %s", source->file, source->line, source->func, msg);
             break;
     }
 }
@@ -76,7 +94,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     while(foo);
 #endif
         
-    //visual_init_path_add("/data/data/org.libvisual.android/lib");
+    /* register VisLog handler to make it log to android logcat */
     visual_log_set_handler(VISUAL_LOG_DEBUG, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_INFO, _log_handler, NULL);
     visual_log_set_handler(VISUAL_LOG_WARNING, _log_handler, NULL);
@@ -89,6 +107,15 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     char **argv = v;
     int argc=1;
     visual_init(&argc,  &argv);
+
+    /* add our plugin search path */
+    visual_init_path_add("/data/data/org.libvisual.android/lib");
+        
+    /* default plugins */
+    _l.actor_name = DEFAULT_ACTOR;
+    _l.input_name = DEFAULT_INPUT;
+    _l.morph_name = DEFAULT_MORPH;
+
         
     return JNI_TRUE;
 }
@@ -98,7 +125,6 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env, jobject  obj)
 {
     LOGI("LibVisual.deinit()");
-    visual_quit();
 }
 
 
@@ -119,6 +145,17 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
         return JNI_FALSE;
     }
 
+    /* create new VisBin */
+    if(!(_l.bin = visual_bin_new()))
+                return JNI_FALSE;
+
+    visual_bin_set_supported_depth(_l.bin, VISUAL_VIDEO_DEPTH_ALL);
+    visual_bin_set_preferred_depth(_l.bin, VISUAL_VIDEO_DEPTH_32BIT);
+
+        
+    /* initialize framerate stats */
+    stats_init(&_l.fps_stats);
+        
     return JNI_TRUE;
 }
 
@@ -126,7 +163,35 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
 /** LibVisualView.deinit() */
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * env, jobject  obj)
 {
+    LOGI("LibVisualView.deinit()");
 
+    if(_l.video)
+    {
+        visual_video_free_buffer(_l.video);
+        visual_object_unref(VISUAL_OBJECT(_l.video));
+        _l.video = NULL;
+    }
+
+    if(_l.bin)
+    {
+        if(_l.bin->actor)
+            visual_object_unref(VISUAL_OBJECT(_l.bin->actor));      
+            
+        if(_l.bin->input)
+            visual_object_unref(VISUAL_OBJECT(_l.bin->input));
+
+        visual_object_unref(VISUAL_OBJECT(_l.bin));
+        _l.bin = NULL;
+    }
+
+    if(_l.palette)
+    {
+        visual_object_unref(VISUAL_OBJECT(_l.palette));
+        _l.palette = NULL;
+    }
+        
+    if(visual_is_initialized())
+        visual_quit();
 }
 
 
@@ -135,16 +200,11 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
 {
     void*              pixels;
     int                ret;
-    static Stats       stats;
     static int         init;
 
-    if (!init) 
-    {
-        /* initialize framerate stats */
-        stats_init(&stats);
-        init = 1;
-    }
-
+    if(!visual_is_initialized())
+                return;
+        
     
     /* lock bitmap for drawing */
     if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0) {
@@ -152,7 +212,7 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
     }
 
     /* start fps timing */
-    stats_startFrame(&stats);
+    stats_startFrame(&_l.fps_stats);
 
     /* Now fill the values with a nice little plasma */
     //fill_plasma(&info, pixels, time_ms );
@@ -161,5 +221,5 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
     AndroidBitmap_unlockPixels(env, bitmap);
 
     /* stop fps timing */
-    stats_endFrame(&stats);
+    stats_endFrame(&_l.fps_stats);
 }

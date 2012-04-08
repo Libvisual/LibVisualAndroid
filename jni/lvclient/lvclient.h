@@ -25,15 +25,19 @@
 #define _LV_CLIENT_H
 
 
-
 #define  LOG_TAG    "libvisual"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+#define DEFAULT_INPUT "debug"
+#define DEFAULT_MORPH "slide_left"
+#define DEFAULT_ACTOR "lv_analyzer"
+
+#ifndef NDEBUG
 /* Set to 1 to enable debug log traces. */
 #define DEBUG 1
-
+#endif
 
 
 

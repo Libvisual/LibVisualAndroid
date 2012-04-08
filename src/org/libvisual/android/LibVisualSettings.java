@@ -51,7 +51,7 @@ public class LibVisualSettings
                 
                 /** read prefs */
                 //_prefs = PreferenceManager.getDefaultSharedPreferences(c);
-                _prefs = c.getSharedPreferences(c.getPackageName()+"_preferences", 
+                _prefs = c.getSharedPreferences(c.getPackageName()+"_prefs", 
                                                 Context.MODE_PRIVATE);
                 _edit = _prefs.edit();
                 commit();
@@ -72,9 +72,16 @@ public class LibVisualSettings
                 return _prefs.getString(key, defValue);
         }
 
+        
         int getInt(String key, int defValue)
         {
                 return _prefs.getInt(key, defValue);
+        }
+
+        
+        boolean getBoolean(String key, boolean defValue)
+        {
+                return _prefs.getBoolean(key, defValue);
         }
 
         
@@ -84,8 +91,15 @@ public class LibVisualSettings
                 _edit.putString(key, value);
         }
 
+        
         void putInt(String key, int value)
         {
                 _edit.putInt(key, value);
+        }
+
+
+        void putBoolean(String key, boolean value)
+        {
+                _edit.putBoolean(key, value);
         }
 }
