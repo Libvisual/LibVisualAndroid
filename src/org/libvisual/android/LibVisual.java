@@ -48,12 +48,13 @@ public class LibVisual extends Activity
     {
         try
         {
+            System.loadLibrary("visual");
             System.loadLibrary("lvclient");
         }
         catch(UnsatisfiedLinkError e)
         {
-                Log.e(TAG, "Error while loading shared library. This is a bug.");
-                e.printStackTrace();
+            Log.e(TAG, "Error while loading shared library: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 }
