@@ -26,12 +26,15 @@ package org.libvisual.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
-
+import android.util.Log;
 
 
 
 public class LibVisual extends Activity
 {
+    private final static String TAG = "LibVisual";
+
+        
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle state)
@@ -43,7 +46,15 @@ public class LibVisual extends Activity
     /* load our native library */
     static 
     {
-        System.loadLibrary("lvclient");
+        try
+        {
+            System.loadLibrary("lvclient");
+        }
+        catch(UnsatisfiedLinkError e)
+        {
+                Log.e(TAG, "Error while loading shared library. This is a bug.");
+                e.printStackTrace();
+        }
     }
 }
 
