@@ -123,7 +123,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setBitmap(JN
     {
         depth = visual_video_depth_get_highest_nogl(depthflag);
     }
-        
+    
 
     /* create video for actor */
     _v.video = visual_video_new();
@@ -171,6 +171,22 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
     if(!(i = visual_input_new(_v.input_name)))
                 return JNI_FALSE;
 
+    /* get depth of actor */
+    VisVideoDepth depth;
+    int depthflag = visual_actor_get_supported_depth(a);
+    if(depthflag == VISUAL_VIDEO_DEPTH_GL) 
+    {
+        depth = visual_video_depth_get_highest(depthflag);
+    }
+    else 
+    {
+        depth = visual_video_depth_get_highest_nogl(depthflag);
+    }
+
+    /* det bin to actor-depth */
+    visual_bin_set_depth(_v.bin, depth);
+
+        
     /* put everything together */
     visual_bin_connect(_v.bin, a, i);
         
@@ -341,10 +357,12 @@ JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualView_getMorph(JNIE
 /** LibVisualView.renderVisual() */
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
 {
-    if((!visual_is_initialized()) || 
-       (!_v.bin) || 
-       (!_v.bin->input) ||
-       (!_v.bin->actor))
+    if(!visual_is_initialized() ||
+       !_v.video ||
+       !_v.bitmap ||
+       !_v.bin || 
+       !_v.bin->input || 
+       !_v.bin->actor)
                 return;
 
     /* start fps timing */
