@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Libvisual - The audio visualisation framework.
+  
+  Copyright (C) 2004-2006 Dennis Smit <ds@nerds-incorporated.org>
+  Copyright (C) 2012 Daniel Hiepler <daniel-lva@niftylight.de>         
+ 
+  Authors: Dennis Smit <ds@nerds-incorporated.org>
+           Daniel Hiepler <daniel-lva@niftylight.de>
+ 
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation; either version 2.1
+  of the License, or (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+ 
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ 
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <!-- Input -->
+        <PreferenceCategory
+                android:title="@string/prefs_title_input">
+                
+                <PreferenceScreen
+                        android:key="prefs_input_screen"
+                        android:title="@string/prefs_title_input_settings"
+                        android:summary="@string/prefs_summary_input_settings">
+
+                <ListPreference
+                                android:key="prefs_input"
+                                android:title="@string/prefs_title_input"
+                                android:summary="@string/prefs_summary_input"
+                                android:entries="@array/input_plugins"
+                                android:entryValues="@array/input_plugins"
+                                android:defaultValue="@string/default_plugin_input"/>
+
+                <!--<EditTextPreference
+                        android:key="birthdays_scan_interval"
+                        android:summary="@string/prefs_summary_scan"
+                        android:title="@string/prefs_title_scan"
+                        android:inputType="number"
+                        android:defaultValue="24"
+                        android:enabled="false"/>-->
+                </PreferenceScreen>
+        </PreferenceCategory>
+        
+
+        <!-- Morph -->
+        <PreferenceCategory
+                android:title="@string/prefs_title_morph">
+                
+                <PreferenceScreen
+                        android:key="prefs_morph_screen"
+                        android:title="@string/prefs_title_morph_settings"
+                        android:summary="@string/prefs_summary_morph_settings">
+                        
+                        <CheckBoxPreference
+                                android:key="prefs_do_morph" 
+                                android:title="@string/prefs_title_do_morph"
+                                android:summary="@string/prefs_summary_do_morph"
+                                android:defaultValue="@string/default_do_morph"
+                                android:enabled="true"/>
+                                
+                        <ListPreference
+                                android:key="prefs_morph"
+                                android:title="@string/prefs_title_morph"
+                                android:summary="@string/prefs_summary_morph"
+                                android:entries="@array/morph_plugins"
+                                android:entryValues="@array/morph_plugins"
+                                android:defaultValue="@string/default_plugin_morph"/>
+                                
+                </PreferenceScreen>
+        </PreferenceCategory>
+        
+    
+        <!-- Actor -->
+        <PreferenceCategory
+                android:title="@string/prefs_title_actor">
+                                        
+                <PreferenceScreen
+                    android:key="prefs_actor_screen"
+                    android:title="@string/prefs_title_actor_settings"
+                    android:summary="@string/prefs_summary_actor_settings">
+
+                        <ListPreference
+                                android:key="prefs_actor"
+                                android:title="@string/prefs_title_actor"
+                                android:summary="@string/prefs_summary_actor"
+                                android:entries="@array/actor_plugins"
+                                android:entryValues="@array/actor_plugins"
+                                android:defaultValue="@string/default_plugin_actor"/>
+
+                       <!-- <CheckBoxPreference
+                                android:key="widget_avartars" 
+                                android:title="@string/prefs_title_avartar"
+                                android:summary="@string/prefs_summary_avartar"
+                                android:defaultValue="@string/widget_avartars"
+                                android:enabled="false"/>
+                                
+                        <EditTextPreference
+                                android:key="widget_flip_interval" 
+                                android:title="@string/prefs_title_flip_interval"
+                                android:summary="@string/prefs_summary_flip_interval"
+                                android:defaultValue="@integer/widget_flip_interval"
+                                android:inputType="number"/> 
+                                
+
+                        
+                        -->
+                </PreferenceScreen>
+                
+        </PreferenceCategory>
+</PreferenceScreen>
