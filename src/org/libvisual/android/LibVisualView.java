@@ -78,25 +78,30 @@ class LibVisualView extends View
 
             
         /* set initial plugins from preferences */
-        setInput(input);
-        setMorph(morph);
-        setActor(actor);
-
+        /** @todo error handling */
+        if(setInput(input) &&
+           setMorph(morph) &&
+           setActor(actor))
+        {
             
-        /* create bitmap */
-        final int W = 200;
-        final int H = 200;
-        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+            /* create bitmap */
+            final int W = 200;
+            final int H = 200;
+            mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
 
-        /* initialize the libvisual view */
-        /** @todo message + quit on failure */
-        init(mBitmap);
+            /* initialize the libvisual view */
+            /** @todo message + quit on failure */
+            init(mBitmap);
+        }
     }
 
         
     @Override 
     protected void onDraw(Canvas canvas) 
     {
+        if(mBitmap == null)
+            return;
+            
         /* render */
         //canvas.drawColor(0xFFCCCCCC);
         renderVisual(mBitmap);

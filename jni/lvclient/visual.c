@@ -91,6 +91,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     visual_log_set_handler(VISUAL_LOG_ERROR, _log_handler, NULL);
     visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 
+
     /* initialize libvisual */
     char *v[] = { "lvclient", NULL };
     char **argv = v;
@@ -98,7 +99,8 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     visual_init(&argc,  &argv);
 
     /* add our plugin search path */
-    visual_init_path_add("/data/data/org.libvisual.android/lib");
+    visual_plugin_registry_add_path("/data/data/org.libvisual.android/lib");
+
         
     return JNI_TRUE;
 }

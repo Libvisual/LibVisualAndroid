@@ -117,16 +117,19 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
     /* create VisVideo for our bitmap */
     if(!(_v.bitmap = visual_video_new()))
                 return JNI_FALSE;
-    visual_video_set_dimension(_v.bitmap, info.width, info.height);
-    visual_video_set_depth(_v.bitmap, VISUAL_VIDEO_DEPTH_32BIT);
-    visual_video_set_pitch(_v.bitmap, info.stride);
-        
+    visual_video_set_attributes(_v.bitmap,
+                                info.width, info.height,
+                                info.stride,
+                                VISUAL_VIDEO_DEPTH_32BIT);
+    //visual_video_allocate_buffer(_v.bitmap);
 
-    /* create video */
+        
+    /* create video for actor */
     _v.video = visual_video_new();
-    visual_video_set_dimension(_v.video, info.width, info.height);
-    visual_video_set_depth(_v.video, depth);
-    visual_video_set_pitch(_v.video, info.width*visual_video_bpp_from_depth(depth));
+    visual_video_set_attributes(_v.video, 
+                                info.width, info.height, 
+                                info.width*visual_video_bpp_from_depth(depth), 
+                                depth);
     visual_video_allocate_buffer(_v.video);
 
 
@@ -155,14 +158,33 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * 
         _v.video = NULL;
     }
 
+    if(_v.bitmap)
+    {
+        //visual_video_free_buffer(_v.bitmap);
+        visual_object_unref(VISUAL_OBJECT(_v.bitmap));
+        _v.bitmap = NULL;
+    }
+        
     if(_v.bin)
     {
         if(_v.bin->actor)
+        {
             visual_object_unref(VISUAL_OBJECT(_v.bin->actor));      
+            _v.bin->actor = NULL;
+        }
             
         if(_v.bin->input)
+        {
             visual_object_unref(VISUAL_OBJECT(_v.bin->input));
+            _v.bin->input = NULL;
+        }
 
+        if(_v.bin->morph)
+        {
+            visual_object_unref(VISUAL_OBJECT(_v.bin->morph));
+            _v.bin->morph = NULL;
+        }
+            
         visual_object_unref(VISUAL_OBJECT(_v.bin));
         _v.bin = NULL;
     }
@@ -296,7 +318,10 @@ JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualView_getMorph(JNIE
 /** LibVisualView.renderVisual() */
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
 {
-    if(!visual_is_initialized())
+    if((!visual_is_initialized()) || 
+       (!_v.bin) || 
+       (!_v.bin->input) ||
+       (!_v.bin->actor))
                 return;
 
     /* start fps timing */
@@ -304,6 +329,7 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
 
     /* run libvisual pipeline */
     visual_bin_run(_v.bin);
+
         
     /* lock bitmap for drawing */
     int ret;
@@ -313,10 +339,11 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
     }
 
     /* set buffer to pixels */
-    visual_video_set_buffer(_v.bitmap, &pixels);
-
+    visual_video_set_buffer(_v.bitmap, pixels);
+    
     /* depth transform */
     visual_video_depth_transform(_v.bitmap, _v.video);
+    //memcpy(pixels, visual_video_get_pixels(_v.bitmap), 200*200*4);
         
     /* unlock bitmap */
     AndroidBitmap_unlockPixels(env, bitmap);
