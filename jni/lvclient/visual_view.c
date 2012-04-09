@@ -56,7 +56,9 @@ static struct
         
 
 /** LibVisualView.init() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, jobject  obj, jobject bitmap)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, 
+                                                                         jobject  obj, 
+                                                                         jobject bitmap)
 {
     LOGI("LibVisualView.init()");
 
@@ -178,14 +180,21 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * 
     }
 
     if(_v.actor_name)
+    {
         free(_v.actor_name);
+        _v.actor_name = NULL;
+    }
     if(_v.morph_name)
+    {
         free(_v.morph_name);
+        _v.morph_name = NULL;
+    }
     if(_v.input_name)
+    {
         free(_v.input_name);
-        
-    if(visual_is_initialized())
-        visual_quit();
+        _v.input_name = NULL;
+    }
+
 }
 
 

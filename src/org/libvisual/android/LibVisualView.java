@@ -51,7 +51,8 @@ class LibVisualView extends View
     private static native boolean setInput(String name);
     private static native void getInput();
 
-        
+
+    /** constructor */
     public LibVisualView(Context context) 
     {
         super(context);
@@ -79,28 +80,58 @@ class LibVisualView extends View
             
         /* set initial plugins from preferences */
         /** @todo error handling */
-        if(setInput(input) &&
-           setMorph(morph) &&
-           setActor(actor))
-        {
+        if(!setInput(input))
+            Log.e(TAG, "Failed to set input");
             
-            /* create bitmap */
-            final int W = 200;
-            final int H = 200;
-            mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
-
-            /* initialize the libvisual view */
-            /** @todo message + quit on failure */
-            init(mBitmap);
-        }
+        if(!setMorph(morph))
+            Log.e(TAG, "Failed to set morph");
+            
+        if(!setActor(actor))
+            Log.e(TAG, "Failed to set actor");
+        
     }
 
+
+    /** This is called when the view is attached to a window. */
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        Log.i(TAG,"onAttachedToWindow()");
+
+        /* create bitmap */
+        final int W = 200;
+        final int H = 200;
+        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
+
+        /* initialize the libvisual view */
+        /** @todo message + quit on failure */
+        init(mBitmap);
+    }
+
+
+    /** This is called when the view is detached from a window. 
+        At this point it no longer has a surface for drawing. */
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        Log.i(TAG,"onDetachedToWindow()");    
+            
+        /** deinitialize libvisual view */
+        deinit();
+        super.onDetachedFromWindow();
+    }  
         
+       
+    /** called whenever the contents of this view are drawn */
     @Override 
     protected void onDraw(Canvas canvas) 
     {
         if(mBitmap == null)
+        {
+            Log.e(TAG, "bitmap not initialized, yet. This is a bug!");
             return;
+        }
             
         /* render */
         //canvas.drawColor(0xFFCCCCCC);
@@ -110,13 +141,5 @@ class LibVisualView extends View
         /* force a redraw, with a different time-based pattern. */
         invalidate();
     }
-
-    @Override
-    public void onDetachedFromWindow()
-    {
-        /** deinitialize libvisual view */
-        deinit();
-        super.onDetachedFromWindow();
-    }            
 
 }

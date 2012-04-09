@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +42,7 @@ public class LibVisual extends Activity
         
     /** object to hold all our permanent settings */
     private static LibVisualSettings s;
-
+    private static LibVisualView v;
 
         
     /* implementend by liblvclient.so */
@@ -62,12 +63,28 @@ public class LibVisual extends Activity
 
         /* initialize libvisual */
         init();
+
+        /* get retained LibVisualView */
+        if((v = (LibVisualView) getLastNonConfigurationInstance()) == null)
+        {
+            /* create new LibVisualView */
+            v = new LibVisualView(this);
+        }
             
         /* set our libvisual view */
-        setContentView(new LibVisualView(this));
+        setContentView(v);
+    }
+        
+        
+    /** this will be called to prepare an object to pass
+        to our future self after our app gets restarted */
+    @Override
+    public Object onRetainNonConfigurationInstance() 
+    {
+        return v;
     }
 
-
+        
     /** options menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)

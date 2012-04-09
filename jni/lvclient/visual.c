@@ -110,6 +110,9 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
 JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env, jobject  obj)
 {
     LOGI("LibVisual.deinit()");
+        
+    if(visual_is_initialized())
+        visual_quit();
 }
 
 
