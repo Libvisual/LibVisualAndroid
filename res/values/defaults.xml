@@ -28,4 +28,5 @@
     <string name="default_plugin_actor">lv_analyzer</string>
     <string name="default_plugin_morph">slide_left</string>
     <string name="default_do_morph">false</string>
+    <string name="default_real_fullscreen">false</string>
 </resources>

@@ -38,8 +38,7 @@
 
         <!-- Main activity -->
         <activity 
-              android:name="LibVisual"
-              android:label="@string/app_name">
+              android:name="LibVisual">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

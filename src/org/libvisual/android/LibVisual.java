@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 
 
 
@@ -53,6 +54,9 @@ public class LibVisual extends Activity
     {
         super.onCreate(state);
 
+        /* hide titlebar */
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            
         /* create new settings-object */
         s = new LibVisualSettings(this);
 

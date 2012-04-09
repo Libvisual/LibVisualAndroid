@@ -24,98 +24,106 @@
  
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <!-- Input -->
-        <PreferenceCategory
-                android:title="@string/prefs_title_input">
+<PreferenceScreen 
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- General -->
+    <PreferenceCategory
+      android:title="@string/prefs_title_general">
+
+        <PreferenceScreen
+          android:key="prefs_general_screen"
+          android:title="@string/prefs_title_general_settings"
+          android:summary="@string/prefs_summary_general_settings">
+
+            <CheckBoxPreference
+              android:key="prefs_real_fullscreen" 
+              android:title="@string/prefs_title_real_fullscreen"
+              android:summary="@string/prefs_summary_real_fullscreen"
+              android:defaultValue="@string/default_real_fullscreen"
+              android:enabled="true"/>
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+
+    <!-- Plugins -->
+    <PreferenceCategory
+            android:title="@string/prefs_title_plugins">
+            
+            <PreferenceScreen
+                    android:key="prefs_input_screen"
+                    android:title="@string/prefs_title_input_settings"
+                    android:summary="@string/prefs_summary_input_settings">
+
+            <ListPreference
+                            android:key="prefs_input"
+                            android:title="@string/prefs_title_input"
+                            android:summary="@string/prefs_summary_input"
+                            android:entries="@array/input_plugins"
+                            android:entryValues="@array/input_plugins"
+                            android:defaultValue="@string/default_plugin_input"/>
+
+            <!--<EditTextPreference
+                    android:key="birthdays_scan_interval"
+                    android:summary="@string/prefs_summary_scan"
+                    android:title="@string/prefs_title_scan"
+                    android:inputType="number"
+                    android:defaultValue="24"
+                    android:enabled="false"/>-->
+            </PreferenceScreen>
+
+        <PreferenceScreen
+          android:key="prefs_morph_screen"
+          android:title="@string/prefs_title_morph_settings"
+          android:summary="@string/prefs_summary_morph_settings">
+            
+            <CheckBoxPreference
+              android:key="prefs_do_morph" 
+              android:title="@string/prefs_title_do_morph"
+              android:summary="@string/prefs_summary_do_morph"
+              android:defaultValue="@string/default_do_morph"
+              android:enabled="true"/>
                 
-                <PreferenceScreen
-                        android:key="prefs_input_screen"
-                        android:title="@string/prefs_title_input_settings"
-                        android:summary="@string/prefs_summary_input_settings">
+            <ListPreference
+              android:key="prefs_morph"
+              android:title="@string/prefs_title_morph"
+              android:summary="@string/prefs_summary_morph"
+              android:entries="@array/morph_plugins"
+              android:entryValues="@array/morph_plugins"
+              android:defaultValue="@string/default_plugin_morph"/>
+                    
+        </PreferenceScreen>
 
-                <ListPreference
-                                android:key="prefs_input"
-                                android:title="@string/prefs_title_input"
-                                android:summary="@string/prefs_summary_input"
-                                android:entries="@array/input_plugins"
-                                android:entryValues="@array/input_plugins"
-                                android:defaultValue="@string/default_plugin_input"/>
+    <PreferenceScreen
+          android:key="prefs_actor_screen"
+          android:title="@string/prefs_title_actor_settings"
+          android:summary="@string/prefs_summary_actor_settings">
 
-                <!--<EditTextPreference
-                        android:key="birthdays_scan_interval"
-                        android:summary="@string/prefs_summary_scan"
-                        android:title="@string/prefs_title_scan"
-                        android:inputType="number"
-                        android:defaultValue="24"
-                        android:enabled="false"/>-->
-                </PreferenceScreen>
-        </PreferenceCategory>
-        
+            <ListPreference
+              android:key="prefs_actor"
+              android:title="@string/prefs_title_actor"
+              android:summary="@string/prefs_summary_actor"
+              android:entries="@array/actor_plugins"
+              android:entryValues="@array/actor_plugins"
+              android:defaultValue="@string/default_plugin_actor"/>
 
-        <!-- Morph -->
-        <PreferenceCategory
-                android:title="@string/prefs_title_morph">
-                
-                <PreferenceScreen
-                        android:key="prefs_morph_screen"
-                        android:title="@string/prefs_title_morph_settings"
-                        android:summary="@string/prefs_summary_morph_settings">
-                        
-                        <CheckBoxPreference
-                                android:key="prefs_do_morph" 
-                                android:title="@string/prefs_title_do_morph"
-                                android:summary="@string/prefs_summary_do_morph"
-                                android:defaultValue="@string/default_do_morph"
-                                android:enabled="true"/>
-                                
-                        <ListPreference
-                                android:key="prefs_morph"
-                                android:title="@string/prefs_title_morph"
-                                android:summary="@string/prefs_summary_morph"
-                                android:entries="@array/morph_plugins"
-                                android:entryValues="@array/morph_plugins"
-                                android:defaultValue="@string/default_plugin_morph"/>
-                                
-                </PreferenceScreen>
-        </PreferenceCategory>
-        
-    
-        <!-- Actor -->
-        <PreferenceCategory
-                android:title="@string/prefs_title_actor">
-                                        
-                <PreferenceScreen
-                    android:key="prefs_actor_screen"
-                    android:title="@string/prefs_title_actor_settings"
-                    android:summary="@string/prefs_summary_actor_settings">
+           <!-- <CheckBoxPreference
+                    android:key="widget_avartars" 
+                    android:title="@string/prefs_title_avartar"
+                    android:summary="@string/prefs_summary_avartar"
+                    android:defaultValue="@string/widget_avartars"
+                    android:enabled="false"/>
+                    
+            <EditTextPreference
+                    android:key="widget_flip_interval" 
+                    android:title="@string/prefs_title_flip_interval"
+                    android:summary="@string/prefs_summary_flip_interval"
+                    android:defaultValue="@integer/widget_flip_interval"
+                    android:inputType="number"/> 
+                    
 
-                        <ListPreference
-                                android:key="prefs_actor"
-                                android:title="@string/prefs_title_actor"
-                                android:summary="@string/prefs_summary_actor"
-                                android:entries="@array/actor_plugins"
-                                android:entryValues="@array/actor_plugins"
-                                android:defaultValue="@string/default_plugin_actor"/>
-
-                       <!-- <CheckBoxPreference
-                                android:key="widget_avartars" 
-                                android:title="@string/prefs_title_avartar"
-                                android:summary="@string/prefs_summary_avartar"
-                                android:defaultValue="@string/widget_avartars"
-                                android:enabled="false"/>
-                                
-                        <EditTextPreference
-                                android:key="widget_flip_interval" 
-                                android:title="@string/prefs_title_flip_interval"
-                                android:summary="@string/prefs_summary_flip_interval"
-                                android:defaultValue="@integer/widget_flip_interval"
-                                android:inputType="number"/> 
-                                
-
-                        
-                        -->
-                </PreferenceScreen>
-                
-        </PreferenceCategory>
+            
+            -->
+        </PreferenceScreen>
+    </PreferenceCategory>
 </PreferenceScreen>

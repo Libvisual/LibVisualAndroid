@@ -167,24 +167,6 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * 
         
     if(_v.bin)
     {
-        if(_v.bin->actor)
-        {
-            visual_object_unref(VISUAL_OBJECT(_v.bin->actor));      
-            _v.bin->actor = NULL;
-        }
-            
-        if(_v.bin->input)
-        {
-            visual_object_unref(VISUAL_OBJECT(_v.bin->input));
-            _v.bin->input = NULL;
-        }
-
-        if(_v.bin->morph)
-        {
-            visual_object_unref(VISUAL_OBJECT(_v.bin->morph));
-            _v.bin->morph = NULL;
-        }
-            
         visual_object_unref(VISUAL_OBJECT(_v.bin));
         _v.bin = NULL;
     }
