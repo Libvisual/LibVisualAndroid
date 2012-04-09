@@ -23,7 +23,7 @@
 #define _LV_HAVE_INTTYPES_H  1
 
 #define VISUAL_BIG_ENDIAN    1
-#define VISUAL_LITTLE_ENDIAN 0
+/* #define VISUAL_LITTLE_ENDIAN 0 */
 
 typedef unsigned int visual_size_t;
 
