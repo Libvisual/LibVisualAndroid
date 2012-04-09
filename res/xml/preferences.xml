@@ -50,28 +50,22 @@
     <PreferenceCategory
             android:title="@string/prefs_title_plugins">
             
-            <PreferenceScreen
-                    android:key="prefs_input_screen"
-                    android:title="@string/prefs_title_input_settings"
-                    android:summary="@string/prefs_summary_input_settings">
-
+        <!-- input -->
+        <PreferenceScreen
+                android:key="prefs_input_screen"
+                android:title="@string/prefs_title_input_settings"
+                android:summary="@string/prefs_summary_input_settings">
             <ListPreference
                             android:key="prefs_input"
                             android:title="@string/prefs_title_input"
                             android:summary="@string/prefs_summary_input"
-                            android:entries="@array/input_plugins"
+                            android:entries="@array/input_plugins_names"
                             android:entryValues="@array/input_plugins"
                             android:defaultValue="@string/default_plugin_input"/>
+        </PreferenceScreen>
 
-            <!--<EditTextPreference
-                    android:key="birthdays_scan_interval"
-                    android:summary="@string/prefs_summary_scan"
-                    android:title="@string/prefs_title_scan"
-                    android:inputType="number"
-                    android:defaultValue="24"
-                    android:enabled="false"/>-->
-            </PreferenceScreen>
 
+        <!-- morph -->
         <PreferenceScreen
           android:key="prefs_morph_screen"
           android:title="@string/prefs_title_morph_settings"
@@ -88,42 +82,26 @@
               android:key="prefs_morph"
               android:title="@string/prefs_title_morph"
               android:summary="@string/prefs_summary_morph"
-              android:entries="@array/morph_plugins"
+              android:entries="@array/morph_plugins_names"
               android:entryValues="@array/morph_plugins"
               android:defaultValue="@string/default_plugin_morph"/>
                     
         </PreferenceScreen>
 
-    <PreferenceScreen
-          android:key="prefs_actor_screen"
-          android:title="@string/prefs_title_actor_settings"
-          android:summary="@string/prefs_summary_actor_settings">
 
-            <ListPreference
-              android:key="prefs_actor"
-              android:title="@string/prefs_title_actor"
-              android:summary="@string/prefs_summary_actor"
-              android:entries="@array/actor_plugins"
-              android:entryValues="@array/actor_plugins"
-              android:defaultValue="@string/default_plugin_actor"/>
+        <!-- actor -->
+        <PreferenceScreen
+              android:key="prefs_actor_screen"
+              android:title="@string/prefs_title_actor_settings"
+              android:summary="@string/prefs_summary_actor_settings">
 
-           <!-- <CheckBoxPreference
-                    android:key="widget_avartars" 
-                    android:title="@string/prefs_title_avartar"
-                    android:summary="@string/prefs_summary_avartar"
-                    android:defaultValue="@string/widget_avartars"
-                    android:enabled="false"/>
-                    
-            <EditTextPreference
-                    android:key="widget_flip_interval" 
-                    android:title="@string/prefs_title_flip_interval"
-                    android:summary="@string/prefs_summary_flip_interval"
-                    android:defaultValue="@integer/widget_flip_interval"
-                    android:inputType="number"/> 
-                    
-
-            
-            -->
+                <ListPreference
+                  android:key="prefs_actor"
+                  android:title="@string/prefs_title_actor"
+                  android:summary="@string/prefs_summary_actor"
+                  android:entries="@array/actor_plugins_names"
+                  android:entryValues="@array/actor_plugins"
+                  android:defaultValue="@string/default_plugin_actor"/>
         </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

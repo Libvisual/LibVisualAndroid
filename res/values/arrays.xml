@@ -25,20 +25,51 @@
 -->
 <resources>
 
-    <!-- used to select sorting-method -->
+    <!-- input plugins -->
     <string-array name="input_plugins">
         <item>debug</item>
         <item>alsa</item>
     </string-array>
-    
-    <string-array name="morph_plugins">
-        <item>slide_left</item>
+    <string-array name="input_plugins_names">
+        <item>Debug</item>
+        <item>ALSA</item>
     </string-array>
 
+    <!-- morph plugins -->
+    <string-array name="morph_plugins">
+        <item>slide_left</item>
+        <item>flash</item>
+        <item>alphablend</item>
+        <item>tentacle</item>
+    </string-array>
+    <string-array name="morph_plugins_names">
+        <item>Slide left</item>
+        <item>Flash</item>
+        <item>Alphablend</item>
+        <item>Tentacle</item>
+    </string-array>
+
+    <!-- actor plugins -->
     <string-array name="actor_plugins">
         <item>lv_analyzer</item>
         <item>lv_scope</item>
         <item>infinite</item>
+        <item>jess</item>
+        <item>corona</item>
+        <item>bumpscope</item>
+        <item>oinksie</item>
+        <item>plazma</item>
+        <item>jakdaw</item>
     </string-array>
-    
+    <string-array name="actor_plugins_names">
+        <item>LV Analyzer</item>
+        <item>LV Scope</item>
+        <item>Infinite</item>
+        <item>JESS</item>
+        <item>Corona</item>
+        <item>BumpScope</item>
+        <item>Oinksie</item>
+        <item>Plazma</item>
+        <item>Jakdaw</item>
+    </string-array>
 </resources>
