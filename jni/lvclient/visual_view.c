@@ -55,28 +55,100 @@ static struct
 
         
 
-/** LibVisualView.init() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, 
+/** LibVisualView.setVideo(Bitmap) */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setBitmap(JNIEnv * env, 
                                                                          jobject  obj, 
                                                                          jobject bitmap)
 {
-    LOGI("LibVisualView.init()");
+    LOGI("LibVisualView.setBitmap()");
 
     /* get BitmapInfo */
     AndroidBitmapInfo info;
-    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) {
+    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) 
+    {
         LOGE("AndroidBitmap_getInfo() failed");
         return JNI_FALSE;
     }
 
-    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+    /* validate format */
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) 
+    {
         LOGE("Bitmap format is not RGBA_8888 !");
         return JNI_FALSE;
     }
 
+        
     LOGI("Bitmap: %dx%d, stride: %d", info.width, info.height, info.stride);
 
+        
+    /* free old VisVideo ? */
+    if(_v.bitmap)
+    {
+        visual_object_unref(VISUAL_OBJECT(_v.bitmap));
+        _v.bitmap = NULL;
+    }
+        
+    /* create VisVideo for our bitmap */
+    if(!(_v.bitmap = visual_video_new()))
+                return JNI_FALSE;
+    visual_video_set_attributes(_v.bitmap,
+                                info.width, info.height,
+                                info.stride,
+                                VISUAL_VIDEO_DEPTH_32BIT);
 
+
+    /* free current actor VisVideo? */
+    if(_v.video)
+    {
+        visual_video_free_buffer(_v.video);
+        visual_object_unref(VISUAL_OBJECT(_v.video));
+        _v.video = NULL;
+    }
+
+    /* do we have an actor? */
+    if(!_v.bin || !_v.bin->actor)
+    {
+        LOGI("No active actor...");
+        return JNI_FALSE;
+    }
+
+    /* get depth info from actor */
+    VisVideoDepth depth;
+    int depthflag = visual_actor_get_supported_depth(_v.bin->actor);
+    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
+    {
+        depth = visual_video_depth_get_highest(depthflag);
+    }
+    else
+    {
+        depth = visual_video_depth_get_highest_nogl(depthflag);
+    }
+        
+
+    /* create video for actor */
+    _v.video = visual_video_new();
+    visual_video_set_attributes(_v.video, 
+                                info.width, info.height, 
+                                info.width*visual_video_bpp_from_depth(depth), 
+                                depth);
+    visual_video_allocate_buffer(_v.video);
+
+
+    /* connect new VisVideo to VisBin */
+    visual_bin_set_video(_v.bin, _v.video);
+    visual_bin_realize(_v.bin);
+    visual_bin_sync(_v.bin, FALSE);
+    visual_bin_depth_changed(_v.bin);
+        
+    return JNI_TRUE;
+}
+
+
+/** LibVisualView.init() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, 
+                                                                         jobject  obj)
+{
+    LOGI("LibVisualView.init()");
 
     /* create new VisBin */
     if(!(_v.bin = visual_bin_new()))
@@ -99,51 +171,12 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
     if(!(i = visual_input_new(_v.input_name)))
                 return JNI_FALSE;
 
-    /* get depth info from actor */
-    VisVideoDepth depth;
-    int depthflag = visual_actor_get_supported_depth(a);
-    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
-    {
-        depth = visual_video_depth_get_highest(depthflag);
-    }
-    else
-    {
-        depth = visual_video_depth_get_highest_nogl(depthflag);
-    }
-
-    /* get video attributes from actor */
-    VisVideoAttributeOptions const* vidoptions;
-    vidoptions = visual_actor_get_video_attribute_options(a);
-
-        
-    /* create VisVideo for our bitmap */
-    if(!(_v.bitmap = visual_video_new()))
-                return JNI_FALSE;
-    visual_video_set_attributes(_v.bitmap,
-                                info.width, info.height,
-                                info.stride,
-                                VISUAL_VIDEO_DEPTH_32BIT);
-    //visual_video_allocate_buffer(_v.bitmap);
-
-        
-    /* create video for actor */
-    _v.video = visual_video_new();
-    visual_video_set_attributes(_v.video, 
-                                info.width, info.height, 
-                                info.width*visual_video_bpp_from_depth(depth), 
-                                depth);
-    visual_video_allocate_buffer(_v.video);
-
-
+    /* put everything together */
     visual_bin_connect(_v.bin, a, i);
-    visual_bin_set_video(_v.bin, _v.video);
-    visual_bin_realize(_v.bin);
-    visual_bin_sync(_v.bin, FALSE);
-    visual_bin_depth_changed(_v.bin);
         
     /* initialize framerate stats */
     fps_init(&_v.fps);
-        
+
     return JNI_TRUE;
 }
 
@@ -162,7 +195,6 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * 
 
     if(_v.bitmap)
     {
-        //visual_video_free_buffer(_v.bitmap);
         visual_object_unref(VISUAL_OBJECT(_v.bitmap));
         _v.bitmap = NULL;
     }
@@ -334,7 +366,6 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNI
     
     /* depth transform */
     visual_video_depth_transform(_v.bitmap, _v.video);
-    //memcpy(pixels, visual_video_get_pixels(_v.bitmap), 200*200*4);
         
     /* unlock bitmap */
     AndroidBitmap_unlockPixels(env, bitmap);

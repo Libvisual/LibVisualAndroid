@@ -64,24 +64,20 @@ public class LibVisual extends Activity
         /* initialize libvisual */
         init();
 
-        /* get retained LibVisualView */
-        if((v = (LibVisualView) getLastNonConfigurationInstance()) == null)
-        {
-            /* create new LibVisualView */
-            v = new LibVisualView(this);
-        }
-            
+        /* create new LibVisualView */
+        v = new LibVisualView(this);
         /* set our libvisual view */
         setContentView(v);
+            
     }
         
-        
-    /** this will be called to prepare an object to pass
-        to our future self after our app gets restarted */
+
+    /** called by OS when this activity becomes active again */
     @Override
-    public Object onRetainNonConfigurationInstance() 
+    public void onResume()
     {
-        return v;
+            super.onResume();
+            Log.i(TAG, "onResume()");
     }
 
         

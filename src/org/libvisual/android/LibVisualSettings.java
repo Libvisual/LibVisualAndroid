@@ -51,7 +51,7 @@ public class LibVisualSettings
                 
                 /** read prefs */
                 //_prefs = PreferenceManager.getDefaultSharedPreferences(c);
-                _prefs = c.getSharedPreferences(c.getPackageName()+"_prefs", 
+                _prefs = c.getSharedPreferences(c.getPackageName()+"_preferences", 
                                                 Context.MODE_PRIVATE);
                 _edit = _prefs.edit();
                 commit();

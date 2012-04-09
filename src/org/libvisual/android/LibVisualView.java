@@ -41,15 +41,16 @@ class LibVisualView extends View
 
 
     /* implementend by liblvclient.so */
-    private static native boolean init(Bitmap bitmap);
+    private static native boolean init();
     private static native boolean deinit();
-    private static native void renderVisual(Bitmap bitmap);
+    private static native boolean setBitmap(Bitmap bitmap);
     private static native boolean setActor(String name);
     private static native void getActor();
     private static native boolean setMorph(String name);
     private static native void getMorph();
     private static native boolean setInput(String name);
     private static native void getInput();
+    private static native void renderVisual(Bitmap bitmap);
 
 
     /** constructor */
@@ -99,17 +100,35 @@ class LibVisualView extends View
         super.onAttachedToWindow();
         Log.i(TAG,"onAttachedToWindow()");
 
-        /* create bitmap */
-        final int W = 200;
-        final int H = 200;
-        mBitmap = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
-
-        /* initialize the libvisual view */
-        /** @todo message + quit on failure */
-        init(mBitmap);
+        /* initialize actor + input */
+        init();
     }
 
 
+    /** This is called during layout when the size of this view has changed. 
+        If you were just added to the view hierarchy, you're called with the 
+        old values of 0. */
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" (prev: "+oldw+"x"+oldh+")");
+           
+        /* free previous Bitmap */
+        if(mBitmap != null)
+        {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
+
+        /* create bitmap */
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+        /* initialize the libvisual view */
+        /** @todo error handling */
+        setBitmap(mBitmap);
+    }
+
+        
     /** This is called when the view is detached from a window. 
         At this point it no longer has a surface for drawing. */
     @Override
@@ -129,7 +148,6 @@ class LibVisualView extends View
     {
         if(mBitmap == null)
         {
-            Log.e(TAG, "bitmap not initialized, yet. This is a bug!");
             return;
         }
             
