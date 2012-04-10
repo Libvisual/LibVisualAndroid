@@ -13,15 +13,15 @@ LV_SHARED_LIBRARIES +=
 LV_STATIC_LIBRARIES += 
 
 # uncomment this for profiling
-TARGET_thumb_release_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_thumb_release_CFLAGS))
-TARGET_thumb_release_CFLAGS := $(filter-out -fomit-frame-pointer,$(TARGET_thumb_release_CFLAGS))
-TARGET_arm_release_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_arm_release_CFLAGS))
-TARGET_arm_release_CFLAGS := $(filter-out -fomit-frame-pointer,$(TARGET_arm_release_CFLAGS))
-TARGET_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_CFLAGS))
-LV_LDLIBS           += -llog
-LV_LDFLAGS          += -pg --coverage
-LV_CFLAGS           += -pg --coverage -DPROFILING
-LV_STATIC_LIBRARIES += andprof
+#TARGET_thumb_release_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_thumb_release_CFLAGS))
+#TARGET_thumb_release_CFLAGS := $(filter-out -fomit-frame-pointer,$(TARGET_thumb_release_CFLAGS))
+#TARGET_arm_release_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_arm_release_CFLAGS))
+#TARGET_arm_release_CFLAGS := $(filter-out -fomit-frame-pointer,$(TARGET_arm_release_CFLAGS))
+#TARGET_CFLAGS := $(filter-out -ffunction-sections,$(TARGET_CFLAGS))
+#LV_LDLIBS           += -llog
+#LV_LDFLAGS          += -pg --coverage
+#LV_CFLAGS           += -pg --coverage -DPROFILING
+#LV_STATIC_LIBRARIES += andprof
 
 #############################################################################
 ifeq ($(TARGET_ARCH_ABI),armeabi)
@@ -40,4 +40,4 @@ endif
 include $(call all-subdir-makefiles)
 
 # profiling
-include jni/android-ndk-profiler.mk
+#include jni/android-ndk-profiler.mk

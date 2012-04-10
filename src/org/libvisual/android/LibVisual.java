@@ -23,8 +23,10 @@
 
 package org.libvisual.android;
 
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Debug;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -55,6 +57,8 @@ public class LibVisual extends Activity
     {
         super.onCreate(state);
 
+        Debug.startMethodTracing("calc");
+            
         /* hide titlebar */
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             
@@ -157,7 +161,8 @@ public class LibVisual extends Activity
     {
         /* deinitialize libvisual */
         deinit();
-            
+
+        Debug.stopMethodTracing();
         super.onDestroy();
     }
 
