@@ -34,7 +34,7 @@ import android.util.Log;
 
 class LibVisualView extends View 
 {
-    private final static String TAG = "LibVisual/View";
+    private final static String TAG = "LibVisualView";
         
     private LibVisualSettings s;
     private Bitmap mBitmap;

@@ -33,7 +33,7 @@ import android.util.Log;
 
 public class LibVisualSettings
 {
-        private final static String TAG = "LibVisual/Settings";
+        private final static String TAG = "LibVisualSettings";
         
         /** our context */
         Context _c;
