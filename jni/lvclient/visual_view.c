@@ -33,7 +33,7 @@
 #include "fps.h"
 
 
-/** local variables */
+/** variables */
 static struct
 {
     /* used to count FPS */
@@ -51,6 +51,7 @@ static struct
     char *input_name;
     char *morph_name;
 }_v;
+
 
 
         

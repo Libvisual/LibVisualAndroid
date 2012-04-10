@@ -33,12 +33,9 @@
 
 
 
-/** local variables */
-static struct
-{
-
-}_l;
-
+#ifdef PROFILING
+#include <prof.h>
+#endif
 
 
 /** VisLog -> android Log glue */
@@ -77,6 +74,12 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
 
     LOGI("LibVisual.init(): %s", visual_get_version());
 
+#ifdef PROFILING
+    /* startup monitoring */
+    monstartup("lvclient.so");
+#endif
+    
+
 #ifndef NDEBUG
     /* endless loop to wait for debugger to attach */
     int foo = 1;
@@ -113,6 +116,14 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env,
         
     if(visual_is_initialized())
         visual_quit();
+
+#ifdef PROFILING
+    /* specify place to write profiling output */
+    setenv("CPUPROFILE", "/data/data/org.libvisual.android/files/gmon.out", 1);
+        
+    /* cleanup monitoring */
+    moncleanup();
+#endif
 }
 
 
