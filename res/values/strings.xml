@@ -41,9 +41,11 @@
     <string name="prefs_title_morph_settings">Morph plugin</string>
     <string name="prefs_title_actor_settings">Actor plugin</string>
     <string name="prefs_title_real_fullscreen">Real Fullscreen</string>
+    <string name="prefs_title_prevent_dimming">Prevent dimming</string>
     <string name="prefs_title_do_morph">Enable</string>
     <string name="prefs_summary_general_settings">General application settings</string>
     <string name="prefs_summary_real_fullscreen">Really use all available screenspace</string>   
+    <string name="prefs_summary_prevent_dimming">Prevent screen backlight dimming</string>   
     <string name="prefs_summary_input">Choose audio input plugin</string>
     <string name="prefs_summary_input_settings">Sound input settings</string>
     <string name="prefs_summary_morph">Choose default morph plugin</string>

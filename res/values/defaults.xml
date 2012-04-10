@@ -29,4 +29,5 @@
     <string name="default_plugin_morph">slide_left</string>
     <string name="default_do_morph">false</string>
     <string name="default_real_fullscreen">false</string>
+    <string name="default_prevent_dimming">true</string>
 </resources>

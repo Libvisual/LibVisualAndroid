@@ -63,13 +63,17 @@ class LibVisualView extends View
 
         /* get defaults */
         String default_do_morph = context.getString(R.string.default_do_morph);
+        String default_prevent_dimming = context.getString(R.string.default_prevent_dimming);
         String default_morph = context.getString(R.string.default_plugin_morph);
         String default_input = context.getString(R.string.default_plugin_input);
         String default_actor = context.getString(R.string.default_plugin_actor);
             
         /* read prefs values */
-        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == 
-                                                          "true" ? 
+        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == "true" ? 
+                                                          true : 
+                                                          false));
+        Boolean preventDimming = s.getBoolean("prefs_prevent_dimming",
+                                                (default_prevent_dimming == "true" ? 
                                                           true : 
                                                           false));
         String input = s.getString("prefs_input", default_input);
@@ -91,7 +95,8 @@ class LibVisualView extends View
             Log.e(TAG, "Failed to set actor");
 
         /* don't dim screen */
-        setKeepScreenOn(true);
+        if(preventDimming)
+            setKeepScreenOn(true);
         
     }
 

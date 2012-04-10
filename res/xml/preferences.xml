@@ -37,6 +37,13 @@
           android:summary="@string/prefs_summary_general_settings">
 
             <CheckBoxPreference
+              android:key="prefs_prevent_dimming" 
+              android:title="@string/prefs_title_prevent_dimming"
+              android:summary="@string/prefs_summary_prevent_dimming"
+              android:defaultValue="@string/default_prevent_dimming"
+              android:enabled="true"/>
+
+            <CheckBoxPreference
               android:key="prefs_real_fullscreen" 
               android:title="@string/prefs_title_real_fullscreen"
               android:summary="@string/prefs_summary_real_fullscreen"
