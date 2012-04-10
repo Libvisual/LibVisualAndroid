@@ -80,7 +80,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
 #ifndef NDEBUG
     /* endless loop to wait for debugger to attach */
     int foo = 1;
-    while(foo);
+    //while(foo);
 #endif
         
     /* register VisLog handler to make it log to android logcat */

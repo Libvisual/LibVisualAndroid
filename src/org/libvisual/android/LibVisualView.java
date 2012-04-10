@@ -89,6 +89,9 @@ class LibVisualView extends View
             
         if(!setActor(actor))
             Log.e(TAG, "Failed to set actor");
+
+        /* don't dim screen */
+        setKeepScreenOn(true);
         
     }
 
@@ -112,7 +115,8 @@ class LibVisualView extends View
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
         Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" (prev: "+oldw+"x"+oldh+")");
-           
+
+            
         /* free previous Bitmap */
         if(mBitmap != null)
         {
