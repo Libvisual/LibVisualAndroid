@@ -6,7 +6,7 @@
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
-#define ENABLE_NLS 0
+/* #define ENABLE_NLS 0 */
 
 /* GETTEXT package name */
 #define GETTEXT_PACKAGE "libvisual-0.5"
