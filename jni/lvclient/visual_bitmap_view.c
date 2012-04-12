@@ -55,8 +55,8 @@ static struct
 
         
 
-/** LibVisualView.setVideo(Bitmap) */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setBitmap(JNIEnv * env, 
+/** LibVisualBitmapView.setVideo(Bitmap) */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBitmap(JNIEnv * env, 
                                                                          jobject  obj, 
                                                                          jobject bitmap)
 {
@@ -154,8 +154,8 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setBitmap(JN
 }
 
 
-/** LibVisualView.init() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv * env, 
+/** LibVisualBitmapView.init() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_init(JNIEnv * env, 
                                                                          jobject  obj)
 {
     LOGI("LibVisualView.init()");
@@ -207,8 +207,8 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_init(JNIEnv 
 }
 
 
-/** LibVisualView.deinit() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * env, jobject  obj)
+/** LibVisualBitmapView.deinit() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualBitmapView_deinit(JNIEnv * env, jobject  obj)
 {
     LOGI("LibVisualView.deinit()");
 
@@ -256,8 +256,8 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_deinit(JNIEnv * 
 }
 
 
-/** LibVisualView.setActor() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setActor(JNIEnv *env, jobject  obj, jstring string)
+/** LibVisualBitmapView.setActor() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setActor(JNIEnv *env, jobject  obj, jstring string)
 {
     
     jboolean isCopy;  
@@ -285,15 +285,15 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setActor(JNI
     return JNI_TRUE;
 }
 
-/** LibVisualView.getActor() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualView_getActor(JNIEnv *env)
+/** LibVisualBitmapView.getActor() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getActor(JNIEnv *env)
 {
     return (*env)->NewStringUTF(env, _v.actor_name);
 }
 
 
-/** LibVisualView.setInput() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setInput(JNIEnv *env, jobject  obj, jstring string)
+/** LibVisualBitmapView.setInput() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setInput(JNIEnv *env, jobject  obj, jstring string)
 {
     jboolean isCopy;  
     const char *input = (*env)->GetStringUTFChars(env, string, &isCopy);  
@@ -321,15 +321,15 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setInput(JNI
 }
 
 
-/** LibVisualView.getInput() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualView_getInput(JNIEnv *env)
+/** LibVisualBitmapView.getInput() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getInput(JNIEnv *env)
 {
     return (*env)->NewStringUTF(env, _v.input_name);
 }
 
 
-/** LibVisualView.setMorph() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setMorph(JNIEnv *env, jobject  obj, jstring string)
+/** LibVisualBitmapView.setMorph() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setMorph(JNIEnv *env, jobject  obj, jstring string)
 {
     jboolean isCopy;  
     const char *morph = (*env)->GetStringUTFChars(env, string, &isCopy);  
@@ -357,15 +357,15 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualView_setMorph(JNI
 }
 
 
-/** LibVisualView.getMorph() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualView_getMorph(JNIEnv *env)
+/** LibVisualBitmapView.getMorph() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getMorph(JNIEnv *env)
 {
     return (*env)->NewStringUTF(env, _v.morph_name);
 }
 
 
-/** LibVisualView.renderVisual() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
+/** LibVisualBitmapView.renderVisual() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualBitmapView_renderVisual(JNIEnv * env, jobject  obj, jobject bitmap)
 {
     if(!visual_is_initialized() ||
        !_v.video ||

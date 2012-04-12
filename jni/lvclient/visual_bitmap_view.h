@@ -21,11 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _VISUAL_VIEW_H
-#define _VISUAL_VIEW_H
+#ifndef _VISUAL_BITMAP_VIEW_H
+#define _VISUAL_BITMAP_VIEW_H
 
 
 
 
 
-#endif /* _VISUAL_VIEW_H */
+#endif /* _VISUAL_BITMAP_VIEW_H */
