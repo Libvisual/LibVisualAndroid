@@ -33,8 +33,7 @@
     <application 
         android:label="@string/app_name" 
         android:layout_width="fill_parent" 
-        android:layout_height="fill_parent"
-        android:debuggable="true">
+        android:layout_height="fill_parent">
 
         <!-- Main activity -->
         <activity 

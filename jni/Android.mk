@@ -5,7 +5,7 @@ LV_ARM_MODE             := arm
 LV_C_INCLUDES  		:= jni/libvisual/libvisual
 LV_CFLAGS      		:= $(WARNING_CFLAGS)
 LV_CXXFLAGS    		:=
-LV_CPPFLAGS    		:= -std=gnu++0x
+LV_CPPFLAGS    		:= -std=gnu++0x -fexceptions
 LV_SHARED_LIBRARIES	:= 
 LV_STATIC_LIBRARIES	:=
 LV_LDFLAGS              :=

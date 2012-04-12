@@ -34,7 +34,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 
-
+/** 
+ * @todo
+ * mic input
+ * scaling
+ * actor/input/morph classes
+ * GL View
+ */
 
 public class LibVisual extends Activity
 {
@@ -78,6 +84,10 @@ public class LibVisual extends Activity
     {
             super.onResume();
             Log.i(TAG, "onResume()");
+
+            /* switch actor */
+
+            /* switch view */
     }
 
         
@@ -167,6 +177,7 @@ public class LibVisual extends Activity
     {
         try
         {
+            System.loadLibrary("gnustl_shared");
             System.loadLibrary("visual");
             System.loadLibrary("lvclient");
         }
