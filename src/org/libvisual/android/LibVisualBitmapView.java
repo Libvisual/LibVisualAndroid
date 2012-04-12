@@ -32,9 +32,9 @@ import android.util.Log;
 
 
 
-class LibVisualView extends View 
+class LibVisualBitmapView extends View 
 {
-    private final static String TAG = "LibVisualView";
+    private final static String TAG = "LibVisualBitmapView";
         
     private LibVisualSettings s;
     private Bitmap mBitmap;
@@ -54,7 +54,7 @@ class LibVisualView extends View
 
 
     /** constructor */
-    public LibVisualView(Context context) 
+    public LibVisualBitmapView(Context context) 
     {
         super(context);
 

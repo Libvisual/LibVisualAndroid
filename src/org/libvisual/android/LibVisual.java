@@ -42,7 +42,7 @@ public class LibVisual extends Activity
         
     /** object to hold all our permanent settings */
     private static LibVisualSettings s;
-    private static LibVisualView v;
+    private static LibVisualBitmapView v;
 
         
     /* implementend by liblvclient.so */
@@ -65,7 +65,7 @@ public class LibVisual extends Activity
         init();
 
         /* create new LibVisualView */
-        v = new LibVisualView(this);
+        v = new LibVisualBitmapView(this);
         /* set our libvisual view */
         setContentView(v);
             
