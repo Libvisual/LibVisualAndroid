@@ -11,13 +11,13 @@ all:
 	ant clean
 	ant release
 
-install: 
+install: sign 
 	adb install -r bin/$(APPNAME).apk
 
-install_emu:
+install_emu: sign
 	adb -e install -r bin/$(APPNAME).apk
 
-install_dev:
+install_dev: sign
 	adb -d install -r bin/$(APPNAME).apk
 
 debug:
@@ -25,17 +25,13 @@ debug:
 	ant clean
 	ant debug
 
-debug_emu:
-	ndk-build NDK_DEBUG=1 APP_OPTIM=debug V=1
-	adb -e install -r bin/$(APPNAME)-debug.apk
-
-install_debug: 
+install_debug: debug
 	adb install -r bin/$(APPNAME)-debug.apk
 
-install_debug_emu:
+install_debug_emu: debug
 	adb -e install -r bin/$(APPNAME)-debug.apk
 
-install_debug_dev:
+install_debug_dev: debug
 	adb -d install -r bin/$(APPNAME)-debug.apk
  
 #Don't delete libs/
@@ -50,7 +46,7 @@ update:
 keygen:
 	keytool -genkey -v -keystore my.keystore -alias $(APPNAME)_key -keyalg RSA -keysize 4096 -validity 100000
 
-sign:
+sign: all
 	jarsigner -keystore my.keystore bin/$(ACTIVITY)-release-unsigned.apk $(APPNAME)_key
 	zipalign -v 4 bin/$(ACTIVITY)-release-unsigned.apk bin/$(APPNAME).apk
 
@@ -62,7 +58,7 @@ log:
 	#./tools/parse_stack.py ./libvisual.asm ./test.log
 	adb shell dumpsys meminfo -h > meminfo.txt
 
-gdb:
+gdb: debug
 	ndk-gdb --start --force --verbose
 
 #Perform leak detection
