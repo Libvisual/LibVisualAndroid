@@ -5,6 +5,7 @@ LOCAL_PATH := $(call my-dir)
 #### slide_left
 include $(CLEAR_VARS)
 
+LOCAL_ARM_MODE          += $(LV_ARM_MODE)
 LOCAL_C_INCLUDES        += $(LV_C_INCLUDES)
 LOCAL_CFLAGS            += $(LV_CFLAGS)
 LOCAL_CXXFLAGS          += $(LV_CXXFLAGS)
@@ -26,6 +27,7 @@ include $(BUILD_SHARED_LIBRARY)
 #### slide_right
 include $(CLEAR_VARS)
 
+LOCAL_ARM_MODE          += $(LV_ARM_MODE)
 LOCAL_C_INCLUDES        += $(LV_C_INCLUDES)
 LOCAL_CFLAGS            += $(LV_CFLAGS)
 LOCAL_CXXFLAGS          += $(LV_CXXFLAGS)
@@ -47,6 +49,7 @@ include $(BUILD_SHARED_LIBRARY)
 #### slide_up
 include $(CLEAR_VARS)
 
+LOCAL_ARM_MODE          += $(LV_ARM_MODE)
 LOCAL_C_INCLUDES        += $(LV_C_INCLUDES)
 LOCAL_CFLAGS            += $(LV_CFLAGS)
 LOCAL_CXXFLAGS          += $(LV_CXXFLAGS)
@@ -68,6 +71,7 @@ include $(BUILD_SHARED_LIBRARY)
 #### slide_down
 include $(CLEAR_VARS)
 
+LOCAL_ARM_MODE          += $(LV_ARM_MODE)
 LOCAL_C_INCLUDES        += $(LV_C_INCLUDES)
 LOCAL_CFLAGS            += $(LV_CFLAGS)
 LOCAL_CXXFLAGS          += $(LV_CXXFLAGS)

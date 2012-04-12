@@ -1,6 +1,7 @@
 
 WARNING_CFLAGS 		:= -Wall -Wstrict-aliasing -Wcast-align -Waddress -Wmissing-braces -Wimplicit -Wunused -Wno-unused-variable
 
+LV_ARM_MODE             := arm
 LV_C_INCLUDES  		:= jni/libvisual/libvisual
 LV_CFLAGS      		:= $(WARNING_CFLAGS)
 LV_CXXFLAGS    		:=
