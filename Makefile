@@ -58,7 +58,7 @@ log:
 	#./tools/parse_stack.py ./libvisual.asm ./test.log
 	adb shell dumpsys meminfo -h > meminfo.txt
 
-gdb: debug
+gdb:
 	ndk-gdb --start --force --verbose
 
 #Perform leak detection
