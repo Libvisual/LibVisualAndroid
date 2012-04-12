@@ -60,7 +60,6 @@ namespace LV {
             return (name == ref->info->plugname);
         }
     };
-
   }
 
   class PluginRegistry::Impl
@@ -70,6 +69,10 @@ namespace LV {
       std::vector<std::string> plugin_paths;
 
       PluginListMap plugin_list_map;
+
+      Impl ();
+
+      ~Impl ();
 
       void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
@@ -151,6 +154,25 @@ namespace LV {
       return match->second;
   }
 
+  PluginRegistry::Impl::Impl ()
+  {
+      // empty
+  }
+
+  void delete_plugin_ref (VisPluginRef* ref)
+  {
+      visual_object_unref (VISUAL_OBJECT (ref));
+  }
+
+  PluginRegistry::Impl::~Impl ()
+  {
+      for (PluginListMap::const_iterator list = plugin_list_map.begin (), list_end = plugin_list_map.end ();
+           list != list_end;
+           ++list) {
+          std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
+      }
+  }
+
   void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)
   {
       list.clear ();
@@ -173,7 +195,7 @@ namespace LV {
               std::string full_path = dir + "/" + file_data.cFileName;
 
               if (str_has_suffix (full_path, ".dll")) {
-                  VisPluginRef* ref = visual_plugin_get_references (full_path.c_str (), &count);
+                  VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
 
                   if (ref) {
                       list.push_back (ref);
