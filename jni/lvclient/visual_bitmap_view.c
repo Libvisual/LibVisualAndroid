@@ -46,10 +46,12 @@ static struct
     VisPalette *palette;
     /* libvisual bin object */
     VisBin *bin;
-    /* plugin names */
-    char *actor_name;
-    char *input_name;
-    char *morph_name;
+    /* currently used actor */
+    VisActor *actor;
+    /* currently used input */
+    VisInput *input;
+    /* currently used morph */
+    VisMorph *morph;
 }_v;
 
 
@@ -160,30 +162,37 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_init(J
 {
     LOGI("LibVisualView.init()");
 
-    /* create new VisBin */
-    if(!(_v.bin = visual_bin_new()))
-                return JNI_FALSE;
 
-    visual_bin_set_supported_depth(_v.bin, VISUAL_VIDEO_DEPTH_ALL);
-    visual_bin_set_preferred_depth(_v.bin, VISUAL_VIDEO_DEPTH_32BIT);
     /*visual_bin_switch_set_style(_v.bin, VISUAL_SWITCH_STYLE_DIRECT);
     visual_bin_switch_set_automatic(_v.bin, JNI_TRUE);
     visual_bin_switch_set_steps(_v.bin, 3);*/
 
 
-    /* create actor */
-    VisActor *a;
-    if(!(a = visual_actor_new(_v.actor_name)))
-                return JNI_FALSE;
+    if(!_v.actor)
+    {
+        LOGE("No VisActor initialized.");
+        return JNI_FALSE;
+    }
+       
+    if(!_v.input)
+    {
+        LOGE("No VisInput initialized.");
+        return JNI_FALSE;
+    }
 
-    /* create input */
-    VisInput *i;
-    if(!(i = visual_input_new(_v.input_name)))
-                return JNI_FALSE;
+    if(!_v.bin)
+    {
+        LOGE("No VisBin initialized.");
+        return JNI_FALSE;
+    }
+
+    /* set depth */
+    visual_bin_set_supported_depth(_v.bin, VISUAL_VIDEO_DEPTH_ALL);
+    visual_bin_set_preferred_depth(_v.bin, VISUAL_VIDEO_DEPTH_32BIT);
 
     /* get depth of actor */
     VisVideoDepth depth;
-    int depthflag = visual_actor_get_supported_depth(a);
+    int depthflag = visual_actor_get_supported_depth(_v.actor);
     if(depthflag == VISUAL_VIDEO_DEPTH_GL) 
     {
         depth = visual_video_depth_get_highest(depthflag);
@@ -196,9 +205,8 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_init(J
     /* set bin to actor-depth */
     visual_bin_set_depth(_v.bin, depth);
 
-        
     /* put everything together */
-    visual_bin_connect(_v.bin, a, i);
+    visual_bin_connect(_v.bin, _v.actor, _v.input);
         
     /* initialize framerate stats */
     fps_init(&_v.fps);
@@ -237,130 +245,71 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualBitmapView_deinit(JNI
         _v.palette = NULL;
     }
 
-    if(_v.actor_name)
-    {
-        free(_v.actor_name);
-        _v.actor_name = NULL;
-    }
-    if(_v.morph_name)
-    {
-        free(_v.morph_name);
-        _v.morph_name = NULL;
-    }
-    if(_v.input_name)
-    {
-        free(_v.input_name);
-        _v.input_name = NULL;
-    }
-
 }
 
 
 /** LibVisualBitmapView.setActor() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setActor(JNIEnv *env, jobject  obj, jstring string)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setActor(JNIEnv *env, jobject  obj, jint actor)
 {
     
-    jboolean isCopy;  
-    const char *actor = (*env)->GetStringUTFChars(env, string, &isCopy);  
+    VisActor *a = (VisActor *) actor;
 
-    LOGI("Setting actor to \"%s\"", actor);
+    if(!a)
+        return JNI_FALSE;
 
-    /* actor valid ? */
-    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_ACTOR, actor)))
-    {
-            LOGE("Invalid actor-plugin: \"%s\"", actor);
-            return JNI_FALSE;
-    }
+    LOGI("Setting actor to \"%s\"", a->plugin->info->name);
 
-    /* free previous actor name */
-    if(_v.actor_name)
-        free(_v.actor_name);
-
-    /* save new actor name */
-    _v.actor_name = strndup(actor, 128);
-        
-        
-    (*env)->ReleaseStringUTFChars(env, string, actor);
+    
+    _v.actor = a;
 
     return JNI_TRUE;
-}
-
-/** LibVisualBitmapView.getActor() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getActor(JNIEnv *env)
-{
-    return (*env)->NewStringUTF(env, _v.actor_name);
 }
 
 
 /** LibVisualBitmapView.setInput() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setInput(JNIEnv *env, jobject  obj, jstring string)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setInput(JNIEnv *env, jobject  obj, jint input)
 {
-    jboolean isCopy;  
-    const char *input = (*env)->GetStringUTFChars(env, string, &isCopy);  
+    VisInput *i = (VisInput *) input;
 
-    LOGI("Setting input to \"%s\"", input);
-
-    /* plugin valid ? */
-    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_INPUT, input)))
-    {
-            LOGE("Invalid input-plugin: \"%s\"", input);
-            return JNI_FALSE;
-    }
-
-    /* free previous plugin name */
-    if(_v.input_name)
-        free(_v.input_name);
-
-    /* save new plugin name */
-    _v.input_name = strndup(input, 128);
+    if(!i)
+        return JNI_FALSE;
         
-        
-    (*env)->ReleaseStringUTFChars(env, string, input);
+    LOGI("Setting input to \"%s\"", i->plugin->info->name);
+
+    
+    _v.input = i;
 
     return JNI_TRUE;
-}
-
-
-/** LibVisualBitmapView.getInput() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getInput(JNIEnv *env)
-{
-    return (*env)->NewStringUTF(env, _v.input_name);
 }
 
 
 /** LibVisualBitmapView.setMorph() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setMorph(JNIEnv *env, jobject  obj, jstring string)
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setMorph(JNIEnv *env, jobject  obj, jint morph)
 {
-    jboolean isCopy;  
-    const char *morph = (*env)->GetStringUTFChars(env, string, &isCopy);  
+    VisMorph *m = (VisMorph *) morph;
 
-    LOGI("Setting morph to \"%s\"", morph);
-
-    /* plugin valid ? */
-    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_MORPH, morph)))
-    {
-            LOGE("Invalid morph-plugin: \"%s\"", morph);
-            return JNI_FALSE;
-    }
-
-    /* free previous plugin name */
-    if(_v.morph_name)
-        free(_v.morph_name);
-
-    /* save new plugin name */
-    _v.morph_name = strndup(morph, 128);
+    if(!m)
+        return JNI_FALSE;
         
-        
-    (*env)->ReleaseStringUTFChars(env, string, morph);
+    LOGI("Setting morph to \"%s\"", m->plugin->info->name);
+
+    _v.morph = m;
 
     return JNI_TRUE;
 }
 
 
-/** LibVisualBitmapView.getMorph() */
-JNIEXPORT jstring JNICALL Java_org_libvisual_android_LibVisualBitmapView_getMorph(JNIEnv *env)
+/** LibVisualBitmapView.setBin() */
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBin(JNIEnv *env, jobject  obj, jint bin)
 {
-    return (*env)->NewStringUTF(env, _v.morph_name);
+    VisBin *b = (VisBin *) bin;
+
+    if(!b)
+        return JNI_FALSE;
+        
+    _v.bin = b;
+
+    return JNI_TRUE;
 }
 
 

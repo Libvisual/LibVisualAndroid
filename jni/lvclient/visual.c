@@ -80,7 +80,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
 #ifndef NDEBUG
     /* endless loop to wait for debugger to attach */
     int foo = 1;
-    //while(foo);
+    while(foo);
 #endif
         
     /* register VisLog handler to make it log to android logcat */
@@ -115,4 +115,166 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisual_deinit(JNIEnv * env,
         visual_quit();
 }
 
+/******************************************************************************/
 
+/** VisActor.actorNew() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorNew(JNIEnv * env, jobject  obj, jstring name)
+{
+    LOGI("VisActor.actorNew()");
+
+
+    /* result */
+    VisActor *a = NULL;
+
+    /* get name string */
+    jboolean isCopy;  
+    const char *actorName = (*env)->GetStringUTFChars(env, name, &isCopy);  
+
+    /* actor valid ? */
+    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_ACTOR, actorName)))
+    {
+            LOGE("Invalid actor-plugin: \"%s\"", actorName);
+            goto _van_exit;
+    }
+
+    /* create new actor */
+    a = visual_actor_new(actorName);
+
+_van_exit:
+    (*env)->ReleaseStringUTFChars(env, name, actorName);
+    return (jint) a;
+}
+
+
+/** VisActor.actorUnref() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisActor_actorUnref(JNIEnv * env, jobject  obj, jint actor)
+{
+    LOGI("VisActor.actorUnref()");
+
+    VisActor *a = (VisActor *) actor;
+    visual_object_unref(VISUAL_OBJECT(actor));
+}
+
+
+/** VisActor.actorGetSupportedDepth() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorGetSupportedDepth(JNIEnv * env, jobject  obj, jint actor)
+{
+    VisActor *a = (VisActor *) actor;
+    return visual_actor_get_supported_depth(a);
+}
+
+/******************************************************************************/
+
+/** VisInput.inputNew() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisInput_inputNew(JNIEnv * env, jobject  obj, jstring name)
+{
+    LOGI("VisInput.inputNew()");
+
+    /* result */
+    VisInput *i = NULL;
+        
+    /* get name string */
+    jboolean isCopy;  
+    const char *inputName = (*env)->GetStringUTFChars(env, name, &isCopy);  
+
+    /* plugin valid ? */
+    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_INPUT, inputName)))
+    {
+            LOGE("Invalid input-plugin: \"%s\"", inputName);
+            goto _vin_exit;
+    }
+
+    /* create new input */
+    i = visual_input_new(inputName);
+        
+_vin_exit:
+    (*env)->ReleaseStringUTFChars(env, name, inputName);
+    return (jint) i;
+}
+
+
+/** VisInput.inputUnref() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisInput_inputUnref(JNIEnv * env, jobject  obj, jint input)
+{
+    LOGI("VisInput.inputUnref()");
+
+    VisInput *i = (VisInput *) input;
+    visual_object_unref(VISUAL_OBJECT(input));        
+}
+
+
+/******************************************************************************/
+
+/** VisMorph.morphNew() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisMorph_morphNew(JNIEnv * env, jobject  obj, jstring name)
+{
+    LOGI("VisMorph.morphNew()");
+
+    /* result */
+    VisMorph *m = NULL;
+        
+    /* get name string */
+    jboolean isCopy;  
+    const char *morphName = (*env)->GetStringUTFChars(env, name, &isCopy);  
+
+    /* plugin valid ? */
+    if(!(visual_plugin_registry_has_plugin(VISUAL_PLUGIN_TYPE_MORPH, morphName)))
+    {
+            LOGE("Invalid morph-plugin: \"%s\"", morphName);
+            goto _vin_exit;
+    }
+
+    /* create new morph */
+    m = visual_morph_new(morphName);
+        
+_vin_exit:
+    (*env)->ReleaseStringUTFChars(env, name, morphName);
+    return (jint) m;
+}
+
+
+/** VisMorph.morphUnref() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisMorph_morphUnref(JNIEnv * env, jobject  obj, jint morph)
+{
+    LOGI("VisMorph.morphUnref()");
+
+    VisMorph *m = (VisMorph *) morph;
+    visual_object_unref(VISUAL_OBJECT(morph));        
+}
+
+
+/******************************************************************************/
+
+/** VisBin.binNew() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisBin_binNew(JNIEnv * env, jobject  obj)
+{
+    LOGI("VisBin.binNew()");
+
+    return (jint) visual_bin_new();
+}
+
+
+/** VisBin.binUnref() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binUnref(JNIEnv * env, jobject  obj, jint bin)
+{
+    LOGI("VisBin.binUnref()");
+
+    VisBin *b = (VisBin *) bin;
+    visual_object_unref(VISUAL_OBJECT(bin));        
+}
+
+
+/** VisBin.setSupportedDepth() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetSupportedDepth(JNIEnv * env, jobject  obj, jint bin, jint depth)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_set_supported_depth(b, depth);
+}
+
+
+/** VisBin.setSupportedDepth() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetPreferredDepth(JNIEnv * env, jobject  obj, jint bin, jint depth)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_set_preferred_depth(b, depth);
+}

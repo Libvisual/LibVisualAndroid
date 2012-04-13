@@ -34,7 +34,21 @@ import android.util.Log;
 
 class LibVisualBitmapView extends LibVisualView 
 {
-    private final static String TAG = "LibVisualBitmapView";
+    private final static String TAG = "LibVisualBitmapView"; 
+    private final int VISUAL_VIDEO_DEPTH_NONE	 = 0;	/**< No video surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_8BIT	 = 1;	/**< 8 bits indexed surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_16BIT	 = 2;	/**< 16 bits 5-6-5 surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_24BIT	 = 4;	/**< 24 bits surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_32BIT	 = 8;	/**< 32 bits surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_GL		 = 16;	/**< openGL surface flag. */
+    private final int VISUAL_VIDEO_DEPTH_ENDLIST = 32;	/**< Used to mark the end of the depth list. */
+    private final int VISUAL_VIDEO_DEPTH_ERROR	 = -1;	/**< Used when there is an error. */
+    private final int VISUAL_VIDEO_DEPTH_ALL	 = VISUAL_VIDEO_DEPTH_8BIT
+                                | VISUAL_VIDEO_DEPTH_16BIT
+                                | VISUAL_VIDEO_DEPTH_24BIT
+                                | VISUAL_VIDEO_DEPTH_32BIT
+                                | VISUAL_VIDEO_DEPTH_GL; /**< All graphical depths. */
+
         
     private LibVisualSettings s;
     private Bitmap mBitmap;
@@ -44,59 +58,56 @@ class LibVisualBitmapView extends LibVisualView
     private static native boolean init();
     private static native boolean deinit();
     private static native boolean setBitmap(Bitmap bitmap);
-    private static native boolean setActor(String name);
-    private static native void getActor();
-    private static native boolean setMorph(String name);
-    private static native void getMorph();
-    private static native boolean setInput(String name);
-    private static native void getInput();
+    private static native boolean setActor(int actor);
+    private static native boolean setMorph(int morph);
+    private static native boolean setInput(int input);
+    private static native boolean setBin(int bin);
     private static native void renderVisual(Bitmap bitmap);
 
 
     /** constructor */
-    public LibVisualBitmapView(Context context) 
+    public LibVisualBitmapView(Context context, 
+                               VisActor a,
+                               VisInput i,
+                               VisMorph m,
+                               VisBin b) 
     {
         super(context);
 
         /* get preferences */
         s = new LibVisualSettings(context);
 
-        /* get defaults */
-        String default_do_morph = context.getString(R.string.default_do_morph);
+        
+        /* prevent dimming of screen? */
         String default_prevent_dimming = context.getString(R.string.default_prevent_dimming);
-        String default_morph = context.getString(R.string.default_plugin_morph);
-        String default_input = context.getString(R.string.default_plugin_input);
-        String default_actor = context.getString(R.string.default_plugin_actor);
-            
-        /* read prefs values */
-        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == "true" ? 
-                                                          true : 
-                                                          false));
         Boolean preventDimming = s.getBoolean("prefs_prevent_dimming",
                                                 (default_prevent_dimming == "true" ? 
                                                           true : 
                                                           false));
-        String input = s.getString("prefs_input", default_input);
-        String actor = s.getString("prefs_actor", default_actor);
-        String morph = s.getString("prefs_morph", default_morph);
-
-        Log.v(TAG, "Input: \""+input+"\" Morph: \""+morph+"\" Actor: \""+actor);
-
-            
-        /* set initial plugins from preferences */
-        /** @todo error handling */
-        if(!setInput(input))
-            Log.e(TAG, "Failed to set input");
-            
-        if(!setMorph(morph))
-            Log.e(TAG, "Failed to set morph");
-            
-        if(!setActor(actor))
-            Log.e(TAG, "Failed to set actor");
-
+        
+        Log.v(TAG, "Prevent dimming: "+preventDimming);
+                       
         /* don't dim screen */
         if(preventDimming)
             setKeepScreenOn(true);
+
+        /* set actor */
+        setActor(a.VisActor);
+
+        /* set input */
+        setInput(i.VisInput);
+
+        /* set morph */
+        setMorph(m.VisMorph);
+
+        /* set bin */
+        setBin(b.VisBin);
+
+        /* set depth */
+        //b.setSupportedDepth(VISUAL_VIDEO_DEPTH_ALL);
+        //b.setPreferredDepth(VISUAL_VIDEO_DEPTH_32BIT);
+
+        //int depthflag = a.getSupportedDepth();
         
     }
 

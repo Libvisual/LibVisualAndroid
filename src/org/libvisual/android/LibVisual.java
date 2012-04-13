@@ -49,11 +49,17 @@ public class LibVisual extends Activity
     /** object to hold all our permanent settings */
     private static LibVisualSettings s;
     private static LibVisualView v;
+    private static VisActor curActor;
+    private static VisInput curInput;
+    private static VisMorph curMorph;
+    private static VisBin curBin;
 
         
     /* implementend by liblvclient.so */
     private static native boolean init();
     private static native void deinit();
+
+
         
     /** Called when the activity is first created. */
     @Override
@@ -63,15 +69,40 @@ public class LibVisual extends Activity
 
         /* hide titlebar */
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        /* initialize libvisual */
+        init();
             
         /* create new settings-object */
         s = new LibVisualSettings(this);
 
-        /* initialize libvisual */
-        init();
+        /* do morph when changing actors? */
+        String default_do_morph = getString(R.string.default_do_morph);
+        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == "true" ? 
+                                                          true : 
+                                                          false));
 
+        /* morph plugin */
+        String default_morph = getString(R.string.default_plugin_morph);
+        String prefMorph = s.getString("prefs_morph", default_morph);
+        curMorph = new VisMorph(prefMorph);
+            
+        /* input plugin */
+        String default_input = getString(R.string.default_plugin_input);
+        String prefInput = s.getString("prefs_input", default_input);
+        curInput = new VisInput(prefInput);
+            
+        /* actor plugin */
+        String default_actor = getString(R.string.default_plugin_actor);
+        String prefActor = s.getString("prefs_actor", default_actor);
+        curActor = new VisActor(prefActor);
+
+        /* create bin */
+        curBin = new VisBin();
+            
         /* create new LibVisualBitmapView */
-        v = new LibVisualBitmapView(this);
+        v = new LibVisualBitmapView(this, curActor, curInput, curMorph, curBin);
+        
         /* set our libvisual view */
         setContentView(v);
             
@@ -187,6 +218,8 @@ public class LibVisual extends Activity
             e.printStackTrace();
         }
     }
+
 }
+
 
 
