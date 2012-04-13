@@ -32,7 +32,7 @@ import android.util.Log;
 
 
 
-class LibVisualBitmapView extends View 
+class LibVisualBitmapView extends LibVisualView 
 {
     private final static String TAG = "LibVisualBitmapView";
         
