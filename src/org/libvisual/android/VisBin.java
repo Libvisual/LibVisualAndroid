@@ -34,15 +34,26 @@ public class VisBin
     /** implemented by visual.c */
     private native int binNew();
     private native int binUnref(int binPtr);
+    private native int binSetDepth(int binPtr, int depth);
     private native int binSetSupportedDepth(int binPtr, int depth);
     private native int binSetPreferredDepth(int binPtr, int depth);
-
+    private native int binSetVideo(int binPtr, int videoPtr);
+    private native int binRealize(int binPtr);
+    private native int binSync(int binPtr, boolean noevent);
+    private native int binDepthChanged(int binPtr);
+    private native int binConnect(int binPtr, int actorPtr, int inputPtr);
+        
         
     public VisBin()
     {
         VisBin = binNew();
     }
 
+    public void setDepth(int depth)
+    {
+        binSetDepth(VisBin, depth);
+    }
+        
     public void setSupportedDepth(int depth)
     {
         binSetSupportedDepth(VisBin, depth);
@@ -51,6 +62,31 @@ public class VisBin
     public void setPreferredDepth(int depth)
     {
         binSetPreferredDepth(VisBin, depth);
+    }
+
+    public void setVideo(int videoPtr)
+    {
+        binSetVideo(VisBin, videoPtr);
+    }
+
+    public void realize()
+    {
+        binRealize(VisBin);
+    }
+
+    public void sync(boolean noevent)
+    {
+        binSync(VisBin, noevent);
+    }
+
+    public void depthChanged()
+    {
+        binDepthChanged(VisBin);
+    }
+
+    public void connect(int actorPtr, int inputPtr)
+    {
+        binConnect(VisBin, actorPtr, inputPtr);
     }
         
     @Override

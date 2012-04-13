@@ -264,6 +264,14 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binUnref(JNIEnv * env, 
 }
 
 
+/** VisBin.setDepth() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetDepth(JNIEnv * env, jobject  obj, jint bin, jint depth)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_set_depth(b, depth);
+}
+
+
 /** VisBin.setSupportedDepth() */
 JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetSupportedDepth(JNIEnv * env, jobject  obj, jint bin, jint depth)
 {    
@@ -279,6 +287,48 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetPreferredDepth(JN
     visual_bin_set_preferred_depth(b, depth);
 }
 
+
+/** VisBin.setVideo() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetVideo(JNIEnv * env, jobject  obj, jint bin, jint video)
+{    
+    VisBin *b = (VisBin *) bin;
+    VisVideo *v = (VisVideo *) video;
+    visual_bin_set_video(b, v);
+}
+
+
+/** VisBin.realize() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binRealize(JNIEnv * env, jobject  obj, jint bin)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_realize(b);
+}
+
+
+/** VisBin.sync() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSync(JNIEnv * env, jobject  obj, jint bin, jboolean noevent)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_sync(b, noevent);
+}
+
+
+/** VisBin.depthChanged() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binDepthChanged(JNIEnv * env, jobject  obj, jint bin)
+{    
+    VisBin *b = (VisBin *) bin;
+    visual_bin_depth_changed(b);
+}
+
+
+/** VisBin.connect() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binConnect(JNIEnv * env, jobject  obj, jint bin, jint actor, jint input)
+{    
+    VisBin *b = (VisBin *) bin;
+    VisActor *a = (VisActor *) actor;
+    VisInput *i = (VisInput *) input;
+    visual_bin_connect(b, a, i);
+}
 
 /******************************************************************************/
 

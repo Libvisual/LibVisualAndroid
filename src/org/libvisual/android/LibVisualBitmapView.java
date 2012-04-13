@@ -43,16 +43,12 @@ class LibVisualBitmapView extends LibVisualView
     private VisInput curInput;
     private VisMorph curMorph;
     private VisBin curBin;
+    private VisVideo curBVideo;
         
     /* implementend by liblvclient.so */
     private static native boolean init();
     private static native boolean deinit();
-    private static native boolean initBitmap(Bitmap bitmap, int bvideo, int avideo);
-    private static native boolean setActor(int actor);
-    private static native boolean setMorph(int morph);
-    private static native boolean setInput(int input);
-    private static native boolean setBin(int bin);
-    private static native void renderVisual(Bitmap bitmap);
+    private static native void renderVisual(Bitmap bitmap, int binPtr, int videoPtr);
 
 
 
@@ -80,25 +76,13 @@ class LibVisualBitmapView extends LibVisualView
         Log.v(TAG, "Prevent dimming: "+preventDimming);
                        
         /* don't dim screen */
-        if(preventDimming)
-            setKeepScreenOn(true);
+        setKeepScreenOn(preventDimming);
 
-        /* set actor */
+        /* save libvisual objects */
         curActor = a;
-        setActor(a.VisActor);
-
-        /* set input */
         curInput = i;
-        setInput(i.VisInput);
-
-        /* set morph */
         curMorph = m;
-        setMorph(m.VisMorph);
-
-        /* set bin */
         curBin = b;
-        setBin(b.VisBin);
-        
     }
 
 
@@ -109,6 +93,25 @@ class LibVisualBitmapView extends LibVisualView
         super.onAttachedToWindow();
         Log.i(TAG,"onAttachedToWindow()");
 
+            
+        /* get depth of current actor */
+        int depth;
+        int depthflag = curActor.getSupportedDepth();
+        if(depthflag == VisVideo.VISUAL_VIDEO_DEPTH_GL)
+        {
+            depth = VisVideo.depthGetHighest(depthflag);
+        }
+        else
+        {
+            depth = VisVideo.depthGetHighestNoGl(depthflag);
+        }
+
+        /* set depth of bin */
+        curBin.setDepth(depth);
+
+        /* connect actor & input to bin */
+        curBin.connect(curActor.VisActor, curInput.VisInput);
+            
         /* initialize actor + input */
         init();
     }
@@ -120,9 +123,6 @@ class LibVisualBitmapView extends LibVisualView
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
-        Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" (prev: "+oldw+"x"+oldh+")");
-
-            
         /* free previous Bitmap */
         if(mBitmap != null)
         {
@@ -140,9 +140,11 @@ class LibVisualBitmapView extends LibVisualView
             return;
         }
 
+        Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" stride: "+mBitmap.getRowBytes()+" (prev: "+oldw+"x"+oldh+")");
+            
         /* create new VisVideo object for this bitmap */
-        VisVideo bvideo = new VisVideo();
-        bvideo.setAttributes(w, h, 
+        curBVideo = new VisVideo();
+        curBVideo.setAttributes(w, h, 
                             mBitmap.getRowBytes(), 
                             VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
             
@@ -164,10 +166,14 @@ class LibVisualBitmapView extends LibVisualView
                              w*VisVideo.bppFromDepth(videoDepth),
                              videoDepth);
         avideo.allocateBuffer();
-            
-        /* initialize the libvisual view */
-        /** @todo error handling */
-        initBitmap(mBitmap, bvideo.VisVideo, avideo.VisVideo);
+
+        /* set video for bin */
+        curBin.setVideo(avideo.VisVideo);
+
+        /* realize bin */
+        curBin.realize();
+        curBin.sync(false);
+        curBin.depthChanged();
     }
 
         
@@ -194,8 +200,7 @@ class LibVisualBitmapView extends LibVisualView
         }
             
         /* render */
-        //canvas.drawColor(0xFFCCCCCC);
-        renderVisual(mBitmap);
+        renderVisual(mBitmap, curBin.VisBin, curBVideo.VisVideo);
         canvas.drawBitmap(mBitmap, 0, 0, null);
             
         /* force a redraw, with a different time-based pattern. */
