@@ -70,8 +70,8 @@ public class LibVisual extends Activity
         /* initialize libvisual */
         init();
 
-        /* create new LibVisualView */
-        v = new LibVisualView(this);
+        /* create new LibVisualBitmapView */
+        v = new LibVisualBitmapView(this);
         /* set our libvisual view */
         setContentView(v);
             

@@ -41,8 +41,5 @@ public class LibVisualView extends View
     public LibVisualView(Context context) 
     {
             super(context);
-
-            /* decide about best mechanism */
-            new LibVisualBitmapView(context);
     }
 }
