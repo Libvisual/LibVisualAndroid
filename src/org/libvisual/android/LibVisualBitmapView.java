@@ -35,29 +35,19 @@ import android.util.Log;
 class LibVisualBitmapView extends LibVisualView 
 {
     private final static String TAG = "LibVisualBitmapView"; 
-    private final int VISUAL_VIDEO_DEPTH_NONE	 = 0;	/**< No video surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_8BIT	 = 1;	/**< 8 bits indexed surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_16BIT	 = 2;	/**< 16 bits 5-6-5 surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_24BIT	 = 4;	/**< 24 bits surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_32BIT	 = 8;	/**< 32 bits surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_GL		 = 16;	/**< openGL surface flag. */
-    private final int VISUAL_VIDEO_DEPTH_ENDLIST = 32;	/**< Used to mark the end of the depth list. */
-    private final int VISUAL_VIDEO_DEPTH_ERROR	 = -1;	/**< Used when there is an error. */
-    private final int VISUAL_VIDEO_DEPTH_ALL	 = VISUAL_VIDEO_DEPTH_8BIT
-                                | VISUAL_VIDEO_DEPTH_16BIT
-                                | VISUAL_VIDEO_DEPTH_24BIT
-                                | VISUAL_VIDEO_DEPTH_32BIT
-                                | VISUAL_VIDEO_DEPTH_GL; /**< All graphical depths. */
 
         
     private LibVisualSettings s;
     private Bitmap mBitmap;
-
-
+    private VisActor curActor;
+    private VisInput curInput;
+    private VisMorph curMorph;
+    private VisBin curBin;
+        
     /* implementend by liblvclient.so */
     private static native boolean init();
     private static native boolean deinit();
-    private static native boolean setBitmap(Bitmap bitmap);
+    private static native boolean initBitmap(Bitmap bitmap, int bvideo, int avideo);
     private static native boolean setActor(int actor);
     private static native boolean setMorph(int morph);
     private static native boolean setInput(int input);
@@ -65,6 +55,8 @@ class LibVisualBitmapView extends LibVisualView
     private static native void renderVisual(Bitmap bitmap);
 
 
+
+        
     /** constructor */
     public LibVisualBitmapView(Context context, 
                                VisActor a,
@@ -92,22 +84,20 @@ class LibVisualBitmapView extends LibVisualView
             setKeepScreenOn(true);
 
         /* set actor */
+        curActor = a;
         setActor(a.VisActor);
 
         /* set input */
+        curInput = i;
         setInput(i.VisInput);
 
         /* set morph */
+        curMorph = m;
         setMorph(m.VisMorph);
 
         /* set bin */
+        curBin = b;
         setBin(b.VisBin);
-
-        /* set depth */
-        //b.setSupportedDepth(VISUAL_VIDEO_DEPTH_ALL);
-        //b.setPreferredDepth(VISUAL_VIDEO_DEPTH_32BIT);
-
-        //int depthflag = a.getSupportedDepth();
         
     }
 
@@ -143,9 +133,41 @@ class LibVisualBitmapView extends LibVisualView
         /* create bitmap */
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
+        /* validate bitmap */
+        if(mBitmap.getConfig() != Bitmap.Config.ARGB_8888)
+        {
+            Log.e(TAG, "Bitmap format is not RGBA_8888 !");
+            return;
+        }
+
+        /* create new VisVideo object for this bitmap */
+        VisVideo bvideo = new VisVideo();
+        bvideo.setAttributes(w, h, 
+                            mBitmap.getRowBytes(), 
+                            VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+            
+        /* get width from actor */
+        int actorDepth = curActor.getSupportedDepth();
+        int videoDepth;
+        if(actorDepth == VisVideo.VISUAL_VIDEO_DEPTH_GL)
+        {
+            videoDepth = VisVideo.depthGetHighest(actorDepth);
+        }
+        else
+        {
+            videoDepth = VisVideo.depthGetHighestNoGl(actorDepth);
+        }
+
+        /* create new VisVideo for actor */
+        VisVideo avideo = new VisVideo();
+        avideo.setAttributes(w, h,
+                             w*VisVideo.bppFromDepth(videoDepth),
+                             videoDepth);
+        avideo.allocateBuffer();
+            
         /* initialize the libvisual view */
         /** @todo error handling */
-        setBitmap(mBitmap);
+        initBitmap(mBitmap, bvideo.VisVideo, avideo.VisVideo);
     }
 
         

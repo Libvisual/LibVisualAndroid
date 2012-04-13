@@ -278,3 +278,75 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binSetPreferredDepth(JN
     VisBin *b = (VisBin *) bin;
     visual_bin_set_preferred_depth(b, depth);
 }
+
+
+/******************************************************************************/
+
+/** VisVideo.videoNew() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisVideo_videoNew(JNIEnv * env, jobject  obj)
+{
+    LOGI("VisVideo.videoNew()");
+
+    return (jint) visual_video_new();
+}
+
+
+/** VisVideo.videoUnref() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisVideo_videoUnref(JNIEnv * env, jobject  obj, jint video)
+{
+    LOGI("VisVideo.videoUnref()");
+
+    VisVideo *v = (VisVideo *) video;
+    visual_object_unref(VISUAL_OBJECT(video));        
+}
+
+
+/** VisVideo.setAttributes() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisVideo_videoSetAttributes(JNIEnv * env, 
+                                                                              jobject  obj, 
+                                                                              jint video, 
+                                                                              jint width, 
+                                                                              jint height, 
+                                                                              jint stride, 
+                                                                              jint depth)
+{
+    LOGI("VisVideo.videoSetAttributes()");
+        
+    VisVideo *v = (VisVideo *) video;
+    visual_video_set_attributes(v, width, height, stride, depth);
+}
+
+
+/** VisVideo.depthGetHighest() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisVideo_videoGetHighestDepth(JNIEnv * env, jobject  obj, jint depth)
+{
+    LOGI("VisVideo.videoGetHighestDepth()");
+
+    return visual_video_depth_get_highest(depth);
+}
+
+
+/** VisVideo.depthGetHighestNoGl() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisVideo_videoGetHighestDepthNoGl(JNIEnv * env, jobject  obj, jint depth)
+{
+    LOGI("VisVideo.videoGetHighestDepthNoGl()");
+
+    return visual_video_depth_get_highest_nogl(depth);
+}
+
+
+/** VisVideo.depthGetHighestNoGl() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisVideo_videoBppFromDepth(JNIEnv * env, jobject  obj, jint depth)
+{
+    LOGI("VisVideo.videoBppFromDepth()");
+    return visual_video_bpp_from_depth(depth);
+}
+
+
+/** VisVideo.videoAllocateBuffer() */
+JNIEXPORT void JNICALL Java_org_libvisual_android_VisVideo_videoAllocateBuffer(JNIEnv * env, jobject  obj, int videoPtr)
+{
+    LOGI("VisVideo.videoAllocateBuffer()");
+    VisVideo *v = (VisVideo *) videoPtr;
+    visual_video_allocate_buffer(v);
+}

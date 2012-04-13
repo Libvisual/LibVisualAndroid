@@ -100,10 +100,15 @@ public class LibVisual extends Activity
         /* create bin */
         curBin = new VisBin();
             
+        /* set depth of bin */
+        curBin.setSupportedDepth(VisVideo.VISUAL_VIDEO_DEPTH_ALL);
+        curBin.setPreferredDepth(VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+
+            
         /* create new LibVisualBitmapView */
         v = new LibVisualBitmapView(this, curActor, curInput, curMorph, curBin);
         
-        /* set our libvisual view */
+        /* set our LibVisualBitmapView as contentView */
         setContentView(v);
             
     }

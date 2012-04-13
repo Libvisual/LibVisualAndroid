@@ -58,9 +58,11 @@ static struct
         
 
 /** LibVisualBitmapView.setVideo(Bitmap) */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBitmap(JNIEnv * env, 
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_initBitmap(JNIEnv * env, 
                                                                          jobject  obj, 
-                                                                         jobject bitmap)
+                                                                         jobject bitmap,
+                                                                         jint bvideo,
+                                                                         jint avideo)
 {
     LOGI("LibVisualView.setBitmap()");
 
@@ -72,30 +74,25 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBit
         return JNI_FALSE;
     }
 
-    /* validate format */
-    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) 
-    {
-        LOGE("Bitmap format is not RGBA_8888 !");
-        return JNI_FALSE;
-    }
-
         
     LOGI("Bitmap: %dx%d, stride: %d", info.width, info.height, info.stride);
 
-        
+    /* video for our bitmap */
+    VisVideo *b = (VisVideo *) bvideo;
+    if(!b)
+    {
+        LOGI("No VisVideo for bitmap initialized");
+        return JNI_FALSE;
+    }    
 
+    /* video for our actor */
+    VisVideo *a = (VisVideo *) avideo;
+    if(!a)
+    {
+        LOGI("No VisVideo for actor initialized");
+        return JNI_FALSE;
+    }
         
-    /* create VisVideo for our bitmap */
-    VisVideo *b;
-    if(!(b = visual_video_new()))
-                return JNI_FALSE;
-        
-    visual_video_set_attributes(b,
-                                info.width, info.height,
-                                info.stride,
-                                VISUAL_VIDEO_DEPTH_32BIT);
-
-
     /* do we have an actor? */
     if(!_v.bin || !_v.bin->actor)
     {
@@ -104,7 +101,7 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBit
     }
 
     /* get depth info from actor */
-    VisVideoDepth depth;
+    /*VisVideoDepth depth;
     int depthflag = visual_actor_get_supported_depth(_v.bin->actor);
     if(depthflag == VISUAL_VIDEO_DEPTH_GL)
     {
@@ -113,43 +110,26 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_setBit
     else
     {
         depth = visual_video_depth_get_highest_nogl(depthflag);
-    }
+    }*/
     
 
     /* create video for actor */
-    VisVideo *v = visual_video_new();
+    /*VisVideo *v = visual_video_new();
     visual_video_set_attributes(v, 
                                 info.width, info.height, 
                                 info.width*visual_video_bpp_from_depth(depth), 
                                 depth);
-    visual_video_allocate_buffer(v);
+    visual_video_allocate_buffer(v);*/
 
 
     /* connect new VisVideo to VisBin */
-    visual_bin_set_video(_v.bin, v);
+    visual_bin_set_video(_v.bin, a);
     visual_bin_realize(_v.bin);
     visual_bin_sync(_v.bin, FALSE);
     visual_bin_depth_changed(_v.bin);
 
-        
-    /* free current actor VisVideo? */
-    if(_v.video)
-    {
-        visual_video_free_buffer(_v.video);
-        visual_object_unref(VISUAL_OBJECT(_v.video));
-        _v.video = NULL;
-    }
-        
-    /* free old VisVideo ? */
-    if(_v.bitmap)
-    {
-        visual_object_unref(VISUAL_OBJECT(_v.bitmap));
-        _v.bitmap = NULL;
-    }
-
-        
     /* save VisVideos */
-    _v.video = v;
+    _v.video = a;
     _v.bitmap = b;
         
     return JNI_TRUE;
