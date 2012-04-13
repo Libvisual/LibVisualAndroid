@@ -11,30 +11,30 @@ all:
 	ant clean
 	ant release
 
-install: sign 
+install: bin/$(APPNAME).apk
 	adb install -r bin/$(APPNAME).apk
 
-install_emu: sign
+install_emu: bin/$(APPNAME).apk
 	adb -e install -r bin/$(APPNAME).apk
 
-install_dev: sign
+install_dev: bin/$(APPNAME).apk
 	adb -d install -r bin/$(APPNAME).apk
 
-debug:
+debug: bin/$(APPNAME)-debug.apk
+bin/$(APPNAME)-debug.apk:
 	ndk-build NDK_DEBUG=1 APP_OPTIM=debug V=1
 	ant clean
 	ant debug
 
-install_debug: debug
+install_debug: bin/$(APPNAME)-debug.apk
 	adb install -r bin/$(APPNAME)-debug.apk
 
-install_debug_emu: debug
+install_debug_emu: bin/$(APPNAME)-debug.apk
 	adb -e install -r bin/$(APPNAME)-debug.apk
 
-install_debug_dev: debug
+install_debug_dev: bin/$(APPNAME)-debug.apk
 	adb -d install -r bin/$(APPNAME)-debug.apk
  
-#Don't delete libs/
 clean:
 	ndk-build clean
 	ant clean
@@ -43,10 +43,13 @@ clean:
 update:
 	android update project --path . --target $(TARGET)
 
-keygen:
+keygen: my.keystore
+my.keystore:
 	keytool -genkey -v -keystore my.keystore -alias $(APPNAME)_key -keyalg RSA -keysize 4096 -validity 100000
 
-sign: all
+sign: my.keystore bin/$(APPNAME).apk
+
+bin/$(APPNAME).apk:
 	jarsigner -keystore my.keystore bin/$(ACTIVITY)-release-unsigned.apk $(APPNAME)_key
 	zipalign -v 4 bin/$(ACTIVITY)-release-unsigned.apk bin/$(APPNAME).apk
 
