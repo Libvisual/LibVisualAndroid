@@ -140,6 +140,11 @@ JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorNew(JNIEnv * env
     /* create new actor */
     a = visual_actor_new(actorName);
 
+    /* set random seed */
+    VisPluginData    *plugin_data = visual_actor_get_plugin(a);
+    VisRandomContext *r_context   = visual_plugin_get_random_context (plugin_data);
+    visual_random_context_set_seed(r_context, time(NULL));
+
 _van_exit:
     (*env)->ReleaseStringUTFChars(env, name, actorName);
     return (jint) a;
