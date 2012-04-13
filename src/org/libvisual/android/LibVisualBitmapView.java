@@ -37,7 +37,6 @@ class LibVisualBitmapView extends LibVisualView
     private final static String TAG = "LibVisualBitmapView"; 
 
         
-    private LibVisualSettings s;
     private Bitmap mBitmap;
     private VisActor curActor;
     private VisInput curInput;
@@ -62,21 +61,6 @@ class LibVisualBitmapView extends LibVisualView
     {
         super(context);
 
-        /* get preferences */
-        s = new LibVisualSettings(context);
-
-        
-        /* prevent dimming of screen? */
-        String default_prevent_dimming = context.getString(R.string.default_prevent_dimming);
-        Boolean preventDimming = s.getBoolean("prefs_prevent_dimming",
-                                                (default_prevent_dimming == "true" ? 
-                                                          true : 
-                                                          false));
-        
-        Log.v(TAG, "Prevent dimming: "+preventDimming);
-                       
-        /* don't dim screen */
-        setKeepScreenOn(preventDimming);
 
         /* save libvisual objects */
         curActor = a;
@@ -85,7 +69,7 @@ class LibVisualBitmapView extends LibVisualView
         curBin = b;
     }
 
-
+            
     /** This is called when the view is attached to a window. */
     @Override
     protected void onAttachedToWindow()

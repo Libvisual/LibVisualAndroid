@@ -70,11 +70,11 @@ public class LibVisual extends Activity
         /* hide titlebar */
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        /* initialize libvisual */
-        init();
-            
         /* create new settings-object */
         s = new LibVisualSettings(this);
+                        
+        /* initialize libvisual */
+        init();
 
         /* do morph when changing actors? */
         String default_do_morph = getString(R.string.default_do_morph);
@@ -103,7 +103,7 @@ public class LibVisual extends Activity
         /* set depth of bin */
         curBin.setSupportedDepth(VisVideo.VISUAL_VIDEO_DEPTH_ALL);
         curBin.setPreferredDepth(VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
-
+    
             
         /* create new LibVisualBitmapView */
         v = new LibVisualBitmapView(this, curActor, curInput, curMorph, curBin);
@@ -121,12 +121,21 @@ public class LibVisual extends Activity
             super.onResume();
             Log.i(TAG, "onResume()");
 
+            /* screen dimming */
+            v.setScreenDimming();
+            
             /* switch actor */
 
             /* switch view */
     }
 
-        
+    /** orientation changed */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) 
+    {
+        super.onConfigurationChanged(newConfig);
+    }
+
     /** options menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -206,6 +215,8 @@ public class LibVisual extends Activity
             
         super.onDestroy();
     }
+
+        
 
         
     /* load our native library */

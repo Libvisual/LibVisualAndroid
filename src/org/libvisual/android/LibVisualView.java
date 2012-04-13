@@ -36,10 +36,41 @@ public class LibVisualView extends View
 {        
     private final static String TAG = "LibVisualView";
 
+    Context ctxt;
+    private LibVisualSettings s;
+
+
+        
         
     /** constructor */
     public LibVisualView(Context context) 
     {
-            super(context);
+        super(context);
+
+        /* save context */
+        ctxt = context;
+            
+        /* get preferences */
+        s = new LibVisualSettings(context);
+
+        /* dim screen? */
+        setScreenDimming();
+    }
+
+        
+    /** set screen-dimming behaviour according to settings */
+    public void setScreenDimming()
+    {
+        /* prevent dimming of screen? */
+        String default_prevent_dimming = ctxt.getString(R.string.default_prevent_dimming);
+        Boolean preventDimming = s.getBoolean("prefs_prevent_dimming",
+                                                (default_prevent_dimming == "true" ? 
+                                                          true : 
+                                                          false));
+        
+        Log.v(TAG, "Prevent dimming: "+preventDimming);
+                       
+        /* don't dim screen */
+        setKeepScreenOn(preventDimming);
     }
 }

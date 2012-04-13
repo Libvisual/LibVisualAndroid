@@ -37,7 +37,8 @@
 
         <!-- Main activity -->
         <activity 
-              android:name="LibVisual">
+              android:name="LibVisual"
+              android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
