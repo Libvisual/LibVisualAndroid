@@ -38,12 +38,18 @@
     <!-- morph plugins -->
     <string-array name="morph_plugins">
         <item>slide_left</item>
+        <item>slide_right</item>
+        <item>slide_up</item>
+        <item>slide_down</item>
         <item>flash</item>
         <item>alphablend</item>
         <item>tentacle</item>
     </string-array>
     <string-array name="morph_plugins_names">
         <item>Slide left</item>
+        <item>Slide right</item>
+        <item>Slide up</item>
+        <item>Slide down</item>
         <item>Flash</item>
         <item>Alphablend</item>
         <item>Tentacle</item>
