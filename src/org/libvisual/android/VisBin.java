@@ -42,7 +42,9 @@ public class VisBin
     private native int binSync(int binPtr, boolean noevent);
     private native int binDepthChanged(int binPtr);
     private native int binConnect(int binPtr, int actorPtr, int inputPtr);
-        
+    private native int binSetMorphByName(int binPtr, String name);
+    private native int binSwitchActorByName(int binPtr, String name);
+                
         
     public VisBin()
     {
@@ -87,6 +89,16 @@ public class VisBin
     public void connect(int actorPtr, int inputPtr)
     {
         binConnect(VisBin, actorPtr, inputPtr);
+    }
+
+    public void setMorph(String name)
+    {
+        binSetMorphByName(VisBin, name);
+    }
+
+    public void switchActor(String name)
+    {
+        binSwitchActorByName(VisBin, name);
     }
         
     @Override

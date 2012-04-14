@@ -344,6 +344,37 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binConnect(JNIEnv * env
     visual_bin_connect(b, a, i);
 }
 
+
+/** VisBin.setMorphByName() */
+JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSetMorphByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
+{    
+    jboolean isCopy;  
+    const char *n = (*env)->GetStringUTFChars(env, name, &isCopy);  
+        
+    VisBin *b = (VisBin *) bin;
+    int r = visual_bin_set_morph_by_name(b, n);
+
+    (*env)->ReleaseStringUTFChars(env, name, n);
+
+    return r;
+}
+
+
+/** VisBin.switchActor() */
+JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSwitchActorByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
+{
+    jboolean isCopy;  
+    const char *n = (*env)->GetStringUTFChars(env, name, &isCopy);  
+
+    VisBin *b = (VisBin *) bin;
+    int r = visual_bin_switch_actor_by_name(b, n);
+
+    (*env)->ReleaseStringUTFChars(env, name, n);
+
+    return r;
+}
+
+
 /******************************************************************************/
 
 /** VisVideo.videoNew() */

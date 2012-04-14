@@ -125,7 +125,7 @@ public class LibVisual extends Activity
             v.setScreenDimming();
             
             /* actor changed? */
-
+            
             /* morph changed? */
 
             /* input changed? */
