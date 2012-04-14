@@ -48,11 +48,11 @@ public class LibVisualAboutActor extends Activity
             
         /** set head */
         TextView head = new TextView(this);
-        head.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
-        head.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+        head.setTextAppearance(this, android.R.style.TextAppearance_Large);
         head.setTextColor(Color.WHITE);
         head.setText(LibVisual.curActor.plugin.getPlugname()+" "+LibVisual.curActor.plugin.getVersion());
         l.addView(head);
+
 
         /* description */
         TextView name = new TextView(this);
@@ -63,16 +63,31 @@ public class LibVisualAboutActor extends Activity
         l.addView(desc);
 
         /* author */
+        TextView title = new TextView(this);
+        title.setTextAppearance(this, android.R.style.TextAppearance_WindowTitle);
+        title.setPadding (0, 10, 0, 5);
+        title.setText("Author:");
+        l.addView(title);
         TextView author = new TextView(this);
         author.setText(LibVisual.curActor.plugin.getAuthor());
         l.addView(author);
 
         /* help */
+        title = new TextView(this);
+        title.setTextAppearance(this, android.R.style.TextAppearance_WindowTitle);
+        title.setPadding (0, 10, 0, 3);
+        title.setText("Help:");
+        l.addView(title);
         TextView help = new TextView(this);
         help.setText(LibVisual.curActor.plugin.getHelp());
         l.addView(help);
 
         /* license */
+        title = new TextView(this);
+        title.setTextAppearance(this, android.R.style.TextAppearance_WindowTitle);
+        title.setPadding (0, 10, 0, 5);
+        title.setText("License:");
+        l.addView(title);
         TextView license = new TextView(this);
         license.setText(LibVisual.curActor.plugin.getLicense());
         l.addView(license);
