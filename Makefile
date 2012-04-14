@@ -6,7 +6,8 @@ APPNAME = LibVisual
 ACTIVITY = LibVisual
 TARGET = android-8
 
-all:
+all: bin/$(ACTIVITY)-release-unsigned.apk
+bin/$(ACTIVITY)-release-unsigned.apk:
 	ndk-build APP_OPTIM=release
 	ant clean
 	ant release
@@ -19,6 +20,7 @@ install_emu: bin/$(APPNAME).apk
 
 install_dev: bin/$(APPNAME).apk
 	adb -d install -r bin/$(APPNAME).apk
+
 
 debug: bin/$(APPNAME)-debug.apk
 bin/$(APPNAME)-debug.apk:
@@ -47,9 +49,8 @@ keygen: my.keystore
 my.keystore:
 	keytool -genkey -v -keystore my.keystore -alias $(APPNAME)_key -keyalg RSA -keysize 4096 -validity 100000
 
-sign: my.keystore bin/$(APPNAME).apk
-
-bin/$(APPNAME).apk:
+sign: bin/$(APPNAME)
+bin/$(APPNAME).apk: my.keystore bin/$(ACTIVITY)-release-unsigned.apk
 	jarsigner -keystore my.keystore bin/$(ACTIVITY)-release-unsigned.apk $(APPNAME)_key
 	zipalign -v 4 bin/$(ACTIVITY)-release-unsigned.apk bin/$(APPNAME).apk
 
