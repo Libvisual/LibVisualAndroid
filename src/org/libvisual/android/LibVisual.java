@@ -89,17 +89,17 @@ public class LibVisual extends Activity
                                                           false));
 
         /* morph plugin */
-        String defaultMorph = getString(R.string.default_plugin_morph);
+        defaultMorph = getString(R.string.default_plugin_morph);
         String prefMorph = s.getString("prefs_morph", defaultMorph);
         curMorph = new VisMorph(prefMorph);
             
         /* input plugin */
-        String defaultInput = getString(R.string.default_plugin_input);
+        defaultInput = getString(R.string.default_plugin_input);
         String prefInput = s.getString("prefs_input", defaultInput);
         curInput = new VisInput(prefInput);
             
         /* actor plugin */
-        String defaultActor = getString(R.string.default_plugin_actor);
+        defaultActor = getString(R.string.default_plugin_actor);
         String prefActor = s.getString("prefs_actor", defaultActor);
         curActor = new VisActor(prefActor);
 
