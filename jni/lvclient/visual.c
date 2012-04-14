@@ -168,14 +168,20 @@ JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorGetSupportedDept
     return visual_actor_get_supported_depth(a);
 }
 
-/** VisActor.videoNegotiate() */
-JNIEXPORT int JNICALL Java_org_libvisual_android_VisActor_actorVideoNegotiate(JNIEnv * env, jobject  obj, jint actor, jint rundepth, jboolean noevent, jboolean forced)
+/** VisActor.actorVideoNegotiate() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorVideoNegotiate(JNIEnv * env, jobject  obj, jint actor, jint rundepth, jboolean noevent, jboolean forced)
 {
     VisActor *a = (VisActor *) actor;
             
     return visual_actor_video_negotiate(a, rundepth, noevent, forced);
 }
 
+/** VisActor.actorGetPlugin() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorGetPlugin(JNIEnv * env, jobject  obj, jint actor)
+{
+    VisActor *a = (VisActor *) actor;
+    return (jint) visual_actor_get_plugin(a);
+}
 
 /******************************************************************************/
 
@@ -217,6 +223,14 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisInput_inputUnref(JNIEnv * e
 }
 
 
+/** VisActor.inputGetPlugin() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisInput_inputGetPlugin(JNIEnv * env, jobject  obj, jint input)
+{
+    VisInput *i = (VisInput *) input;
+    return (jint) visual_input_get_plugin(i);
+}
+
+
 /******************************************************************************/
 
 /** VisMorph.morphNew() */
@@ -254,6 +268,13 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisMorph_morphUnref(JNIEnv * e
 
     VisMorph *m = (VisMorph *) morph;
     visual_object_unref(VISUAL_OBJECT(morph));        
+}
+
+/** VisActor.morphGetPlugin() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisMorph_morphGetPlugin(JNIEnv * env, jobject  obj, jint morph)
+{
+    VisMorph *m = (VisMorph *) morph;
+    return (jint) visual_morph_get_plugin(m);
 }
 
 
@@ -444,4 +465,64 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisVideo_videoAllocateBuffer(J
     LOGI("VisVideo.videoAllocateBuffer()");
     VisVideo *v = (VisVideo *) videoPtr;
     visual_video_allocate_buffer(v);
+}
+
+
+
+/******************************************************************************/
+
+/** VisPlugin.pluginGetName() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetName(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->name);
+}
+
+/** VisPlugin.pluginGetPlugname() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetPlugname(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->plugname);
+}
+
+/** VisPlugin.pluginGetAuthor() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetAuthor(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->author);
+}
+
+/** VisPlugin.pluginGetVersion() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetVersion(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->version);
+}
+
+/** VisPlugin.pluginGetAbout() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetAbout(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->about);
+}
+
+/** VisPlugin.pluginGetHelp() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetHelp(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->help);
+}
+    
+/** VisPlugin.pluginGetLicense() */
+JNIEXPORT jstring JNICALL Java_org_libvisual_android_VisPlugin_pluginGetLicense(JNIEnv * env, jobject  obj, int pluginPtr)
+{
+    VisPluginData *d = (VisPluginData *) pluginPtr;
+        
+    return (*env)->NewStringUTF(env, d->info->license);
 }

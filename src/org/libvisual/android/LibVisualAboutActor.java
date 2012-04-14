@@ -25,7 +25,12 @@ package org.libvisual.android;
 
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 public class LibVisualAboutActor extends Activity
@@ -36,6 +41,41 @@ public class LibVisualAboutActor extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_actor);
+
+        /* get LinearLayout container */
+        LinearLayout l = (LinearLayout) findViewById(R.id.layout_about_actor);
+
+            
+        /** set head */
+        TextView head = new TextView(this);
+        head.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
+        head.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+        head.setTextColor(Color.WHITE);
+        head.setText(LibVisual.curActor.plugin.getPlugname()+" "+LibVisual.curActor.plugin.getVersion());
+        l.addView(head);
+
+        /* description */
+        TextView name = new TextView(this);
+        name.setText(LibVisual.curActor.plugin.getName());
+        TextView desc = new TextView(this);
+        desc.setText(LibVisual.curActor.plugin.getAbout());
+        l.addView(name);
+        l.addView(desc);
+
+        /* author */
+        TextView author = new TextView(this);
+        author.setText(LibVisual.curActor.plugin.getAuthor());
+        l.addView(author);
+
+        /* help */
+        TextView help = new TextView(this);
+        help.setText(LibVisual.curActor.plugin.getHelp());
+        l.addView(help);
+
+        /* license */
+        TextView license = new TextView(this);
+        license.setText(LibVisual.curActor.plugin.getLicense());
+        l.addView(license);
     }
 }
 

@@ -26,28 +26,59 @@ package org.libvisual.android;
 
 
 
-/** VisInput wrapper */
-public class VisInput
+/** VisPlugin wrapper */
+public class VisPlugin
 {
-    public int VisInput;
-    public VisPlugin plugin;
-        
-    /** implemented by visual.c */
-    private native int inputNew(String name);
-    private native int inputUnref(int inputPtr);
-    private native int inputGetPlugin(int inputPtr);
+    public int VisPlugin;
 
+    /** implemented by visual.c */
+    private native String pluginGetName(int pluginPtr);
+    private native String pluginGetPlugname(int pluginPtr);
+    private native String pluginGetAuthor(int pluginPtr);
+    private native String pluginGetVersion(int pluginPtr);
+    private native String pluginGetAbout(int pluginPtr);
+    private native String pluginGetHelp(int pluginPtr);
+    private native String pluginGetLicense(int pluginPtr);
         
-    public VisInput(String name)
+        
+    public VisPlugin(int pluginPtr)
     {
-        VisInput = inputNew(name);
-        plugin = new VisPlugin(inputGetPlugin(VisInput));
+        VisPlugin = pluginPtr;
     }
 
-    @Override
-    public void finalize()
+    public String getName()
     {
-        inputUnref(VisInput);
+        return pluginGetName(VisPlugin);
+    }
+        
+    public String getPlugname()
+    {
+        return pluginGetPlugname(VisPlugin);
+    }
+
+    public String getAuthor()
+    {
+        return pluginGetAuthor(VisPlugin);
+    }
+
+    public String getVersion()
+    {
+        return pluginGetVersion(VisPlugin);
+    }
+
+    public String getAbout()
+    {
+        return pluginGetAbout(VisPlugin);
+    }
+
+    public String getHelp()
+    {
+        return pluginGetHelp(VisPlugin);
+    }
+
+    public String getLicense()
+    {
+        return pluginGetLicense(VisPlugin);
     }
 }
 

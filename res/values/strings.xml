@@ -64,6 +64,8 @@
     <string name="about_title_url">Homepage</string>
     <string name="about_title_changes">Changes</string>
     <string name="about_title_license">License</string>
+    <string name="about_title_author">Author</string>
+    <string name="about_title_help">Help</string>
     <string name="about_app_head">LibVisual v0.1</string>
     <string name="about_app_copyright">2011-2012 (C) Daniel Hiepler &lt;info-lva@niftylight.de&gt;\n2011-2012 (C) Scott Sibley &lt;sisibley@gmail.com&gt;</string>
     <string name="about_app_url">http://github.com/libvisual/LibVisualAndroid</string>

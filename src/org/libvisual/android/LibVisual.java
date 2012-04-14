@@ -33,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.TextView;
+
 
 /** 
  * @todo
@@ -44,14 +46,14 @@ import android.view.Window;
 
 public class LibVisual extends Activity
 {
+    public static VisActor curActor;
+    public static VisInput curInput;
+    public static VisMorph curMorph;
+
     private final static String TAG = "LibVisual";
         
-    /** object to hold all our permanent settings */
     private static LibVisualSettings s;
     private static LibVisualView v;
-    private static VisActor curActor;
-    private static VisInput curInput;
-    private static VisMorph curMorph;
     private static VisBin curBin;
 
         
@@ -171,7 +173,7 @@ public class LibVisual extends Activity
 
             /* About actor */
             case R.id.about_actor:
-            {
+            {                                
                 startActivity(new Intent(this, LibVisualAboutActor.class));
                 return true;
             }

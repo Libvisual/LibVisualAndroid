@@ -30,14 +30,18 @@ package org.libvisual.android;
 public class VisMorph
 {
     public int VisMorph;
-
+    public VisPlugin plugin;
+        
     /** implemented by visual.c */
     private native int morphNew(String name);
     private native int morphUnref(int morphPtr);
+    private native int morphGetPlugin(int morphPtr);
+
         
     public VisMorph(String name)
     {
         VisMorph = morphNew(name);
+        plugin = new VisPlugin(morphGetPlugin(VisMorph));
     }
 
     @Override
