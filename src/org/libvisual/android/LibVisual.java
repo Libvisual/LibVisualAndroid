@@ -55,7 +55,11 @@ public class LibVisual extends Activity
     private static LibVisualSettings s;
     private static LibVisualView v;
     private static VisBin curBin;
-
+    private static String defaultDoMorph;
+    private static String defaultMorph;
+    private static String defaultActor;
+    private static String defaultInput;
+    private static Boolean doMorph;
         
     /* implementend by liblvclient.so */
     private static native boolean init();
@@ -79,24 +83,24 @@ public class LibVisual extends Activity
         init();
 
         /* do morph when changing actors? */
-        String default_do_morph = getString(R.string.default_do_morph);
-        Boolean doMorph = s.getBoolean("prefs_do_morph", (default_do_morph == "true" ? 
+        defaultDoMorph = getString(R.string.default_do_morph);
+        doMorph = s.getBoolean("prefs_do_morph", (defaultDoMorph == "true" ? 
                                                           true : 
                                                           false));
 
         /* morph plugin */
-        String default_morph = getString(R.string.default_plugin_morph);
-        String prefMorph = s.getString("prefs_morph", default_morph);
+        String defaultMorph = getString(R.string.default_plugin_morph);
+        String prefMorph = s.getString("prefs_morph", defaultMorph);
         curMorph = new VisMorph(prefMorph);
             
         /* input plugin */
-        String default_input = getString(R.string.default_plugin_input);
-        String prefInput = s.getString("prefs_input", default_input);
+        String defaultInput = getString(R.string.default_plugin_input);
+        String prefInput = s.getString("prefs_input", defaultInput);
         curInput = new VisInput(prefInput);
             
         /* actor plugin */
-        String default_actor = getString(R.string.default_plugin_actor);
-        String prefActor = s.getString("prefs_actor", default_actor);
+        String defaultActor = getString(R.string.default_plugin_actor);
+        String prefActor = s.getString("prefs_actor", defaultActor);
         curActor = new VisActor(prefActor);
 
         /* create bin */
@@ -125,10 +129,45 @@ public class LibVisual extends Activity
 
             /* screen dimming */
             v.setScreenDimming();
+
             
-            /* actor changed? */
+            /* do-morph */
+            doMorph = s.getBoolean("prefs_do_morph", (defaultDoMorph == "true" ? 
+                                                          true : 
+                                                          false));
             
             /* morph changed? */
+            String newMorphName = s.getString("prefs_morph", defaultMorph);
+            if(!curMorph.plugin.getPlugname().equals(newMorphName))
+            {
+                Log.i(TAG, "Changing morph (\""+curMorph.plugin.getPlugname()+"\" -> \""+newMorphName+"\")");
+                curBin.setMorph(newMorphName);
+                curMorph = curBin.getMorph();
+            }
+            
+            /* actor changed? */
+            String newActorName = s.getString("prefs_actor", defaultActor);
+            if(!curActor.plugin.getPlugname().equals(newActorName))
+            {
+                Log.i(TAG, "Changing actor (\""+curActor.plugin.getPlugname()+"\" -> \""+newActorName+"\")");
+                    
+                /* do morph? */
+                if(doMorph)
+                {
+                        /* enable morph */
+                }
+                else
+                {
+                        /* disable morph */
+                }
+
+                /* switch actor */
+                curBin.switchActor(newActorName);
+
+                /* get new actor */
+                curActor = curBin.getActor();
+            }
+            
 
             /* input changed? */
             

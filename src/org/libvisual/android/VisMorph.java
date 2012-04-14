@@ -37,6 +37,12 @@ public class VisMorph
     private native int morphUnref(int morphPtr);
     private native int morphGetPlugin(int morphPtr);
 
+
+    public VisMorph(int morphPtr)
+    {
+        VisMorph = morphPtr;
+        plugin = new VisPlugin(morphGetPlugin(VisMorph));
+    }
         
     public VisMorph(String name)
     {

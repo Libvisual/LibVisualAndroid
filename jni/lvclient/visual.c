@@ -367,7 +367,7 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_VisBin_binConnect(JNIEnv * env
 
 
 /** VisBin.setMorphByName() */
-JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSetMorphByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisBin_binSetMorphByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
 {    
     jboolean isCopy;  
     const char *n = (*env)->GetStringUTFChars(env, name, &isCopy);  
@@ -382,7 +382,7 @@ JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSetMorphByName(JNIEnv
 
 
 /** VisBin.switchActor() */
-JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSwitchActorByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisBin_binSwitchActorByName(JNIEnv * env, jobject  obj, jint bin, jstring name)
 {
     jboolean isCopy;  
     const char *n = (*env)->GetStringUTFChars(env, name, &isCopy);  
@@ -393,6 +393,24 @@ JNIEXPORT int JNICALL Java_org_libvisual_android_VisBin_binSwitchActorByName(JNI
     (*env)->ReleaseStringUTFChars(env, name, n);
 
     return r;
+}
+
+
+/** VisBin.getMorph() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisBin_binGetMorph(JNIEnv * env, jobject  obj, jint bin)
+{
+    VisBin *b = (VisBin *) bin;
+        
+    return (jint) visual_bin_get_morph(b);
+}
+
+
+/** VisBin.getActor() */
+JNIEXPORT jint JNICALL Java_org_libvisual_android_VisBin_binGetActor(JNIEnv * env, jobject  obj, jint bin)
+{
+    VisBin *b = (VisBin *) bin;
+
+    return (jint) visual_bin_get_actor(b);
 }
 
 

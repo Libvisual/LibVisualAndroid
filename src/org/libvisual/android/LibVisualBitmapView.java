@@ -111,8 +111,7 @@ class LibVisualBitmapView extends LibVisualView
                                     VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
                 
             /* create new VisVideo object for this bitmap */
-            //curBin.setVideo(curBVideo.VisVideo);
-            //curActor.videoNegotiate(VisVideo.VISUAL_VIDEO_DEPTH_32BIT, false, false);
+            curBin.setVideo(curBVideo);
         }
 
         /* realize bin */
@@ -159,7 +158,7 @@ class LibVisualBitmapView extends LibVisualView
         curBin.setDepth(depth);
 
         /* connect actor & input to bin */
-        curBin.connect(curActor.VisActor, curInput.VisInput);
+        curBin.connect(curActor, curInput);
 
         /* create new VisVideo object for this bitmap */
         curBVideo = new VisVideo();
@@ -187,7 +186,7 @@ class LibVisualBitmapView extends LibVisualView
         avideo.allocateBuffer();
 
         /* set video for bin */
-        curBin.setVideo(avideo.VisVideo);
+        curBin.setVideo(avideo);
     }
 
 }

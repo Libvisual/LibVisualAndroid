@@ -29,8 +29,6 @@ package org.libvisual.android;
 /** VisBin wrapper */
 public class VisBin
 {
-    public int VisBin;
-
     /** implemented by visual.c */
     private native int binNew();
     private native int binUnref(int binPtr);
@@ -44,7 +42,17 @@ public class VisBin
     private native int binConnect(int binPtr, int actorPtr, int inputPtr);
     private native int binSetMorphByName(int binPtr, String name);
     private native int binSwitchActorByName(int binPtr, String name);
-                
+    private native int binGetMorph(int binPtr);
+    private native int binGetActor(int binPtr);
+        
+    private VisVideo video;
+    private VisInput input;
+    private VisActor actor;
+    private VisMorph morph;
+
+    public int VisBin;
+
+        
         
     public VisBin()
     {
@@ -66,9 +74,10 @@ public class VisBin
         binSetPreferredDepth(VisBin, depth);
     }
 
-    public void setVideo(int videoPtr)
+    public void setVideo(VisVideo v)
     {
-        binSetVideo(VisBin, videoPtr);
+        video = v;
+        binSetVideo(VisBin, v.VisVideo);
     }
 
     public void realize()
@@ -86,9 +95,11 @@ public class VisBin
         binDepthChanged(VisBin);
     }
 
-    public void connect(int actorPtr, int inputPtr)
+    public void connect(VisActor a, VisInput i)
     {
-        binConnect(VisBin, actorPtr, inputPtr);
+        actor = a;
+        input = i;
+        binConnect(VisBin, a.VisActor, i.VisInput);
     }
 
     public void setMorph(String name)
@@ -96,9 +107,25 @@ public class VisBin
         binSetMorphByName(VisBin, name);
     }
 
+    public VisMorph getMorph()
+    {
+        if(morph == null)
+            morph = new VisMorph(binGetMorph(VisBin));
+            
+        return morph;
+    }
+        
     public void switchActor(String name)
     {
         binSwitchActorByName(VisBin, name);
+    }
+
+    public VisActor getActor()
+    {
+        if(actor == null)
+            actor = new VisActor(binGetActor(VisBin));
+        
+        return actor;
     }
         
     @Override

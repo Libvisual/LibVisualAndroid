@@ -40,6 +40,11 @@ public class VisActor
     private native int actorGetPlugin(int actorPtr);
 
 
+    public VisActor(int actorPtr)
+    {
+        VisActor = actorPtr;    
+        plugin = new VisPlugin(actorGetPlugin(VisActor));
+    }
         
     public VisActor(String name)
     {
