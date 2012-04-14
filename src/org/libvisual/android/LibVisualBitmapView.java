@@ -36,7 +36,7 @@ class LibVisualBitmapView extends LibVisualView
 {
     private final static String TAG = "LibVisualBitmapView"; 
         
-    private static boolean videoInitialized = false;
+    private boolean videoInitialized = false;
     private Bitmap curBitmap;
     private VisActor curActor;
     private VisInput curInput;
@@ -112,6 +112,7 @@ class LibVisualBitmapView extends LibVisualView
                 
             /* create new VisVideo object for this bitmap */
             curBin.setVideo(curBVideo);
+            curActor.videoNegotiate(VisVideo.VISUAL_VIDEO_DEPTH_32BIT, false, false);
         }
 
         /* realize bin */

@@ -52,14 +52,14 @@ public class LibVisual extends Activity
 
     private final static String TAG = "LibVisual";
         
-    private static LibVisualSettings s;
-    private static LibVisualView v;
-    private static VisBin curBin;
-    private static String defaultDoMorph;
-    private static String defaultMorph;
-    private static String defaultActor;
-    private static String defaultInput;
-    private static Boolean doMorph;
+    private LibVisualSettings s;
+    private LibVisualView v;
+    private VisBin curBin;
+    private String defaultDoMorph;
+    private String defaultMorph;
+    private String defaultActor;
+    private String defaultInput;
+    private Boolean doMorph;
         
     /* implementend by liblvclient.so */
     private static native boolean init();
