@@ -45,21 +45,11 @@ static struct
 
 
 /** LibVisualBitmapView.init() */
-JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_init(JNIEnv * env, 
+JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisualBitmapView_fpsInit(JNIEnv * env, 
                                                                          jobject  obj)
 {
-    LOGI("LibVisualView.init()");
-
     fps_init(&_v.fps);
-
     return JNI_TRUE;
-}
-
-
-/** LibVisualBitmapView.deinit() */
-JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualBitmapView_deinit(JNIEnv * env, jobject  obj)
-{
-    LOGI("LibVisualView.deinit()");
 }
 
 

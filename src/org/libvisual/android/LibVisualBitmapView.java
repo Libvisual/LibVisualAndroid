@@ -35,18 +35,19 @@ import android.util.Log;
 class LibVisualBitmapView extends LibVisualView 
 {
     private final static String TAG = "LibVisualBitmapView"; 
-
         
-    private Bitmap mBitmap;
+    private static boolean videoInitialized = false;
+    private Bitmap curBitmap;
     private VisActor curActor;
     private VisInput curInput;
     private VisMorph curMorph;
     private VisBin curBin;
     private VisVideo curBVideo;
+    
+
         
     /* implementend by liblvclient.so */
-    private static native boolean init();
-    private static native boolean deinit();
+    private static native boolean fpsInit();
     private static native void renderVisual(Bitmap bitmap, int binPtr, int videoPtr);
 
 
@@ -67,17 +68,81 @@ class LibVisualBitmapView extends LibVisualView
         curInput = i;
         curMorph = m;
         curBin = b;
+            
+        /* initialize actor + input */
+        fpsInit();
     }
 
             
-    /** This is called when the view is attached to a window. */
+    /** This is called during layout when the size of this view has changed. 
+        If you were just added to the view hierarchy, you're called with the 
+        old values of 0. */
     @Override
-    protected void onAttachedToWindow()
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
-        super.onAttachedToWindow();
-        Log.i(TAG,"onAttachedToWindow()");
+        /* free previous Bitmap */
+        if(curBitmap != null)
+        {
+            curBitmap.recycle();
+            curBitmap = null;
+        }
 
+        /* create bitmap */
+        curBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+        /* validate bitmap */
+        if(curBitmap.getConfig() != Bitmap.Config.ARGB_8888)
+        {
+            Log.e(TAG, "Bitmap format is not RGBA_8888 !");
+            return;
+        }
+
+        Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" stride: "+curBitmap.getRowBytes()+" (prev: "+oldw+"x"+oldh+")");
             
+        if(!videoInitialized)
+        {
+            initVideo(w, h, curBitmap.getRowBytes());
+            videoInitialized = true;
+        }
+        else
+        {
+            curBVideo.setAttributes(w, h, 
+                                    curBitmap.getRowBytes(),
+                                    VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+                
+            /* create new VisVideo object for this bitmap */
+            //curBin.setVideo(curBVideo.VisVideo);
+            //curActor.videoNegotiate(VisVideo.VISUAL_VIDEO_DEPTH_32BIT, false, false);
+        }
+
+        /* realize bin */
+        curBin.realize();
+        curBin.sync(false);
+        curBin.depthChanged();
+            
+    }
+
+       
+    /** called whenever the contents of this view are drawn */
+    @Override 
+    protected void onDraw(Canvas canvas) 
+    {
+        if(curBitmap == null)
+        {
+            return;
+        }
+            
+        /* render */
+        renderVisual(curBitmap, curBin.VisBin, curBVideo.VisVideo);
+        canvas.drawBitmap(curBitmap, 0, 0, null);
+            
+        /* force a redraw, with a different time-based pattern. */
+        invalidate();
+    }
+
+    /** initialize VisVideo for actor + buffer bitmap */
+    void initVideo(int width, int height, int stride)
+    {
         /* get depth of current actor */
         int depth;
         int depthflag = curActor.getSupportedDepth();
@@ -95,44 +160,14 @@ class LibVisualBitmapView extends LibVisualView
 
         /* connect actor & input to bin */
         curBin.connect(curActor.VisActor, curInput.VisInput);
-            
-        /* initialize actor + input */
-        init();
-    }
 
-
-    /** This is called during layout when the size of this view has changed. 
-        If you were just added to the view hierarchy, you're called with the 
-        old values of 0. */
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
-        /* free previous Bitmap */
-        if(mBitmap != null)
-        {
-            mBitmap.recycle();
-            mBitmap = null;
-        }
-
-        /* create bitmap */
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-
-        /* validate bitmap */
-        if(mBitmap.getConfig() != Bitmap.Config.ARGB_8888)
-        {
-            Log.e(TAG, "Bitmap format is not RGBA_8888 !");
-            return;
-        }
-
-        Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" stride: "+mBitmap.getRowBytes()+" (prev: "+oldw+"x"+oldh+")");
-            
         /* create new VisVideo object for this bitmap */
         curBVideo = new VisVideo();
-        curBVideo.setAttributes(w, h, 
-                            mBitmap.getRowBytes(), 
-                            VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+        curBVideo.setAttributes(width, height, 
+                             stride, 
+                             VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
             
-        /* get width from actor */
+        /* get depth from actor */
         int actorDepth = curActor.getSupportedDepth();
         int videoDepth;
         if(actorDepth == VisVideo.VISUAL_VIDEO_DEPTH_GL)
@@ -146,49 +181,13 @@ class LibVisualBitmapView extends LibVisualView
 
         /* create new VisVideo for actor */
         VisVideo avideo = new VisVideo();
-        avideo.setAttributes(w, h,
-                             w*VisVideo.bppFromDepth(videoDepth),
+        avideo.setAttributes(width, height,
+                             width*VisVideo.bppFromDepth(videoDepth),
                              videoDepth);
         avideo.allocateBuffer();
 
         /* set video for bin */
         curBin.setVideo(avideo.VisVideo);
-
-        /* realize bin */
-        curBin.realize();
-        curBin.sync(false);
-        curBin.depthChanged();
-    }
-
-        
-    /** This is called when the view is detached from a window. 
-        At this point it no longer has a surface for drawing. */
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        Log.i(TAG,"onDetachedToWindow()");    
-            
-        /** deinitialize libvisual view */
-        deinit();
-        super.onDetachedFromWindow();
-    }  
-        
-       
-    /** called whenever the contents of this view are drawn */
-    @Override 
-    protected void onDraw(Canvas canvas) 
-    {
-        if(mBitmap == null)
-        {
-            return;
-        }
-            
-        /* render */
-        renderVisual(mBitmap, curBin.VisBin, curBVideo.VisVideo);
-        canvas.drawBitmap(mBitmap, 0, 0, null);
-            
-        /* force a redraw, with a different time-based pattern. */
-        invalidate();
     }
 
 }

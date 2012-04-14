@@ -168,6 +168,15 @@ JNIEXPORT jint JNICALL Java_org_libvisual_android_VisActor_actorGetSupportedDept
     return visual_actor_get_supported_depth(a);
 }
 
+/** VisActor.videoNegotiate() */
+JNIEXPORT int JNICALL Java_org_libvisual_android_VisActor_actorVideoNegotiate(JNIEnv * env, jobject  obj, jint actor, jint rundepth, jboolean noevent, jboolean forced)
+{
+    VisActor *a = (VisActor *) actor;
+            
+    return visual_actor_video_negotiate(a, rundepth, noevent, forced);
+}
+
+
 /******************************************************************************/
 
 /** VisInput.inputNew() */

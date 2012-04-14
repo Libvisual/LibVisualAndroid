@@ -35,7 +35,8 @@ public class VisActor
     private native int actorNew(String name);
     private native int actorUnref(int actorPtr);
     private native int actorGetSupportedDepth(int actorPtr);
-
+    private native int actorVideoNegotiate(int actorPtr, int rundepth, boolean noevent, boolean forced);
+        
         
     public VisActor(String name)
     {
@@ -46,6 +47,12 @@ public class VisActor
     public int getSupportedDepth()
     {
         return actorGetSupportedDepth(VisActor);
+    }
+
+        
+    public void videoNegotiate(int rundepth, boolean noevent, boolean forced)
+    {
+        actorVideoNegotiate(VisActor, rundepth, noevent, forced);
     }
 
         
