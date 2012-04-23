@@ -44,7 +44,7 @@
 
 namespace LV {
 
-  class System
+  class LV_API System
       : public Singleton<System>
   {
   public:
@@ -55,12 +55,7 @@ namespace LV {
        * @param argc Number of arguments
        * @param argv Argument strings
        */
-      static void init (int& argc, char**& argv)
-      {
-          if (!m_instance) {
-              m_instance = new System (argc, argv);
-          }
-      }
+      static void init (int& argc, char**& argv);
 
       ~System ();
 
@@ -100,22 +95,21 @@ namespace LV {
 #endif // __cplusplus
 
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
-int visual_init (int *argc, char ***argv);
+LV_API int visual_init (int *argc, char ***argv);
 
-int visual_is_initialized (void);
+LV_API int visual_is_initialized (void);
 
-int visual_quit (void);
+LV_API int visual_quit (void);
 
-const char *visual_get_version (void);
+LV_API const char *visual_get_version (void);
 
-int visual_get_api_version (void);
+LV_API int visual_get_api_version (void);
 
-VisParamContainer *visual_get_params (void);
+LV_API VisParamContainer *visual_get_params (void);
 
-
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

@@ -35,8 +35,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_BIN(obj)					(VISUAL_CHECK_CAST ((obj), VisBin))
 
 typedef enum {
@@ -87,49 +85,51 @@ struct _VisBin {
 	int		 depthforcedmain;	/* Contains forced depth value, for the main actor */
 };
 
+LV_BEGIN_DECLS
+
 /* prototypes */
-VisBin *visual_bin_new (void);
+LV_API VisBin *visual_bin_new (void);
 
-int visual_bin_realize (VisBin *bin);
+LV_API int visual_bin_realize (VisBin *bin);
 
-int visual_bin_set_actor (VisBin *bin, VisActor *actor);
-VisActor *visual_bin_get_actor (VisBin *bin);
+LV_API int visual_bin_set_actor (VisBin *bin, VisActor *actor);
+LV_API VisActor *visual_bin_get_actor (VisBin *bin);
 
-int visual_bin_set_input (VisBin *bin, VisInput *input);
-VisInput *visual_bin_get_input (VisBin *bin);
+LV_API int visual_bin_set_input (VisBin *bin, VisInput *input);
+LV_API VisInput *visual_bin_get_input (VisBin *bin);
 
-int visual_bin_set_morph (VisBin *bin, VisMorph *morph);
-int visual_bin_set_morph_by_name (VisBin *bin, const char *morphname);
-VisMorph *visual_bin_get_morph (VisBin *bin);
+LV_API int visual_bin_set_morph (VisBin *bin, VisMorph *morph);
+LV_API int visual_bin_set_morph_by_name (VisBin *bin, const char *morphname);
+LV_API VisMorph *visual_bin_get_morph (VisBin *bin);
 
-int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
-int visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname);
+LV_API int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
+LV_API int visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname);
 
-int visual_bin_sync (VisBin *bin, int noevent);
+LV_API int visual_bin_sync (VisBin *bin, int noevent);
 
-int visual_bin_set_video (VisBin *bin, VisVideo *video);
+LV_API int visual_bin_set_video (VisBin *bin, VisVideo *video);
 
-int visual_bin_set_supported_depth (VisBin *bin, int depthflag);
-int visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depthpreferred);
-int visual_bin_set_depth (VisBin *bin, int depth);
-int visual_bin_get_depth (VisBin *bin);
-int visual_bin_depth_changed (VisBin *bin);
+LV_API int visual_bin_set_supported_depth (VisBin *bin, int depthflag);
+LV_API int visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depthpreferred);
+LV_API int visual_bin_set_depth (VisBin *bin, int depth);
+LV_API int visual_bin_get_depth (VisBin *bin);
+LV_API int visual_bin_depth_changed (VisBin *bin);
 
-VisPalette *visual_bin_get_palette (VisBin *bin);
+LV_API VisPalette *visual_bin_get_palette (VisBin *bin);
 
-int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
-int visual_bin_switch_actor (VisBin *bin, VisActor *actor);
-int visual_bin_switch_finalize (VisBin *bin);
-int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
-int visual_bin_switch_set_steps (VisBin *bin, int steps);
-int visual_bin_switch_set_automatic (VisBin *bin, int automatic);
-int visual_bin_switch_set_rate (VisBin *bin, float rate);
-int visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
-int visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
+LV_API int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
+LV_API int visual_bin_switch_actor (VisBin *bin, VisActor *actor);
+LV_API int visual_bin_switch_finalize (VisBin *bin);
+LV_API int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
+LV_API int visual_bin_switch_set_steps (VisBin *bin, int steps);
+LV_API int visual_bin_switch_set_automatic (VisBin *bin, int automatic);
+LV_API int visual_bin_switch_set_rate (VisBin *bin, float rate);
+LV_API int visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
+LV_API int visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 
-int visual_bin_run (VisBin *bin);
+LV_API int visual_bin_run (VisBin *bin);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

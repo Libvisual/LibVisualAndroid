@@ -45,11 +45,6 @@ public class VisBin
     private native int binGetMorph(int binPtr);
     private native int binGetActor(int binPtr);
         
-    private VisVideo video;
-    private VisInput input;
-    private VisActor actor;
-    private VisMorph morph;
-
     public int VisBin;
 
         
@@ -76,7 +71,6 @@ public class VisBin
 
     public void setVideo(VisVideo v)
     {
-        video = v;
         binSetVideo(VisBin, v.VisVideo);
     }
 
@@ -97,8 +91,6 @@ public class VisBin
 
     public void connect(VisActor a, VisInput i)
     {
-        actor = a;
-        input = i;
         binConnect(VisBin, a.VisActor, i.VisInput);
     }
 
@@ -109,10 +101,7 @@ public class VisBin
 
     public VisMorph getMorph()
     {
-        if(morph == null)
-            morph = new VisMorph(binGetMorph(VisBin));
-            
-        return morph;
+        return new VisMorph(binGetMorph(VisBin));
     }
         
     public void switchActor(String name)
@@ -122,10 +111,7 @@ public class VisBin
 
     public VisActor getActor()
     {
-        if(actor == null)
-            actor = new VisActor(binGetActor(VisBin));
-        
-        return actor;
+        return new VisActor(binGetActor(VisBin));
     }
         
     @Override

@@ -23,6 +23,7 @@
 
 package org.libvisual.android;
 
+<<<<<<< HEAD:src/org/libvisual/android/VisInput.java
 
 
 
@@ -43,6 +44,27 @@ public class VisInput
         VisInput = inputNew(name);
         plugin = new VisPlugin(inputGetPlugin(VisInput));
     }
+=======
+LV_BEGIN_DECLS
+
+/**
+ * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
+ * system up. Only works as super user.
+ */
+LV_API int visual_os_scheduler_realtime_start (void);
+
+/**
+ * Returns to normal execution mode. Only works as super user.
+ */
+LV_API int visual_os_scheduler_realtime_stop (void);
+
+/**
+ * Yield the process. Don't rely on this.
+ */
+LV_API int visual_os_scheduler_yield (void);
+
+LV_END_DECLS
+>>>>>>> b5686a28430096bb7de2f61e802506dcca9c2f28:libvisual/libvisual/lv_os.h
 
     @Override
     public void finalize()

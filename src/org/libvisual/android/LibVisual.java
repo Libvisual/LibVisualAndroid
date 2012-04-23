@@ -49,12 +49,12 @@ public class LibVisual extends Activity
     public static VisActor curActor;
     public static VisInput curInput;
     public static VisMorph curMorph;
-
+    public static VisBin curBin;
+        
     private final static String TAG = "LibVisual";
         
     private LibVisualSettings s;
     private LibVisualView v;
-    private VisBin curBin;
     private String defaultDoMorph;
     private String defaultMorph;
     private String defaultActor;
@@ -112,7 +112,7 @@ public class LibVisual extends Activity
     
             
         /* create new LibVisualBitmapView */
-        v = new LibVisualBitmapView(this, curActor, curInput, curMorph, curBin);
+        v = new LibVisualBitmapView(this);
         
         /* set our LibVisualBitmapView as contentView */
         setContentView(v);

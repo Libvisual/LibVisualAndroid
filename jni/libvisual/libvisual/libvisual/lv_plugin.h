@@ -35,8 +35,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginInfo))
 #define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginData))
@@ -73,9 +71,9 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
 
 #define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
-#define VISUAL_PLUGIN_API_VERSION_VALIDATOR	VISUAL_C_LINKAGE const int __lv_plugin_libvisual_api_version = \
-						VISUAL_PLUGIN_API_VERSION;
-
+#define VISUAL_PLUGIN_API_VERSION_VALIDATOR \
+    LV_C_LINKAGE LV_PLUGIN_EXPORT const int __lv_plugin_libvisual_api_version = VISUAL_PLUGIN_API_VERSION; \
+    LV_C_LINKAGE LV_PLUGIN_EXPORT const VisPluginInfo* get_plugin_info (void);
 
 /**
  * Enumerate to define the plugin flags. Plugin flags can be used to
@@ -222,12 +220,14 @@ struct _VisPluginEnviron {
 	VisObject  *environment;  /**< VisObject that contains environ specific data. */
 };
 
+LV_BEGIN_DECLS
+
 /**
  * Creates a new VisPluginInfo structure.
  *
  * @return A newly allocated VisPluginInfo
  */
-VisPluginInfo *visual_plugin_info_new (void);
+LV_API VisPluginInfo *visual_plugin_info_new (void);
 
 /**
  * Copies data from one VisPluginInfo to another, this does not copy everything
@@ -238,7 +238,7 @@ VisPluginInfo *visual_plugin_info_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
+LV_API int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
 
 /**
  * Pumps the queued events into the plugin it's event handler if it has one.
@@ -248,7 +248,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
  */
-int visual_plugin_events_pump (VisPluginData *plugin);
+LV_API int visual_plugin_events_pump (VisPluginData *plugin);
 
 /**
  * Gives the event queue from a VisPluginData. This queue needs to be used
@@ -260,7 +260,7 @@ int visual_plugin_events_pump (VisPluginData *plugin);
  *
  * @return A pointer to the requested VisEventQueue or NULL on failure.
  */
-VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
+LV_API VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
 
 /**
  * Gives the VisPluginInfo related to a VisPluginData.
@@ -269,7 +269,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
  *
  * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
  */
-const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
+LV_API const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
 
 /**
  * Gives the VisParamContainer related to a VisPluginData.
@@ -278,7 +278,7 @@ const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
  *
  * @return The VisParamContainer within the VisPluginData, or NULL on failure.
  */
-VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
+LV_API VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
 /**
  * Gives the VisRandomContext related to a VisPluginData.
@@ -287,7 +287,7 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
  *
  * @return The VisRandomContext within the VisPluginDAta, or NULL on failure.
  */
-VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
+LV_API VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 
 /**
  * Retrieves the plugin specific part of a plugin.
@@ -296,14 +296,14 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
  *
  * @return Void * pointing to the plugin specific part which can be cast.
  */
-void *visual_plugin_get_specific (VisPluginData *plugin);
+LV_API void *visual_plugin_get_specific (VisPluginData *plugin);
 
 /**
  * Creates a new VisPluginData structure.
  *
  * @return A newly allocated VisPluginData.
  */
-VisPluginData *visual_plugin_new (void);
+LV_API VisPluginData *visual_plugin_new (void);
 
 /**
  * Private function to unload a plugin. After calling this function the
@@ -314,7 +314,7 @@ VisPluginData *visual_plugin_new (void);
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
  *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
  */
-int visual_plugin_unload (VisPluginData *plugin);
+LV_API int visual_plugin_unload (VisPluginData *plugin);
 
 /**
  * Private function to load a plugin.
@@ -324,7 +324,7 @@ int visual_plugin_unload (VisPluginData *plugin);
  *
  * @return A newly created and loaded VisPluginData.
  */
-VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
+LV_API VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
 
 /**
  * Private function to realize the plugin. This initializes the plugin.
@@ -333,7 +333,7 @@ VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
  */
-int visual_plugin_realize (VisPluginData *plugin);
+LV_API int visual_plugin_realize (VisPluginData *plugin);
 
 /**
  * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
@@ -341,7 +341,7 @@ int visual_plugin_realize (VisPluginData *plugin);
  *
  * @return The VISUAL_PLUGIN_API_VERSION define value.
  */
-int visual_plugin_get_api_version (void);
+LV_API int visual_plugin_get_api_version (void);
 
 /**
  * Creates a VisPluginEnviron structure.
@@ -351,7 +351,7 @@ int visual_plugin_get_api_version (void);
  *
  * @return A newly allocated VisPluginEnviron, or NULL on failure.
  */
-VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj);
+LV_API VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj);
 
 /**
  * Adds a VisPluginEnviron to the plugin its environment list.
@@ -362,7 +362,7 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
  *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
  */
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
+LV_API int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
 
 /**
  * Removes a VisPluginEnviron from the plugin it's environment list.
@@ -372,7 +372,7 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
+LV_API int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 
 /**
  * Retrieves a VisPluginEnviron from the plugin it's environment list.
@@ -384,7 +384,7 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
  */
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #ifdef __cplusplus
 
@@ -401,7 +401,7 @@ namespace LV {
       ModulePtr            module;
   };
 
-  typedef std::vector<PluginRef*> PluginList;
+  typedef std::vector<PluginRef> PluginList;
 
   /**
    * Retrieves the name of the next plugin in the given list.
@@ -411,7 +411,7 @@ namespace LV {
    *
    * @return name of the next plugin, or NULL if none can be found
    */
-  char const* plugin_get_next_by_name (PluginList const& list, char const* name);
+  LV_API char const* plugin_get_next_by_name (PluginList const& list, char const* name);
 
   /**
    * Retrieves the name of the previous plugin in the given list
@@ -421,7 +421,7 @@ namespace LV {
    *
    * @return name of the previous plugin, or NULL if none can be found
    */
-  char const* plugin_get_prev_by_name (PluginList const& list, char const* name);
+  LV_API char const* plugin_get_prev_by_name (PluginList const& list, char const* name);
 
 } // LV namespace
 

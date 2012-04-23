@@ -32,10 +32,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
-/* This is read-only */
-extern char *__lv_progname;
+LV_BEGIN_DECLS
 
 /**
  * Used to determine the severity of the log message using the visual_log
@@ -77,14 +74,14 @@ typedef void (*VisLogHandlerFunc) (VisLogSeverity severity, const char *message,
  *
  * @param level The verbosity level
  */
-void visual_log_set_verbosity (VisLogSeverity level);
+LV_API void visual_log_set_verbosity (VisLogSeverity level);
 
 /**
  * Get the current library it's verbosity level.
  *
  * @return The verboseness level as a VisLogVerboseness enumerate value.
  */
-VisLogSeverity visual_log_get_verbosity (void);
+LV_API VisLogSeverity visual_log_get_verbosity (void);
 
 /**
  * Set the callback function that handles info messages.
@@ -92,7 +89,7 @@ VisLogSeverity visual_log_get_verbosity (void);
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
+LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
 
 /**
  * Used for log messages, this is brought under a define so
@@ -130,14 +127,14 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler,
 #endif /* LV_HAVE_ISO_C_VARARGS */
 
 #if defined(_LV_LOG_HAVE_SOURCE)
-void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
-	const char *fmt, ...) VIS_CHECK_PRINTF_FORMAT(5, 6);
+LV_API void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
+	const char *fmt, ...) LV_CHECK_PRINTF_FORMAT(5, 6);
 #else
-void _lv_log (VisLogSeverity severity, const char *fmt, ...)
-	VIS_CHECK_PRINTF_FORMAT(2, 3);
+LV_API void _lv_log (VisLogSeverity severity, const char *fmt, ...)
+	LV_CHECK_PRINTF_FORMAT(2, 3);
 #endif
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

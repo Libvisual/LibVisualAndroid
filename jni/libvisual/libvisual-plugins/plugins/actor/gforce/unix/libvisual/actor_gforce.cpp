@@ -60,15 +60,14 @@ typedef struct {
 	GForce		*gGF;
 } GForcePrivate;
 
-VISUAL_C_LINKAGE int lv_gforce_init (VisPluginData *plugin);
-VISUAL_C_LINKAGE int lv_gforce_cleanup (VisPluginData *plugin);
-VISUAL_C_LINKAGE int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
-VISUAL_C_LINKAGE int lv_gforce_resize (VisPluginData *plugin, int width, int height);
-VISUAL_C_LINKAGE int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
-VISUAL_C_LINKAGE VisPalette *lv_gforce_palette (VisPluginData *plugin);
-VISUAL_C_LINKAGE int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_gforce_init (VisPluginData *plugin);
+static int lv_gforce_cleanup (VisPluginData *plugin);
+static int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_gforce_resize (VisPluginData *plugin, int width, int height);
+static int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_gforce_palette (VisPluginData *plugin);
+static int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_C_LINKAGE
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor;
@@ -98,7 +97,6 @@ const VisPluginInfo *get_plugin_info (void)
 	return &info;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_init (VisPluginData *plugin)
 {
 	GForcePrivate *priv;
@@ -132,7 +130,6 @@ int lv_gforce_init (VisPluginData *plugin)
 	return 0;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_cleanup (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
@@ -149,7 +146,6 @@ int lv_gforce_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
@@ -175,7 +171,6 @@ int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_resize (VisPluginData *plugin, int width, int height)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
@@ -187,7 +182,6 @@ int lv_gforce_resize (VisPluginData *plugin, int width, int height)
 	return 0;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
@@ -218,7 +212,6 @@ int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VISUAL_C_LINKAGE
 VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
@@ -236,7 +229,6 @@ VisPalette *lv_gforce_palette (VisPluginData *plugin)
 	return priv->pal;
 }
 
-VISUAL_C_LINKAGE
 int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));

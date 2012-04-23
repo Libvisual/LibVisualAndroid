@@ -38,11 +38,7 @@ class LibVisualBitmapView extends LibVisualView
         
     private boolean videoInitialized = false;
     private Bitmap curBitmap;
-    private VisActor curActor;
-    private VisInput curInput;
-    private VisMorph curMorph;
-    private VisBin curBin;
-    private VisVideo curBVideo;
+    private VisVideo curBVideo, curAVideo;
     
 
         
@@ -54,20 +50,9 @@ class LibVisualBitmapView extends LibVisualView
 
         
     /** constructor */
-    public LibVisualBitmapView(Context context, 
-                               VisActor a,
-                               VisInput i,
-                               VisMorph m,
-                               VisBin b) 
+    public LibVisualBitmapView(Context context) 
     {
         super(context);
-
-
-        /* save libvisual objects */
-        curActor = a;
-        curInput = i;
-        curMorph = m;
-        curBin = b;
             
         /* initialize actor + input */
         fpsInit();
@@ -98,27 +83,47 @@ class LibVisualBitmapView extends LibVisualView
         }
 
         Log.i(TAG, "onSizeChanged(): "+w+"x"+h+" stride: "+curBitmap.getRowBytes()+" (prev: "+oldw+"x"+oldh+")");
+
             
-        if(!videoInitialized)
-        {
-            initVideo(w, h, curBitmap.getRowBytes());
-            videoInitialized = true;
-        }
-        else
-        {
-            curBVideo.setAttributes(w, h, 
-                                    curBitmap.getRowBytes(),
-                                    VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+        /* create new VisVideo object for this bitmap */
+        curBVideo = new VisVideo();
+        curBVideo.setAttributes(w, h, curBitmap.getRowBytes(), 
+                             VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+
+        initVideo(w,h);
+        //~ if(!videoInitialized)
+        //~ {
+            //~ initVideo(w, h);
+            //~ videoInitialized = true;
+        //~ }
+        //~ else
+        //~ {     
+            //~ /* get depth of current actor */
+            //~ int depth;
+            //~ int depthflag = LibVisual.curActor.getSupportedDepth();
+            //~ if(depthflag == VisVideo.VISUAL_VIDEO_DEPTH_GL)
+            //~ {
+                //~ depth = VisVideo.depthGetHighest(depthflag);
+            //~ }
+            //~ else
+            //~ {
+                //~ depth = VisVideo.depthGetHighestNoGl(depthflag);
+            //~ }
                 
-            /* create new VisVideo object for this bitmap */
-            curBin.setVideo(curBVideo);
-            curActor.videoNegotiate(VisVideo.VISUAL_VIDEO_DEPTH_32BIT, false, false);
-        }
+            //~ curAVideo.setAttributes(w, h,
+                                 //~ w*VisVideo.bppFromDepth(depth), depth);
+            //~ curBVideo.setAttributes(w, h, 
+                                    //~ curBitmap.getRowBytes(),
+                                    //~ VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
+                
+            //~ /* create new VisVideo object for this bitmap */
+            //~ LibVisual.curActor.videoNegotiate(VisVideo.VISUAL_VIDEO_DEPTH_32BIT, false, false);
+        //~ }
 
         /* realize bin */
-        curBin.realize();
-        curBin.sync(false);
-        curBin.depthChanged();
+        LibVisual.curBin.realize();
+        LibVisual.curBin.sync(false);
+        LibVisual.curBin.depthChanged();
             
     }
 
@@ -133,7 +138,7 @@ class LibVisualBitmapView extends LibVisualView
         }
             
         /* render */
-        renderVisual(curBitmap, curBin.VisBin, curBVideo.VisVideo);
+        renderVisual(curBitmap, LibVisual.curBin.VisBin, curBVideo.VisVideo);
         canvas.drawBitmap(curBitmap, 0, 0, null);
             
         /* force a redraw, with a different time-based pattern. */
@@ -141,11 +146,13 @@ class LibVisualBitmapView extends LibVisualView
     }
 
     /** initialize VisVideo for actor + buffer bitmap */
-    void initVideo(int width, int height, int stride)
+    void initVideo(int width, int height)
     {
+
+            
         /* get depth of current actor */
         int depth;
-        int depthflag = curActor.getSupportedDepth();
+        int depthflag = LibVisual.curActor.getSupportedDepth();
         if(depthflag == VisVideo.VISUAL_VIDEO_DEPTH_GL)
         {
             depth = VisVideo.depthGetHighest(depthflag);
@@ -155,39 +162,23 @@ class LibVisualBitmapView extends LibVisualView
             depth = VisVideo.depthGetHighestNoGl(depthflag);
         }
 
-        /* set depth of bin */
-        curBin.setDepth(depth);
-
-        /* connect actor & input to bin */
-        curBin.connect(curActor, curInput);
-
-        /* create new VisVideo object for this bitmap */
-        curBVideo = new VisVideo();
-        curBVideo.setAttributes(width, height, 
-                             stride, 
-                             VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
-            
-        /* get depth from actor */
-        int actorDepth = curActor.getSupportedDepth();
-        int videoDepth;
-        if(actorDepth == VisVideo.VISUAL_VIDEO_DEPTH_GL)
-        {
-            videoDepth = VisVideo.depthGetHighest(actorDepth);
-        }
-        else
-        {
-            videoDepth = VisVideo.depthGetHighestNoGl(actorDepth);
-        }
-
         /* create new VisVideo for actor */
-        VisVideo avideo = new VisVideo();
-        avideo.setAttributes(width, height,
-                             width*VisVideo.bppFromDepth(videoDepth),
-                             videoDepth);
-        avideo.allocateBuffer();
+        VisVideo curAVideo = new VisVideo();
+            
+        curAVideo.setAttributes(width, height,
+                             width*VisVideo.bppFromDepth(depth),
+                             depth);
+        curAVideo.allocateBuffer();
+
+        /* set depth of bin */
+        LibVisual.curBin.setDepth(depth);
 
         /* set video for bin */
-        curBin.setVideo(avideo);
+        LibVisual.curBin.setVideo(curAVideo);
+
+        /* connect actor & input to bin */
+        LibVisual.curBin.connect(LibVisual.curActor, LibVisual.curInput);
+
     }
 
 }
