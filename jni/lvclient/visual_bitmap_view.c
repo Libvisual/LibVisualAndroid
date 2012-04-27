@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_org_libvisual_android_LibVisualBitmapView_renderVisu
     visual_video_set_buffer(bvideo, pixels);
     
     /* depth transform */
-    visual_video_depth_transform(bvideo, b->actvideo);
+    visual_video_convert_depth(bvideo, b->actvideo);
 
         
     /* unlock bitmap */
