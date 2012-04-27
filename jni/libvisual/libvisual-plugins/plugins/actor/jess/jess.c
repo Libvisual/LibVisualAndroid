@@ -1,11 +1,9 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
  * Authors: Remi Arquier <arquier@crans.org>
- *	    Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: jess.c,v 1.25 2006/01/27 20:19:14 synap Exp $
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,14 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <string.h>
-#include <gettext.h>
+#include "config.h"
+#include "gettext.h"
 
 #include "def.h"
 #include "struct.h"
@@ -42,8 +34,6 @@
 #include "jess.h"
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 static int act_jess_init (VisPluginData *plugin);
 static int act_jess_cleanup (VisPluginData *plugin);
@@ -94,7 +84,7 @@ static int act_jess_init (VisPluginData *plugin)
 	visual_return_val_if_fail (plugin != NULL, -1);
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (JessPrivate, 1);
@@ -141,8 +131,8 @@ static int act_jess_init (VisPluginData *plugin)
 
 	priv->jess_pal = visual_palette_new (256);
 
-	visual_buffer_init (&priv->pcm_data1, priv->pcm_data[0], 512 * sizeof (float), NULL);
-	visual_buffer_init (&priv->pcm_data2, priv->pcm_data[1], 512 * sizeof (float), NULL);
+	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float));
+	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float));
 
 	start_ticks (priv);
 
@@ -186,6 +176,9 @@ static int act_jess_cleanup (VisPluginData *plugin)
 
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
+
+	visual_buffer_free (priv->pcm_data1);
+	visual_buffer_free (priv->pcm_data2);
 
 	visual_palette_free (priv->jess_pal);
 
@@ -286,7 +279,7 @@ static VisPalette *act_jess_palette (VisPluginData *plugin)
 static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JessPrivate *priv;
-	VisBuffer fbuf[2];
+	VisBuffer* fbuf[2];
 	float freq[2][256];
 	short freqdata[2][256];
 	int i;
@@ -303,14 +296,17 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 		return -1;
 	}
 
-	visual_audio_get_sample (audio, &priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
-	visual_audio_get_sample (audio, &priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_audio_get_sample (audio, priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_audio_get_sample (audio, priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&fbuf[0], freq[0], sizeof (freq[0]));
-	visual_buffer_set_data_pair (&fbuf[1], freq[1], sizeof (freq[1]));
+	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]));
+	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]));
 
-	visual_audio_get_spectrum_for_sample (&fbuf[0], &priv->pcm_data1, FALSE);
-	visual_audio_get_spectrum_for_sample (&fbuf[1], &priv->pcm_data2, FALSE);
+	visual_audio_get_spectrum_for_sample (fbuf[0], priv->pcm_data1, FALSE);
+	visual_audio_get_spectrum_for_sample (fbuf[1], priv->pcm_data2, FALSE);
+
+	visual_buffer_free (fbuf[0]);
+	visual_buffer_free (fbuf[1]);
 
 	for (i = 0;i < 256; i++) {
 		freqdata[0][i] = freq[0][i] * 32768;

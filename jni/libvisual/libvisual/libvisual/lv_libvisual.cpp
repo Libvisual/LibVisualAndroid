@@ -21,7 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
+#include "version.h"
+
 #include "lv_libvisual.h"
 #include "lv_common.h"
 
@@ -31,7 +33,6 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
-#include "lv_cpu.h"
 #include "lv_util.h"
 
 #include "gettext.h"
@@ -40,6 +41,11 @@ extern "C" {
 
   // Set a progname from argv[0] when we're capable of doing so.
   char *__lv_progname = 0;
+
+  void visual_alpha_blend_initialize (void);
+  void visual_cpu_initialize (void);
+  void visual_mem_initialize (void);
+  void visual_thread_initialize (void);
 }
 
 namespace LV
@@ -92,16 +98,25 @@ namespace LV
   {
   public:
 
-	  VisParamContainer *params;
+      VisParamContainer *params;
 
       Impl ()
           : params (0)
       {}
   };
 
+  template <>
+  LV_API System* Singleton<System>::m_instance = 0;
+
+  void System::init (int& argc, char**& argv)
+  {
+      if (!m_instance)
+          m_instance = new System (argc, argv);
+  }
+
   std::string System::get_version () const
   {
-      return VISUAL_VERSION;
+      return VISUAL_VERSION " (" LV_REVISION ")";
   }
 
   int System::get_api_version () const
@@ -117,8 +132,10 @@ namespace LV
   System::System (int& argc, char**& argv)
       : m_impl(new Impl)
   {
+      visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", get_version ().c_str ());
+
 #if ENABLE_NLS
-      bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
       bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 #endif
 
@@ -140,7 +157,7 @@ namespace LV
       visual_thread_initialize ();
 
       /* Initialize FFT system */
-	  Fourier::init ();
+      Fourier::init ();
 
       /* Initialize the plugin registry */
       PluginRegistry::init ();

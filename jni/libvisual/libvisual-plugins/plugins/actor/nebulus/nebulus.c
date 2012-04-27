@@ -1,11 +1,9 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Pascal Brochart <pbrochart@tuxfamily.org> and many others
- *
- * $Id: nebulus.c,v 1.15 2006-02-25 18:45:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,25 +20,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <math.h>
-#include <gettext.h>
-
-#include "nebulus.h"
 #include "config.h"
+#include "gettext.h"
+#include "nebulus.h"
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 typedef struct {
-	VisBuffer pcmbuf;
+	VisBuffer *pcmbuf;
 } NebulusPrivate;
 
 
@@ -122,7 +109,7 @@ static int lv_nebulus_init (VisPluginData *plugin)
 	NebulusPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -139,7 +126,7 @@ static int lv_nebulus_init (VisPluginData *plugin)
 	if (tunnel_first)
 		precalculate_tunnel();
 
-	visual_buffer_init_allocate (&priv->pcmbuf, 1024 * sizeof (float), visual_buffer_destroyer_free);
+	priv->pcmbuf = visual_buffer_new_allocate (1024 * sizeof (float));
 
 	visual_video_init (&child_image);
 	visual_video_init (&energy_image);
@@ -182,7 +169,7 @@ static int lv_nebulus_cleanup (VisPluginData *plugin)
 	visual_object_unref (VISUAL_OBJECT (&twist_image));
 	visual_object_unref (VISUAL_OBJECT (&background_image));
 
-	visual_object_unref (VISUAL_OBJECT (&priv->pcmbuf));
+	visual_buffer_free (priv->pcmbuf);
 
 	visual_mem_free (priv);
 
@@ -344,18 +331,18 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 	GLfloat val, energy = 0;
 	int xscale[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
 	float *fbuf;
-	VisBuffer buf;
+	VisBuffer *buf;
 	float freq[256];
 
-	visual_audio_get_sample_mixed_simple (audio, &priv->pcmbuf, 2,
+	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&buf, freq, sizeof (freq));
+	buf = visual_buffer_new_wrap_data (freq, sizeof (freq));
+	visual_audio_get_spectrum_for_sample (buf, priv->pcmbuf, FALSE);
+	visual_buffer_free (buf);
 
-	visual_audio_get_spectrum_for_sample (&buf, &priv->pcmbuf, FALSE);
-
-	fbuf = visual_buffer_get_data (&priv->pcmbuf);
+	fbuf = visual_buffer_get_data (priv->pcmbuf);
 
 	for (i = 0; i < 1024; i++) {
 		pcm_data[i] = fbuf[i] * 32767; // FIXME pull the 32767 as a constant from somewhere, also in goom2.c

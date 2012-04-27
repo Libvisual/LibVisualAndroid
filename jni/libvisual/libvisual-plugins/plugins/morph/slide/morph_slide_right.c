@@ -26,8 +26,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int lv_morph_slide_init_right (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
@@ -39,8 +37,8 @@ const VisPluginInfo *get_plugin_info (void)
         .name = "Slide right morph",
         .author = "Dennis Smit <ds@nerds-incorporated.org>",
         .version = "0.1",
-        .about = "A slide in/out morph plugin",
-        .help = "This morph plugin morphs between two video sources by sliding one in and the other out",
+        .about = N_("A slide in/out morph plugin"),
+        .help = N_("This morph plugin morphs between two video sources by sliding one in and the other out"),
         .license = VISUAL_PLUGIN_LICENSE_LGPL,
 
         .init = lv_morph_slide_init_right,

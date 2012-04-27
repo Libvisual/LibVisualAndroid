@@ -23,9 +23,7 @@
 #include <libvisual/libvisual.h>
 #include <windows.h>
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR;
-
-VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define PCM_BUFFER_SIZE 4096
 
@@ -50,7 +48,7 @@ namespace {
 
 } // anonymous namespace
 
-VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count)
+VisPluginInfo const* get_plugin_info ()
 {
     static VisInputPlugin input = {
         { 0 },
@@ -177,6 +175,10 @@ namespace {
   int inp_wavein_init (VisPluginData* plugin)
   {
       visual_return_val_if_fail (plugin != NULL, -1);
+
+#if ENABLE_NLS
+      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
       if (!check_available_devices ()) {
           visual_log (VISUAL_LOG_ERROR, "No input device can be found!");

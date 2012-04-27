@@ -1,6 +1,4 @@
-/* $Id$
- * $URL$
- *
+/*
  * Copyright (C) 2009 Scott Sibley <scott@starlon.net>
  *
  * This file is part of Blurks-libvisual.
@@ -19,16 +17,14 @@
  * along with Blurks-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libvisual/libvisual.h>
+#include "config.h"
+#include "gettext.h"
 #include "actor_blursk.h"
 #include "blursk.h"
-
-#include <string.h>
-#include <stddef.h>
-#include <stdlib.h>
+#include <libvisual/libvisual.h>
 #include <limits.h>
 
-const VisPluginInfo *get_plugin_info (void);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static int act_blursk_init (VisPluginData *plugin);
 static int act_blursk_cleanup (VisPluginData *plugin);
@@ -37,9 +33,6 @@ static int act_blursk_resize (VisPluginData *plugin, int width, int height);
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_blursk_palette (VisPluginData *plugin);
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -54,11 +47,11 @@ const VisPluginInfo *get_plugin_info (void)
                 .type = VISUAL_PLUGIN_TYPE_ACTOR,
 
                 .plugname = "blursk",
-                .name = "blursk plugin",
+                .name = "Blursk plugin",
                 .author = "Read AUTHORS",
                 .version = "0.0.1",
-                .about = "blursk visual plugin",
-                .help = "This is the libvisual port of blursk xmms visualization",
+                .about = N_("blursk visual plugin"),
+                .help = N_("This is the libvisual port of blursk xmms visualization"),
                 .license = VISUAL_PLUGIN_LICENSE_GPL,
 
                 .init = act_blursk_init,
@@ -103,6 +96,10 @@ static int act_blursk_init (VisPluginData *plugin) {
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", TRUE),
         VISUAL_PARAM_LIST_END
     };
+
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
     /* init plugin */
     priv = visual_mem_new0 (BlurskPrivate, 1);
@@ -195,7 +192,7 @@ static int act_blursk_init (VisPluginData *plugin) {
     visual_param_entry_min_set_integer(param, 0);
     visual_param_entry_max_set_integer(param, 1);
 
-    priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+    priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
 
     config_default(&config);
 
@@ -211,7 +208,7 @@ static int act_blursk_cleanup (VisPluginData *plugin) {
 
     visual_palette_free (priv->pal);
 
-    visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+    visual_buffer_free (priv->pcmbuf);
 
     visual_mem_free (priv);
 

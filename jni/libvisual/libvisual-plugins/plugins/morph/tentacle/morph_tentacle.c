@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,14 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <math.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -71,8 +67,8 @@ const VisPluginInfo *get_plugin_info (void)
 		.name = "tentacle morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "An sine wave morph plugin",
-		.help = "This morph plugin morphs between two video sources using some sort of wave that grows in size",
+		.about = N_("An sine wave morph plugin"),
+		.help = N_("This morph plugin morphs between two video sources using some sort of wave that grows in size"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_tentacle_init,
@@ -87,6 +83,10 @@ const VisPluginInfo *get_plugin_info (void)
 static int lv_morph_tentacle_init (VisPluginData *plugin)
 {
 	TentaclePrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
 	priv = visual_mem_new0 (TentaclePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

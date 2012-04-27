@@ -33,8 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_TRANSFORM(obj)               (VISUAL_CHECK_CAST ((obj), VisTransform))
 #define VISUAL_TRANSFORM_PLUGIN(obj)        (VISUAL_CHECK_CAST ((obj), VisTransformPlugin))
 
@@ -105,6 +103,8 @@ struct _VisTransformPlugin {
     VisVideoAttributeOptions     vidoptions;
 };
 
+LV_BEGIN_DECLS
+
 /**
  * Gives the encapsulated VisPluginData from a VisTransform.
  *
@@ -112,7 +112,7 @@ struct _VisTransformPlugin {
  *
  * @return VisPluginData that is encapsulated in the VisTransform, possibly NULL.
  */
-VisPluginData *visual_transform_get_plugin (VisTransform *transform);
+LV_API VisPluginData *visual_transform_get_plugin (VisTransform *transform);
 
 /**
  * Gives the next transform plugin based on the name of a plugin.
@@ -123,7 +123,7 @@ VisPluginData *visual_transform_get_plugin (VisTransform *transform);
  *
  * @return The name of the next plugin within the list.
  */
-const char *visual_transform_get_next_by_name (const char *name);
+LV_API const char *visual_transform_get_next_by_name (const char *name);
 
 /**
  * Gives the previous transform plugin based on the name of a plugin.
@@ -134,7 +134,7 @@ const char *visual_transform_get_next_by_name (const char *name);
  *
  * @return The name of the previous plugin within the list.
  */
-const char *visual_transform_get_prev_by_name (const char *name);
+LV_API const char *visual_transform_get_prev_by_name (const char *name);
 
 
 /**
@@ -147,7 +147,7 @@ const char *visual_transform_get_prev_by_name (const char *name);
  *
  * @return A newly allocated VisTransform, optionally containing a loaded plugin. Or NULL on failure.
  */
-VisTransform *visual_transform_new (const char *transformname);
+LV_API VisTransform *visual_transform_new (const char *transformname);
 
 
 /**
@@ -163,7 +163,7 @@ VisTransform *visual_transform_new (const char *transformname);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
-int visual_transform_init (VisTransform *transform, const char *transformname);
+LV_API int visual_transform_init (VisTransform *transform, const char *transformname);
 
 /**
  * Realize the VisTransform. This also calls the plugin init function.
@@ -174,7 +174,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname);
  *  error values returned by visual_plugin_realize () on failure.
  *
  */
-int visual_transform_realize (VisTransform *transform);
+LV_API int visual_transform_realize (VisTransform *transform);
 
 /**
  * This function negotiates the VisTransform with it's target video
@@ -187,7 +187,7 @@ int visual_transform_realize (VisTransform *transform);
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL
  *  or -VISUAL_ERROR_TRANSFORM_NEGOTIATE on failure.
  */
-int visual_transform_video_negotiate (VisTransform *transform);
+LV_API int visual_transform_video_negotiate (VisTransform *transform);
 
 /**
  * Gives the by the plugin natively supported depths
@@ -198,9 +198,9 @@ int visual_transform_video_negotiate (VisTransform *transform);
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  *  -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
-int visual_transform_get_supported_depth (VisTransform *transform);
+LV_API int visual_transform_get_supported_depth (VisTransform *transform);
 
-VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
+LV_API VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
 
 /**
  * Used to connect the target display it's VisVideo structure to the
@@ -223,7 +223,7 @@ VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTrans
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL on failure.
  */
-int visual_transform_set_video (VisTransform *transform, VisVideo *video);
+LV_API int visual_transform_set_video (VisTransform *transform, VisVideo *video);
 
 /**
  * Used to override the palette that is extracted from the VisVideo
@@ -237,7 +237,7 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL on failure.
  */
-int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);
+LV_API int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);
 
 /**
  * This is called to run a VisTransform.
@@ -251,7 +251,7 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);
  * return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL or error values returned by
  *  either visual_transform_run_video or visual_transform_run_palette on failure.
  */
-int visual_transform_run (VisTransform *transform, VisAudio *audio);
+LV_API int visual_transform_run (VisTransform *transform, VisAudio *audio);
 
 
 /**
@@ -265,7 +265,7 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio);
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_VIDEO_NULL
  *  or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
-int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
+LV_API int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
 
 /**
  * This is called to run the palette part of a VisTransform.
@@ -278,12 +278,12 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
  * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_PALETTE_NULL
  *  or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
-int visual_transform_run_palette (VisTransform *transform, VisAudio *audio);
+LV_API int visual_transform_run_palette (VisTransform *transform, VisAudio *audio);
 
 /**
  * @}
  */
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_TRANSFORM_H */

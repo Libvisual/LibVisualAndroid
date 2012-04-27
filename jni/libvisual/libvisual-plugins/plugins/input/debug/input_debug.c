@@ -41,8 +41,6 @@ typedef struct {
 	float angle_step;
 } DebugPriv;
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events);
@@ -87,6 +85,10 @@ static int inp_debug_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_FLOAT ("ampltitude", DEFAULT_AMPLITUDE),
 		VISUAL_PARAM_LIST_END
 	};
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
 	priv = visual_mem_new0 (DebugPriv, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -160,11 +162,12 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 		}
 	}
 
-	VisBuffer buffer;
-	visual_buffer_init (&buffer, data, VISUAL_TABLESIZE (data), NULL);
+	VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data));
 
-	visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+	visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 			VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+
+	visual_buffer_free (buffer);
 
 	return 0;
 }

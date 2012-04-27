@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,21 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "main.h"
 #include "renderer.h"
 #include "display.h"
+#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 static int act_infinite_init (VisPluginData *plugin);
 static int act_infinite_cleanup (VisPluginData *plugin);
@@ -80,7 +73,7 @@ static int act_infinite_init (VisPluginData *plugin)
 	InfinitePrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -193,7 +186,7 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer buffer;
+	VisBuffer *buffer;
 	InfinitePrivate *priv;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -202,14 +195,18 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	buffer = visual_buffer_new ();
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	_inf_renderer (priv);
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), video->pitch);
+
+	visual_buffer_free (buffer);
 
 	return 0;
 }

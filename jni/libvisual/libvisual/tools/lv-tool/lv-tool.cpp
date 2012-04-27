@@ -25,6 +25,7 @@
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
 #include <libvisual/libvisual.h>
+#include <string>
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
@@ -55,6 +56,7 @@ namespace {
   int width  = DEFAULT_WIDTH;
   int height = DEFAULT_HEIGHT;
   int framerate = DEFAULT_FPS;
+  int framecount = 0;
   int have_seed = 0;
   uint32_t seed = 0;
 
@@ -67,11 +69,8 @@ static void _print_plugin_info(VisPluginInfo const& info)
 {
     std::printf(
         "Plugin: \"%s\" (%s)\n"
-        "\tauthor:\t%s\n"
-        "\tversion:\t%s\n"
-        "\tlicense:\t%s\n"
-        "%s\n"
-        "%s\n\n",
+        "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
+        "\t%s - %s\n\n",
         info.name, info.plugname,
         info.author, info.version, info.license,
         info.about, info.help);
@@ -89,7 +88,7 @@ static void _print_plugin_help()
     {
         for (unsigned int i = 0; i < list.size (); i++)
         {
-            _print_plugin_info(*list[i]->info);
+            _print_plugin_info(*list[i].info);
         }
     }
     else
@@ -101,20 +100,22 @@ static void _print_plugin_help()
 }
 
 /** print commandline help */
-static void _print_help(char *name)
+static void _print_help(const char *name)
 {
     std::printf("libvisual commandline tool - %s\n"
                 "Usage: %s [options]\n\n"
                 "Valid options:\n"
                 "\t--help\t\t\t-h\t\tThis help text\n"
                 "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
+                "\t--verbose\t\t-v\t\tOutput debugging info\n"
                 "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                 "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                 "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                 "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
                 "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                 "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
-                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
+                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
+                "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n",
                 "http://github.com/StarVisuals/libvisual",
                 name,
                 width, height,
@@ -126,7 +127,12 @@ static void _print_help(char *name)
 }
 
 
-/** parse commandline arguments */
+/** 
+ * parse commandline arguments 
+ *
+ * @param argc from main()
+ * @param argv from main()
+ * @result 0 upon success, <0 upon failure, >0 if app should exit without error */
 static int _parse_args(int argc, char *argv[])
 {
     int index, argument;
@@ -135,6 +141,7 @@ static int _parse_args(int argc, char *argv[])
     {
         {"help",        no_argument,       0, 'h'},
         {"plugin-help", no_argument,       0, 'p'},
+        {"verbose",     no_argument,       0, 'v'},
         {"dimensions",  required_argument, 0, 'D'},
         {"driver",      required_argument, 0, 'd'},
         {"input",       required_argument, 0, 'i'},
@@ -142,10 +149,11 @@ static int _parse_args(int argc, char *argv[])
         {"morph",       required_argument, 0, 'm'},
         {"fps",         required_argument, 0, 'f'},
         {"seed",        required_argument, 0, 's'},
+        {"framecount",  required_argument, 0, 'F'},
         {0,             0,                 0,  0 }
     };
 
-    while((argument = getopt_long(argc, argv, "hpD:d:i:a:m:f:s:", loptions, &index)) >= 0)
+    while((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:", loptions, &index)) >= 0)
     {
 
         switch(argument)
@@ -154,23 +162,30 @@ static int _parse_args(int argc, char *argv[])
             case 'h':
             {
                 _print_help(argv[0]);
-                return EXIT_FAILURE;
+                return 1;
             }
 
             /* --plugin-help */
             case 'p':
             {
                 _print_plugin_help();
-                return EXIT_FAILURE;
+                return 1;
             }
 
+            /* --version */
+            case 'v':
+            {
+                visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+                break;
+            }
+            
             /* --dimensions */
             case 'D':
             {
                 if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
                 {
                     std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
-                    return EXIT_FAILURE;
+                    return -1;
                 }
                 break;
             }
@@ -181,7 +196,7 @@ static int _parse_args(int argc, char *argv[])
                 if (!DisplayDriverFactory::instance().has_driver (optarg))
                 {
                     std::cerr << "Unsupported display driver: " << optarg << "\n";
-                    return EXIT_FAILURE;
+                    return -1;
                 }
 
                 driver_name = optarg;
@@ -228,25 +243,31 @@ static int _parse_args(int argc, char *argv[])
                  break;
             }
 
+	    /* --framecount */
+	    case 'F':
+	    {
+		/* set framecount */
+		std::sscanf(optarg, "%d", &framecount);
+		break;
+	    }
+	    
             /* invalid argument */
             case '?':
             {
-                std::fprintf(stderr, "argument %d is invalid\n", index);
                 _print_help(argv[0]);
-                return EXIT_FAILURE;
+                return -1;
             }
 
             /* unhandled arguments */
             default:
             {
-                std::fprintf(stderr, "argument %d is invalid\n", index);
-                break;
+                abort ();
             }
         }
     }
 
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 static void v_cycleActor (int prev)
@@ -286,14 +307,17 @@ int main (int argc, char **argv)
 
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+    visual_log_set_verbosity(VISUAL_LOG_INFO);
     visual_init (&argc, &argv);
 
     try {
         // parse commandline arguments
-        if (_parse_args(argc, argv) != EXIT_SUCCESS)
+        int parseRes = _parse_args(argc, argv);
+        if (parseRes < 0)
             throw std::runtime_error ("Failed to parse arguments");
-
+	else if (parseRes > 0)
+	    throw std::runtime_error ("");
+	    
         // create new VisBin for video output
         VisBin *bin = visual_bin_new();
         visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
@@ -362,7 +386,8 @@ int main (int argc, char **argv)
         // main loop
         bool running = true;
         bool visible = true;
-
+	int framesDrawn = 0;
+	
         while (running)
         {
             LV::Event ev;
@@ -415,6 +440,8 @@ int main (int argc, char **argv)
 
                         // get new actor
                         actor = visual_bin_get_actor(bin);
+
+                        display.set_title(visual_actor_get_plugin(actor)->info->name);
 
                         // handle depth of new actor
                         depthflag = visual_actor_get_supported_depth(actor);
@@ -501,6 +528,11 @@ int main (int argc, char **argv)
 
             display.lock();
             visual_bin_run(bin);
+            
+            /* all frames rendered? */
+            if((framecount > 0) && (framesDrawn++ >= framecount))
+        	running = false;
+    	    	
             display.unlock();
             display.update_all();
             display.set_fps_limit(framerate);

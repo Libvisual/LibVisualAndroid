@@ -1,11 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
- *	    Dennis Smit <ds@nerds-incorporated.org>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.11 2006/02/25 18:45:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,37 +21,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "config.h"
+#include "gettext.h"
+#include "main.h"
+#include "notch.h"
+#include <libvisual/libvisual.h>
 #include <math.h>
-#include <gettext.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <libvisual/libvisual.h>
-
-#include "main.h"
-#include "notch.h"
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
-
 
 #define NOTCH_BANDS	32
 
 typedef struct {
-	VisTimer		*t;
-	FlowerInternal		 flower;
-	int			 nof_bands;
-	NOTCH_FILTER		*notch[NOTCH_BANDS];
-	VisRandomContext	*rcxt;
+	VisTimer         *t;
+	FlowerInternal    flower;
+	int               nof_bands;
+	NOTCH_FILTER     *notch[NOTCH_BANDS];
+	VisRandomContext *rcxt;
 } FlowerPrivate;
 
 static int lv_flower_init (VisPluginData *plugin);
@@ -108,7 +95,7 @@ static int lv_flower_init (VisPluginData *plugin)
 	int i;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (FlowerPrivate, 1);
@@ -218,8 +205,8 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmbuf;
-	VisBuffer freqbuf;
+	VisBuffer *pcmbuf;
+	VisBuffer *freqbuf;
 	float pcm[512];
 	float freqnorm[256];
 	float temp_bars[NOTCH_BANDS];
@@ -227,14 +214,17 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	int b;
 	int i;
 
-	visual_buffer_set_data_pair (&pcmbuf, pcm, sizeof (pcm));
-	visual_buffer_set_data_pair (&freqbuf, freqnorm, sizeof (freqnorm));
+	pcmbuf = visual_buffer_new ();
+	freqbuf = visual_buffer_new ();
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+	visual_buffer_set_data_pair (pcmbuf, pcm, sizeof (pcm));
+	visual_buffer_set_data_pair (freqbuf, freqnorm, sizeof (freqnorm));
+
+	visual_audio_get_sample_mixed_simple (audio, pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
+	visual_audio_get_spectrum_for_sample (freqbuf, pcmbuf, TRUE);
 
 	/* Activate the effect change timer */
 	if (!visual_timer_is_active (priv->t))
@@ -300,6 +290,8 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	render_flower_effect (&priv->flower);
 
+	visual_buffer_free (pcmbuf);
+	visual_buffer_free (freqbuf);
+
 	return 0;
 }
-

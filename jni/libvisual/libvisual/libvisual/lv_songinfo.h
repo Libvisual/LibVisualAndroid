@@ -65,7 +65,7 @@ namespace LV {
    * song. Information like artist, album, song, elapsed time and even
    * coverart can be set using the methods of the VisSongInfo system.
    */
-  class SongInfo
+  class LV_API SongInfo
   {
   public:
 
@@ -199,8 +199,6 @@ namespace LV {
 
 #endif /* __cplusplus */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_SONGINFO(obj)                (VISUAL_CHECK_CAST ((obj), VisSongInfo))
 
 #ifdef __cplusplus
@@ -210,44 +208,45 @@ typedef struct _VisSongInfo VisSongInfo;
 struct _VisSongInfo;
 #endif
 
-VisSongInfo *visual_songinfo_new (VisSongInfoType type);
+LV_BEGIN_DECLS
 
-void visual_songinfo_free (VisSongInfo *songinfo);
+LV_API VisSongInfo *visual_songinfo_new (VisSongInfoType type);
 
-void visual_songinfo_copy (VisSongInfo *dest, VisSongInfo const *src);
+LV_API void visual_songinfo_free (VisSongInfo *songinfo);
 
-int visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
+LV_API void visual_songinfo_copy (VisSongInfo *dest, VisSongInfo const *src);
 
-void            visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
-VisSongInfoType visual_songinfo_get_type (VisSongInfo *songinfo);
+LV_API int visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
 
-void visual_songinfo_set_length (VisSongInfo *songinfo, int length);
-int  visual_songinfo_get_length (VisSongInfo *songinfo);
+LV_API void            visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
+LV_API VisSongInfoType visual_songinfo_get_type (VisSongInfo *songinfo);
 
-void visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
-int  visual_songinfo_get_elapsed (VisSongInfo *songinfo);
+LV_API void visual_songinfo_set_length (VisSongInfo *songinfo, int length);
+LV_API int  visual_songinfo_get_length (VisSongInfo *songinfo);
 
-void        visual_songinfo_set_simple_name (VisSongInfo *songinfo, const char *name);
-const char *visual_songinfo_get_simple_name (VisSongInfo *songinfo);
+LV_API void visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
+LV_API int  visual_songinfo_get_elapsed (VisSongInfo *songinfo);
 
-void        visual_songinfo_set_artist (VisSongInfo *songinfo, const char *artist);
-const char *visual_songinfo_get_artist (VisSongInfo *songinfo);
+LV_API void        visual_songinfo_set_simple_name (VisSongInfo *songinfo, const char *name);
+LV_API const char *visual_songinfo_get_simple_name (VisSongInfo *songinfo);
 
-void        visual_songinfo_set_album (VisSongInfo *songinfo, const char *album);
-const char *visual_songinfo_get_album (VisSongInfo *songinfo);
+LV_API void        visual_songinfo_set_artist (VisSongInfo *songinfo, const char *artist);
+LV_API const char *visual_songinfo_get_artist (VisSongInfo *songinfo);
 
-void        visual_songinfo_set_song (VisSongInfo *songinfo, const char *song);
-const char *visual_songinfo_get_song (VisSongInfo *songinfo);
+LV_API void        visual_songinfo_set_album (VisSongInfo *songinfo, const char *album);
+LV_API const char *visual_songinfo_get_album (VisSongInfo *songinfo);
 
-void        visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
-VisVideo   *visual_songinfo_get_cover (VisSongInfo *songinfo);
+LV_API void        visual_songinfo_set_song (VisSongInfo *songinfo, const char *song);
+LV_API const char *visual_songinfo_get_song (VisSongInfo *songinfo);
 
-void visual_songinfo_mark (VisSongInfo *songinfo);
+LV_API void        visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
+LV_API VisVideo   *visual_songinfo_get_cover (VisSongInfo *songinfo);
 
-long visual_songinfo_get_age (VisSongInfo *songinfo);
+LV_API void visual_songinfo_mark (VisSongInfo *songinfo);
 
+LV_API long visual_songinfo_get_age (VisSongInfo *songinfo);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

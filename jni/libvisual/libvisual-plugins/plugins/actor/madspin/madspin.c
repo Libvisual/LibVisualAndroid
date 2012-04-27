@@ -22,24 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
 #include <math.h>
-#include <gettext.h>
-
-#include <time.h>
-
 #include <GL/gl.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
 	int			 initialized;
@@ -130,7 +119,7 @@ static int lv_madspin_init (VisPluginData *plugin)
 	};
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (MadspinPrivate, 1);
@@ -304,18 +293,21 @@ static int madspin_load_textures (MadspinPrivate *priv)
 static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 {
 	int i;
-	VisBuffer buffer;
-	VisBuffer pcmb;
+	VisBuffer* buffer;
+	VisBuffer* pcmb;
 	float freq[256];
 	float pcm[256];
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
+	visual_audio_get_sample_mixed_simple (audio, pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+
+	visual_buffer_free (buffer);
+	visual_buffer_free (pcmb);
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {

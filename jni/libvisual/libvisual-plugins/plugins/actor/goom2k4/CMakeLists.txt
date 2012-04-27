@@ -50,7 +50,7 @@ SET(actor_goom2k4_SOURCES
 #    ppc_zoom_ultimate.s
 #    ppc_zoom_drawings.s
 #  )
-#ENDIF(VISUAL_ARCH_X86)
+#ENDIF()
 
 FLEX_TARGET(goomsl_lex goomsl_lex.l ${CMAKE_CURRENT_BINARY_DIR}/goomsl_lex.c)
 BISON_TARGET(goomsl_yacc goomsl_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/goomsl_yacc.c)
@@ -61,7 +61,6 @@ LIST(APPEND actor_goom2k4_SOURCES
 )
 
 ADD_LIBRARY(actor_goom2k4 MODULE ${actor_goom2k4_SOURCES})
-#-avoid-version
 
 SET_TARGET_PROPERTIES(actor_goom2k4
   PROPERTIES COMPILE_FLAGS "-Wno-missing-braces"   # Needed to kill massive warnings with *motif.h

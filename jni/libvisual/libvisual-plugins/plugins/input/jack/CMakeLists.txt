@@ -11,11 +11,10 @@ LINK_DIRECTORIES(
 )
 
 SET(input_jack_SOURCES
-  input_jack.c
+  input_jack.cpp
 )
 
 ADD_LIBRARY(input_jack MODULE ${input_jack_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_jack
   ${LIBVISUAL_LIBRARIES}

@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_plazma.c,v 1.21 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,23 +19,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
+#include "actor_plazma.h"
+#include "plazma.h"
 #include <libvisual/libvisual.h>
 
-#include "plazma.h"
-#include "actor_plazma.h"
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 static int act_plazma_init (VisPluginData *plugin);
 static int act_plazma_cleanup (VisPluginData *plugin);
@@ -61,10 +49,10 @@ const VisPluginInfo *get_plugin_info (void)
 
 		.plugname = "plazma",
 		.name = "Plazma plugin",
-		.author = ("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = N_("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.0.1",
-		.about = ("Libvisual Plazma visual plugin"),
-		.help = ("This is the libvisual port of the xmms Plazma plugin"),
+		.about = N_("Libvisual Plazma visual plugin"),
+		.help = N_("This is the libvisual port of the xmms Plazma plugin"),
 		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_plazma_init,
@@ -94,7 +82,7 @@ static int act_plazma_init (VisPluginData *plugin)
 	};
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
@@ -224,19 +212,22 @@ static VisPalette *act_plazma_palette (VisPluginData *plugin)
 static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmback;
-	VisBuffer fbuf;
+	VisBuffer *pcmback;
+	VisBuffer *fbuf;
 	int i;
 
-	visual_buffer_set_data_pair (&pcmback, priv->pcm_buffer, sizeof (float) * 1024);
-	visual_audio_get_sample_mixed (audio, &pcmback, TRUE, 2,
+	pcmback = visual_buffer_new_wrap_data (priv->pcm_buffer, sizeof (float) * 1024);
+	visual_audio_get_sample_mixed (audio, pcmback, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT,
 			1.0,
 			1.0);
 
-	visual_buffer_set_data_pair (&fbuf, priv->render_buffer, sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&fbuf, &pcmback, TRUE);
+	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (fbuf, pcmback, TRUE);
+
+	visual_buffer_free (pcmback);
+	visual_buffer_free (fbuf);
 
 	/* Analyse spectrum data */
 	priv->bass = 0;

@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_lv_scope.c,v 1.21 2006/01/27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,27 +19,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
-
 
 #define PCM_SIZE	1024
 
 typedef struct {
 	VisPalette *pal;
-	VisBuffer	pcm;
+	VisBuffer  *pcm;
 } ScopePrivate;
 
 static int lv_scope_init (VisPluginData *plugin);
@@ -87,7 +75,7 @@ static int lv_scope_init (VisPluginData *plugin)
 	ScopePrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (ScopePrivate, 1);
@@ -95,7 +83,7 @@ static int lv_scope_init (VisPluginData *plugin)
 
 	priv->pal = visual_palette_new (256);
 
-	visual_buffer_init_allocate (&priv->pcm, sizeof (float) * PCM_SIZE, visual_buffer_destroyer_free);
+	priv->pcm = visual_buffer_new_allocate (sizeof (float) * PCM_SIZE);
 
 	return 0;
 }
@@ -106,7 +94,7 @@ static int lv_scope_cleanup (VisPluginData *plugin)
 
 	visual_palette_free (priv->pal);
 
-	visual_object_unref (VISUAL_OBJECT (&priv->pcm));
+	visual_buffer_free (priv->pcm);
 
 	visual_mem_free (priv);
 
@@ -188,13 +176,13 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 
 	y = video->height >> 1;
 
-	visual_audio_get_sample_mixed (audio, &priv->pcm, TRUE, 2,
+	visual_audio_get_sample_mixed (audio, priv->pcm, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT,
 			1.0,
 			1.0);
 
-	pcmbuf = visual_buffer_get_data (&priv->pcm);
+	pcmbuf = visual_buffer_get_data (priv->pcm);
 
 	visual_color_set (&col, 0, 0, 0);
 	visual_video_fill_color (video, &col);

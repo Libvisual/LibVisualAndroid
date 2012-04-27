@@ -35,12 +35,6 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
   }
 
-  inline LV::PluginRef*
-  find_input_plugin (std::string const& name)
-  {
-      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
-  }
-
 } // Anonymous namespace
 
 static int input_dtor (VisObject *object);
@@ -181,7 +175,7 @@ int visual_input_run (VisInput *input)
     } else
         input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
 
-    visual_audio_analyze (input->audio);
+    //visual_audio_analyze (input->audio);
 
     return VISUAL_OK;
 }

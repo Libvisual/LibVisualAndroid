@@ -35,8 +35,6 @@ typedef struct {
 } pulseaudio_priv_t;
 
 
-const VisPluginInfo *get_plugin_info( void );
-
 static int inp_pulseaudio_init( VisPluginData *plugin );
 static int inp_pulseaudio_cleanup( VisPluginData *plugin );
 static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
@@ -73,11 +71,15 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
 
     visual_object_set_private(VISUAL_OBJECT(plugin), priv);
 
-    memset(priv, 0, sizeof(pulseaudio_priv_t));
+    visual_mem_set(priv, 0, sizeof(pulseaudio_priv_t));
 
 
     priv->simple = pa_simple_new(
@@ -165,10 +167,10 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
     pulseaudio_priv_t *priv = NULL;
     short pcm_data[PCM_BUF_SIZE];
-    VisBuffer buffer;
+    VisBuffer *buffer;
     int error;
 
-    memset(pcm_data, 0, sizeof(pcm_data));
+    visual_mem_set(pcm_data, 0, sizeof(pcm_data));
 
     visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
@@ -182,9 +184,10 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
         return -VISUAL_ERROR_GENERAL;
     }
 
-    visual_buffer_init(&buffer, pcm_data, PCM_BUF_SIZE, NULL);
-    visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+    buffer = visual_buffer_new_wrap_data (pcm_data, PCM_BUF_SIZE);
+    visual_audio_samplepool_input(audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
         VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+    visual_buffer_free (buffer);
 
     return 0;
 }

@@ -4,8 +4,6 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.28 2006/01/27 20:19:16 synap Exp $
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
@@ -21,20 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-#include <limits.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 /** default amount of bars */
 #define BARS_DEFAULT 25
@@ -76,7 +65,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "1.0",
 		.about = N_("Libvisual analyzer plugin"),
 		.help = N_("A nice simple spectrum analyzer plugin."),
@@ -100,9 +89,8 @@ static int _bars(VisPluginData *plugin)
 
 static int lv_analyzer_init (VisPluginData *plugin)
 {
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
@@ -337,22 +325,25 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
  */
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer buffer;
-	VisBuffer pcmb;
+	VisBuffer *buffer;
+	VisBuffer *pcmb;
 
 	int bars = _bars(plugin);
 
 	float freq[bars];
 	float pcm[bars * 2];
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+
+    visual_buffer_free (buffer);
+    visual_buffer_free (pcmb);
 
 	int i;
 	int spaces = BARS_DEFAULT_SPACE * (bars - 1);

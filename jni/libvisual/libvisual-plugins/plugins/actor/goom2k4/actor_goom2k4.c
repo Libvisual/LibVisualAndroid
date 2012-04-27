@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_goom2k4.c,v 1.7 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,29 +19,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <time.h>
-#include <sys/time.h>
-
-#include <libvisual/libvisual.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "goom.h"
+#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 typedef struct {
-	VisBuffer	 pcmbuf1;
-	VisBuffer	 pcmbuf2;
+	VisBuffer	*pcmbuf1;
+	VisBuffer	*pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
@@ -90,7 +75,7 @@ static int lv_goom_init (VisPluginData *plugin)
 	GoomPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (GoomPrivate, 1);
@@ -98,8 +83,8 @@ static int lv_goom_init (VisPluginData *plugin)
 
 	priv->goominfo = goom_init (128, 128);
 
-	visual_buffer_init (&priv->pcmbuf1, NULL, 0, NULL);
-	visual_buffer_init (&priv->pcmbuf2, NULL, 0, NULL);
+	priv->pcmbuf1 = visual_buffer_new ();
+	priv->pcmbuf2 = visual_buffer_new ();
 
 	return 0;
 }
@@ -110,6 +95,9 @@ static int lv_goom_cleanup (VisPluginData *plugin)
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
+
+	visual_buffer_free (priv->pcmbuf1);
+	visual_buffer_free (priv->pcmbuf2);
 
 	visual_mem_free (priv);
 
@@ -166,11 +154,11 @@ static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 	int showinfo = TRUE;
 	int i;
 
-	visual_buffer_set_data_pair (&priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_buffer_set_data_pair (priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	for (i = 0; i < 512; i++) {
 		pcmdata[0][i] = fpcmdata[0][i] * 32767;

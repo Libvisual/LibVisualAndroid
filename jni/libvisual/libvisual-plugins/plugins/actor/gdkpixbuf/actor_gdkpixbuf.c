@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_gdkpixbuf.c,v 1.19 2006/01/27 20:19:15 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,21 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <gdk/gdk.h>
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <gdk/gdk.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
 	GdkPixbuf	*pixbuf;
@@ -119,7 +108,7 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
 	};
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (PixbufPrivate, 1);

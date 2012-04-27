@@ -25,7 +25,7 @@
 #ifndef _LV_FOURIER_H
 #define _LV_FOURIER_H
 
-#include <libvisual/lv_object.h>
+#include <libvisual/lv_defines.h>
 
 /**
  * @defgroup VisDFT VisDFT
@@ -39,16 +39,12 @@
 
 namespace LV {
 
-  class Fourier
+  class LV_API Fourier
       : public Singleton<Fourier>
   {
   public:
 
-      static void init ()
-      {
-          if (m_instance != 0)
-              m_instance = new Fourier;
-      }
+      static void init ();
 
       ~Fourier ();
 
@@ -126,8 +122,6 @@ namespace LV {
 
 /* C API bindings */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_DFT(obj)                 (VISUAL_CHECK_CAST ((obj), VisDFT))
 
 #ifdef __cplusplus
@@ -137,12 +131,10 @@ typedef struct _VisDFT VisDFT;
 struct _VisDFT;
 #endif
 
-void visual_fourier_initialize (void);
-int  visual_fourier_is_initialized (void);
-void visual_fourier_deinitialize (void);
+LV_BEGIN_DECLS
 
-VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in);
-void visual_dft_free (VisDFT *dft);
+VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
+void    visual_dft_free (VisDFT *dft);
 
 void visual_dft_perform (VisDFT *dft, float *output, float const *input);
 
@@ -150,7 +142,7 @@ void visual_dft_log_scale (float *output, float const *input, unsigned int size)
 void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
 void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

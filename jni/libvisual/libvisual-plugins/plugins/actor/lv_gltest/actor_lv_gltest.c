@@ -3,10 +3,8 @@
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
- *	    4Front Technologies
- *
- * $Id: actor_lv_gltest.c,v 1.27 2006/03/02 23:50:06 synap Exp $
+ *          Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
+ *            4Front Technologies
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,24 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <math.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
+#include <libvisual/libvisual.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <libvisual/libvisual.h>
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 #define BARS	16
 
@@ -86,7 +73,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 		.plugname = "lv_gltest",
 		.name = "libvisual GL analyser",
-		.author = N_("Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = N_("Original by: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
 		.about = N_("Libvisual GL analyzer plugin"),
 		.help =  N_("This plugin shows an openGL bar analyzer like the xmms one"),
@@ -122,7 +109,7 @@ static int lv_gltest_init (VisPluginData *plugin)
 	int x, y;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (GLtestPrivate, 1);
@@ -249,22 +236,25 @@ static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer buffer;
-	VisBuffer pcmb;
+	VisBuffer *buffer;
+	VisBuffer *pcmb;
 	float freq[256];
 	float pcm[256];
 	int i,c;
 	int y;
 	float ff;
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+
+	visual_buffer_free (buffer);
+	visual_buffer_free (pcmb);
 
 	for (y = BARS - 1; y > 0; y--)
 	{

@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_bumpscope.c,v 1.29 2006/01/27 20:19:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,23 +19,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <libvisual/libvisual.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "actor_bumpscope.h"
 #include "bump_scope.h"
+#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 static int act_bumpscope_init (VisPluginData *plugin);
 static int act_bumpscope_cleanup (VisPluginData *plugin);
@@ -93,7 +81,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
 	};
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (BumpscopePrivate, 1);
@@ -125,7 +113,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
     visual_param_entry_set_annotation(param, "Whether to use a diamond shape light or not");
     visual_param_entry_max_set_integer(param, 1);
 
-	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
 
 	return 0;
 }
@@ -138,7 +126,7 @@ static int act_bumpscope_cleanup (VisPluginData *plugin)
 
 	visual_palette_free (priv->pal);
 
-	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+	visual_buffer_free (priv->pcmbuf);
 
 	visual_mem_free (priv);
 

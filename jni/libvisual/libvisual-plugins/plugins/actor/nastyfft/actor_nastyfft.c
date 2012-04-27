@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by yodor   *
- *   yodor@developer.bg   *
+ *   Copyright (C) 2005 by yodor                                           *
+ *   yodor@developer.bg                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,24 +18,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "config.h"
+#include "gettext.h"
+#include <libvisual/libvisual.h>
 #include <math.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <gettext.h>
-
-#include <libvisual/libvisual.h>
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (void);
 
 #define NUM_BANDS 16
 #define SCOPE_DEPTH 16
@@ -85,10 +75,10 @@ const VisPluginInfo *get_plugin_info (void)
 	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = N_("nastyfft"),
+		.plugname = "nastyfft",
 		.name = N_("Libvisual NastyFFT plugin"),
-		.author = N_("yodor <yodor@developer.bg>"),
-		.version = N_("0.5"),
+		.author = "yodor <yodor@developer.bg>",
+		.version = "0.5",
 		.about = N_("The Libvisual NastyFFT plugin"),
 		.help = N_("This plugin shows nasty fft visualization effect using OpenGL"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
@@ -121,7 +111,7 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv->cam_y=-1.0f;
@@ -272,21 +262,24 @@ static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio)
 	int i, c, y;
 	GLfloat val;
 	int xscale[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
-	VisBuffer buffer;
-	VisBuffer pcmb;
+	VisBuffer *buffer;
+	VisBuffer *pcmb;
 
 	float freq[256];
 	unsigned short rfreq[256];
 	float pcm[256];
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
+    pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+
+    visual_buffer_free (buffer);
+    visual_buffer_free (pcmb);
 
 	for (i = 0; i < 256; i++)
 		rfreq[i] = freq[i] * 320000.0;
