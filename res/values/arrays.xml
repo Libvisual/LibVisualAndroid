@@ -59,6 +59,7 @@
     <string-array name="actor_plugins">
         <item>lv_analyzer</item>
         <item>lv_scope</item>
+        <item>blursk</item>
         <item>infinite</item>
         <item>jess</item>
         <item>corona</item>
@@ -70,6 +71,7 @@
     <string-array name="actor_plugins_names">
         <item>LV Analyzer</item>
         <item>LV Scope</item>
+        <item>Blursk</item>
         <item>Infinite</item>
         <item>JESS</item>
         <item>Corona</item>
