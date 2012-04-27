@@ -22,20 +22,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
+#include "gettext.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include <gettext.h>
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <assert.h>
 
 #include <libvisual/libvisual.h>
 
@@ -113,7 +110,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 	mplayer_priv_t *priv = NULL;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0(mplayer_priv_t, 1);
@@ -143,7 +140,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 		 * before to return the error value.
 		 */
 		visual_log( VISUAL_LOG_CRITICAL,
-				_("Could not open file '%s': %s"),
+				"Could not open file '%s': %s",
 				priv->sharedfile, strerror( errno ) );
 		return -3;
 	}
@@ -154,7 +151,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	if ( priv->mmap_area->nch == 0 )
 	{
-		visual_log( VISUAL_LOG_CRITICAL, _("No audio channel available") );
+		visual_log( VISUAL_LOG_CRITICAL, "No audio channel available" );
 		return -5;
 	}
 
@@ -162,9 +159,9 @@ static int inp_mplayer_init( VisPluginData *plugin )
 			( priv->mmap_area->bs  != 2048 ) )
 	{
 		visual_log( VISUAL_LOG_CRITICAL,
-				_("Data in wrong format. It should be 2 channels" \
-					" with 512 16bit samples. There are %d channels %d 16bit " \
-					"samples in it (buffer is %d bytes)"),
+				"Data in wrong format. It should be 2 channels" \
+				" with 512 16bit samples. There are %d channels %d 16bit " \
+				"samples in it (buffer is %d bytes)",
 				priv->mmap_area->nch,
 				priv->mmap_area->bs / 2 / priv->mmap_area->nch,
 				priv->mmap_area->bs );
@@ -177,8 +174,8 @@ static int inp_mplayer_init( VisPluginData *plugin )
 	if ( (intptr_t)priv->mmap_area == -1 )
 	{
 		visual_log( VISUAL_LOG_CRITICAL,
-				_("Could not mremap() area from file '%s' " \
-					" (%p from %" VISUAL_SIZE_T_FORMAT " to %" VISUAL_SIZE_T_FORMAT " bytes): %s"),
+				"Could not mremap() area from file '%s' " \
+				" (%p from %" VISUAL_SIZE_T_FORMAT " to %" VISUAL_SIZE_T_FORMAT " bytes): %s",
 				priv->sharedfile,
 				(void *) priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
@@ -216,7 +213,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 			if ( close( priv->fd ) != 0 )
 			{
 				visual_log( VISUAL_LOG_CRITICAL,
-						_("Could not close file descriptor %d: %s"),
+						"Could not close file descriptor %d: %s",
 						priv->fd, strerror( errno ) );
 				unclean |= 1;
 			}
@@ -224,7 +221,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 		}
 		else
 		{
-			visual_log( VISUAL_LOG_CRITICAL, _("Wrong file descriptor %d"),
+			visual_log( VISUAL_LOG_CRITICAL, "Wrong file descriptor %d",
 					priv->fd );
 			unclean |= 2;
 		}
@@ -232,7 +229,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 		if ( munmap( mmap_area, mmap_count ) != 0 )
 		{
 			visual_log( VISUAL_LOG_CRITICAL,
-					_("Could not munmap() area %p+%d. %s"),
+					"Could not munmap() area %p+%d. %s",
 					mmap_area, mmap_count,
 					strerror( errno ) );
 			unclean |= 4;
@@ -257,6 +254,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
 	mplayer_priv_t *priv = NULL;
+	VisBuffer *buffer;
 
 	visual_return_val_if_fail( audio != NULL, -1 );
 	visual_return_val_if_fail( plugin != NULL, -1 );
@@ -264,10 +262,12 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_return_val_if_fail( priv != NULL, -1 );
 	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	visual_mem_copy( audio->plugpcm,
-			((uint8_t *)priv->mmap_area) + sizeof( mplayer_data_t ),
-			2048 );
+	buffer = visual_buffer_new_wrap_data ( (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048 / sizeof( int16_t ) );
+	visual_audio_samplepool_input (audio->samplepool, buffer,
+	                               VISUAL_AUDIO_SAMPLE_RATE_44100,
+	                               VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+	                               VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+	visual_buffer_free (buffer);
 
 	return 0;
 }
-

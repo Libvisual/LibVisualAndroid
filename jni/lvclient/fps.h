@@ -46,12 +46,9 @@ typedef struct
 }Fps;
 
 
-LV_BEGIN_DECLS
-
 void fps_init(Fps* s);
 void fps_startFrame(Fps* s);
 void fps_endFrame(Fps* s);
 
-LV_END_DECLS
 
 #endif /* _LV_FPS_H */
