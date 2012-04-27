@@ -48,8 +48,8 @@ keygen: my.keystore
 my.keystore:
 	keytool -genkey -v -keystore my.keystore -alias $(APPNAME)_key -keyalg RSA -keysize 4096 -validity 100000
 
-sign: bin/$(APPNAME)-unsigned.apk
-bin/$(APPNAME).apk: my.keystore all
+sign: bin/$(APPNAME).apk
+bin/$(APPNAME).apk: bin/$(APPNAME)-unsigned.apk my.keystore all
 	jarsigner -keystore my.keystore bin/$(ACTIVITY)-release-unsigned.apk $(APPNAME)_key
 	zipalign -v 4 bin/$(ACTIVITY)-release-unsigned.apk bin/$(APPNAME).apk
 
