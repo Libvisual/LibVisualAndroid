@@ -56,6 +56,7 @@ typedef struct
 
 
 
+
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 
@@ -83,6 +84,7 @@ int audioRecord_init (VisPluginData *plugin)
                                  CHANNEL_IN_MONO, 
                                  ENCODING_PCM_16BIT, 
                                  MAX_PCM);
+
     
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    4096
@@ -94,6 +96,7 @@ int audioRecord_init (VisPluginData *plugin)
     priv->angle = 0.0;
     priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
                     
+
     return 0;
 }
 
@@ -105,6 +108,7 @@ int audioRecord_cleanup (VisPluginData *plugin)
 
 
     /* free private structure */
+
     AudioRecordPriv *priv;
     if((priv = visual_object_get_private (VISUAL_OBJECT (plugin))))
         visual_mem_free (priv);
@@ -171,4 +175,3 @@ const VisPluginInfo *get_plugin_info (void)
     
     return &info;
 }
-                                                                                                                                                                                                                                                

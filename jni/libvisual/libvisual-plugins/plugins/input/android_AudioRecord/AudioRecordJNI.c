@@ -26,7 +26,9 @@
 #include <android/log.h>
 #include "AudioRecordJNI.h"
 
+
 JavaVM *m_vm;
+
 
 
 
@@ -40,6 +42,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
 }
 
 
+
 /** create new recorder */
 AudioRecordJNI AudioRecord(jint audioSource, 
                            jint sampleRateInHz, 
@@ -47,6 +50,7 @@ AudioRecordJNI AudioRecord(jint audioSource,
                            jint audioFormat, 
                            jint bufferSizeInBytes)
 {
+
     /* get environment */
     JNIEnv *env;
     (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
@@ -76,3 +80,6 @@ void AudioRecord_destroy(AudioRecordJNI r)
     /* unref */
     (*env)->DeleteLocalRef(env, r);	
 }
+
+
+
