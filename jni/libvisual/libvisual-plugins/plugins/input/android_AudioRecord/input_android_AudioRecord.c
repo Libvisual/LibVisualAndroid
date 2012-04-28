@@ -47,7 +47,12 @@ typedef struct
     VisAudioSampleRateType rate;
     VisAudioSampleChannelType channels;
     VisAudioSampleFormatType encoding;
-} audioRecordPriv;
+    
+    float frequency;
+    float ampltitude;
+    float angle;
+    float angle_step;                                
+} AudioRecordPriv;
 
 
 
@@ -66,17 +71,29 @@ int audioRecord_init (VisPluginData *plugin)
     visual_return_val_if_fail(plugin != NULL, -1);
 
     /** allocate private structure */
-    audioRecordPriv *priv;
-	if(!(priv = visual_mem_new0(audioRecordPriv, 1)))
+    AudioRecordPriv *priv;
+    if(!(priv = visual_mem_new0(AudioRecordPriv, 1)))
         return -1;
-	visual_object_set_private (VISUAL_OBJECT(plugin), priv);
+        
+    visual_object_set_private (VISUAL_OBJECT(plugin), priv);
+
 
     priv->recorder = AudioRecord(MIC, 
                                  44100, 
                                  CHANNEL_IN_MONO, 
                                  ENCODING_PCM_16BIT, 
                                  MAX_PCM);
+    
+#define OUTPUT_RATE       44100
+#define OUTPUT_SAMPLES    4096
+#define DEFAULT_FREQUENCY (OUTPUT_RATE/25)
+#define DEFAULT_AMPLITUDE 1.0
         
+    priv->frequency  = DEFAULT_FREQUENCY;
+    priv->ampltitude = DEFAULT_AMPLITUDE;
+    priv->angle = 0.0;
+    priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
+                    
     return 0;
 }
 
@@ -88,11 +105,12 @@ int audioRecord_cleanup (VisPluginData *plugin)
 
 
     /* free private structure */
-    audioRecordPriv *priv;
+    AudioRecordPriv *priv;
     if((priv = visual_object_get_private (VISUAL_OBJECT (plugin))))
         visual_mem_free (priv);
 
     /* destroy recorder */
+    AudioRecord_destroy(priv->recorder);
     
     return 0;
 }
@@ -101,34 +119,56 @@ int audioRecord_cleanup (VisPluginData *plugin)
 /** libvisual calls this when it wants us to upload PCM data */
 int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
 {
+    AudioRecordPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+    int16_t data[OUTPUT_SAMPLES];
+    int i;
+         
+    for(i = 0; i < VISUAL_TABLESIZE(data); i++) 
+    {
+	data[i] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
+                             
+        priv->angle += priv->angle_step;
+        if(priv->angle >= 2 * VISUAL_MATH_PI) 
+        {
+    	    priv->angle -= 2 * VISUAL_MATH_PI;
+        }
+    }
+                                                                                                                 
+    VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data));
+                                                                                         
+    visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+    VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+                                                                 
+    visual_buffer_free(buffer);
+                                                                                                                                                                                                                                                                                                                                  
     return 0;
 }
 
-
-/** hand info about us over to libvisual */
-const VisPluginInfo *get_plugin_info (int *count)
+/** hand over info about us over to libvisual */
+const VisPluginInfo *get_plugin_info (void)
 {
     static VisInputPlugin input = 
     {
-            .upload = audioRecord_upload
+        .upload = audioRecord_upload        
     };
-
-    static VisPluginInfo info[] = {{
+                                
+    static VisPluginInfo info = 
+    {
         .type = VISUAL_PLUGIN_TYPE_INPUT,
 
-        .plugname = "android_audioRecord",
+        .plugname = "android_AudioRecord",
         .name = "Android AudioRecord class wrapper",
         .author = "Daniel Hiepler <daniel@niftylight.de>",
         .version = "0.1",
-        .about = ("Android input plugin for libvisual"),
-        .help = ("You sing into the mic, and LibVisual goes nuts. Sing loud. With feeling."),
+        .about = N_("Android input plugin for libvisual"),
+        .help = N_("You sing into the mic, and LibVisual goes nuts. Sing loud. With feeling."),
         .license = VISUAL_PLUGIN_LICENSE_LGPL,
         .init = audioRecord_init,
         .cleanup = audioRecord_cleanup,
         .plugin = VISUAL_OBJECT (&input)
-    }};
-
-    *count = sizeof (info) / sizeof (*info);
-
-    return info;
+    };
+    
+    return &info;
 }
+                                                                                                                                                                                                                                                

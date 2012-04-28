@@ -26,11 +26,18 @@
 #include <android/log.h>
 #include "AudioRecordJNI.h"
 
-static JavaVM *_vm;
-static jclass *AudioRecordClass;
+JavaVM *m_vm;
 
 
 
+
+/** library loaded */
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
+{
+    m_vm = vm;
+        
+    return JNI_VERSION_1_4;
+}
 
 
 /** create new recorder */
@@ -40,30 +47,32 @@ AudioRecordJNI AudioRecord(jint audioSource,
                            jint audioFormat, 
                            jint bufferSizeInBytes)
 {
-    JNIEnv      *env;
-    (*_vm)->GetEnv(_vm, (void **) &env, JNI_VERSION_1_4);    
-    jmethodID initID = (*env)->GetMethodID(env, AudioRecordClass, "<init>", "(Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;)V");
-    return (*env)->NewObject(_env, AudioRecordClass, initID, audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
+    /* get environment */
+    JNIEnv *env;
+    (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
+    
+    /* get AudioRecord class */
+    jclass AudioRecordClass;
+    AudioRecordClass = (*env)->FindClass(env, "android/media/AudioRecord");
+
+    /* constructor method */
+    jmethodID initID = (*env)->GetMethodID(env, AudioRecordClass, "<init>", "(IIIII)V");
+    
+    /* create new instance */
+    return (*env)->NewObject(env, AudioRecordClass, initID, audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
 }
 
 
-/** library loaded */
-jint JNI_OnLoad(JavaVM* vm, void* reserved)
+/** destroy recorder */
+void AudioRecord_destroy(AudioRecordJNI r)
 {
-    _vm = vm;
+    if(!r)
+	return;
+	
+    /* get environment */
+    JNIEnv *env;
+    (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
 
-    /*if((*_vm)->GetEnv(_vm, (void**) &_env, JNI_VERSION_1_4) != JNI_OK)
-    {
-        __android_log_print(ANDROID_LOG_ERROR, "input_AudioRecord", "Failed to get the environment using GetEnv()");
-        return -1;
-    }
-        
-    if(!(AudioRecordClass = (*_env)->FindClass(_env, "android/media/AudioRecord")))
-    {
-        __android_log_print(ANDROID_LOG_ERROR, "input_AudioRecord", "Failed to get AudioRecord class using FindClass()");
-        return -1;
-    }*/
-        
-    return JNI_VERSION_1_4;
+    /* unref */
+    (*env)->DeleteLocalRef(env, r);	
 }
-
