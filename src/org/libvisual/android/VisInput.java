@@ -24,6 +24,8 @@
 package org.libvisual.android;
 
 
+
+
 /** VisInput wrapper */
 public class VisInput
 {
@@ -38,7 +40,16 @@ public class VisInput
         
     public VisInput(String name)
     {
+	/* load JNI stuff for android audio plugin */
+	if(name.equals("android_AudioRecord"))
+	{
+	    System.loadLibrary("input_android_AudioRecord");
+	}
+	
+	/* initialize new VisInput */
         VisInput = inputNew(name);
+        
+        /* save plugin pointer */
         plugin = new VisPlugin(inputGetPlugin(VisInput));
     }
 
