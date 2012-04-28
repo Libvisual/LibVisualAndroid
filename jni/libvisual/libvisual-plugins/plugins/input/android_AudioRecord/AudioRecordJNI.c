@@ -27,7 +27,6 @@
 #include "AudioRecordJNI.h"
 
 static JavaVM *_vm;
-static JNIEnv *_env;
 static jclass *AudioRecordClass;
 
 
@@ -41,8 +40,10 @@ AudioRecordJNI AudioRecord(jint audioSource,
                            jint audioFormat, 
                            jint bufferSizeInBytes)
 {
-    jmethodID initID = (*_env)->GetMethodID(_env, AudioRecordClass, "<init>", "(Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;)V;");
-    return (*_env)->NewObject(_env, AudioRecordClass, initID, audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
+    JNIEnv      *env;
+    (*_vm)->GetEnv(_vm, (void **) &env, JNI_VERSION_1_4);    
+    jmethodID initID = (*env)->GetMethodID(env, AudioRecordClass, "<init>", "(Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;Ljava/lang/int;)V");
+    return (*env)->NewObject(_env, AudioRecordClass, initID, audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
 }
 
 

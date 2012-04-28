@@ -92,6 +92,8 @@ int audioRecord_cleanup (VisPluginData *plugin)
     if((priv = visual_object_get_private (VISUAL_OBJECT (plugin))))
         visual_mem_free (priv);
 
+    /* destroy recorder */
+    
     return 0;
 }
 
