@@ -28,11 +28,11 @@
     <!-- input plugins -->
     <string-array name="input_plugins">
         <item>debug</item>
-        <item>alsa</item>
+        <item>android_AudioRecord</item>
     </string-array>
     <string-array name="input_plugins_names">
         <item>Debug</item>
-        <item>ALSA</item>
+        <item>Android</item>
     </string-array>
 
     <!-- morph plugins -->
