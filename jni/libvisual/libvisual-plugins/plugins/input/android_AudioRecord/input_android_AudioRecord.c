@@ -65,7 +65,7 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 #define LV_CHANNELS     VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
 #define LV_ENCODING     VISUAL_AUDIO_SAMPLE_FORMAT_S16
 #define AND_SAMPLERATE  44100
-#define AND_CHANNELS    CHANNEL_IN_MONO
+#define AND_CHANNELS    CHANNEL_IN_STEREO
 #define AND_ENCODING    ENCODING_PCM_16BIT
 
 
@@ -173,11 +173,32 @@ int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
 {
     AudioRecordPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     
+        //~ int16_t data[2048];
+        //~ int i;
+
+        //~ static float angle;
+	//~ const static float ampltitude = 1.0;
+	//~ const static float angle_step = (2 * VISUAL_MATH_PI * AND_SAMPLERATE/25) / AND_SAMPLERATE;
+        
+        //~ for(i = 0; i < VISUAL_TABLESIZE(data); i++) {
+                //~ data[i] = (int16_t) (65535/2 * ampltitude * sin (angle));
+
+                //~ angle += angle_step;
+                //~ if (angle >= 2 * VISUAL_MATH_PI) {
+                        //~ angle -= 2 * VISUAL_MATH_PI;
+                //~ }
+        //~ }
+
+        //~ VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data));
+
+        //~ visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+                        //~ VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+
+        //~ visual_buffer_free (buffer);
 
     int16_t *buf = AudioRecord_lockBuf();
-                        
+
     VisBuffer *buffer = visual_buffer_new_wrap_data(buf, priv->bufsize);
-                                                                                         
     visual_audio_samplepool_input(audio->samplepool, 
                                   buffer, 
                                   LV_SAMPLERATE,

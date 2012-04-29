@@ -198,10 +198,10 @@ void AudioRecord_readThread(AudioRecordJNI r, int *running)
     (*m_vm)->AttachCurrentThread(m_vm, &env, 0);
 
     /* change thread priority */
-    /*jclass ProcessClass;
-    ProcessClass = (*env)->FindClass(env, "android/os/Process");
-    jmethodID setThreadPriorityID = (*env)->GetStaticMethodID(env, ProcessClass, "setThreadPriority", "(I)V");
-    (*env)->CallStaticIntMethod(env, ProcessClass, setThreadPriorityID, THREAD_PRIORITY_URGENT_AUDIO);*/
+    //~ jclass ProcessClass;
+    //~ ProcessClass = (*env)->FindClass(env, "android/os/Process");
+    //~ jmethodID setThreadPriorityID = (*env)->GetStaticMethodID(env, ProcessClass, "setThreadPriority", "(I)V");
+    //~ (*env)->CallStaticIntMethod(env, ProcessClass, setThreadPriorityID, THREAD_PRIORITY_URGENT_AUDIO);
         
     /* wait until recorder is initialized */
     while(AudioRecord_getState(r) != STATE_INITIALIZED)
