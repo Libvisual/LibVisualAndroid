@@ -28,32 +28,31 @@
 #include <fcntl.h>
 #include <string.h>
 #include <gettext.h>
+#include <pthread.h>
 #include <math.h>
 #include <jni.h>
+#include <android/log.h>
 #include <libvisual/libvisual.h>
 #include "AudioRecordJNI.h"
 
 
+/** logging TAG */
+#define TAG "input_android_AudioRecord"
 /** buffersize in PCM samples */
-#define MAX_PCM 4096
+#define MAX_PCM 2048
 
 
 /** private parts */
 typedef struct 
 {
     AudioRecordJNI recorder;
-    int16_t pcm_data[MAX_PCM];
-    int size;
-    VisAudioSampleRateType rate;
-    VisAudioSampleChannelType channels;
-    VisAudioSampleFormatType encoding;
-    
-    float frequency;
-    float ampltitude;
-    float angle;
-    float angle_step;                                
+    jshortArray pcmArray;
+    int16_t *pcm;
+    size_t bufsize;
+    int recording;
+    pthread_attr_t attr;
+    pthread_t id;
 } AudioRecordPriv;
-
 
 
 
@@ -64,6 +63,27 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 /******************************************************************************/
 
+#define LV_SAMPLERATE   VISUAL_AUDIO_SAMPLE_RATE_44100
+#define LV_CHANNELS     VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
+#define LV_ENCODING     VISUAL_AUDIO_SAMPLE_FORMAT_S16
+#define AND_SAMPLERATE  44100
+#define AND_CHANNELS    CHANNEL_IN_MONO
+#define AND_ENCODING    ENCODING_PCM_16BIT
+
+
+
+/** PCM reader thread */
+void *readThread(void *p)
+{
+    AudioRecordPriv *priv = p;
+        
+    /* record loop */
+    AudioRecord_readThread(priv->recorder, priv->pcm, priv->bufsize/sizeof(jshort), &priv->recording);
+
+    pthread_exit(0);
+    
+    return 0;
+}
 
 
 /** initialize */
@@ -71,32 +91,56 @@ int audioRecord_init (VisPluginData *plugin)
 {
     visual_return_val_if_fail(plugin != NULL, -1);
 
+                    
     /** allocate private structure */
     AudioRecordPriv *priv;
     if(!(priv = visual_mem_new0(AudioRecordPriv, 1)))
         return -1;
         
-    visual_object_set_private (VISUAL_OBJECT(plugin), priv);
+    visual_object_set_private(VISUAL_OBJECT(plugin), priv);
 
-
-    priv->recorder = AudioRecord(MIC, 
-                                 44100, 
-                                 CHANNEL_IN_MONO, 
-                                 ENCODING_PCM_16BIT, 
-                                 MAX_PCM);
-
-    
-#define OUTPUT_RATE       44100
-#define OUTPUT_SAMPLES    4096
-#define DEFAULT_FREQUENCY (OUTPUT_RATE/25)
-#define DEFAULT_AMPLITUDE 1.0
+    /* initialize threading */
+    if(pthread_attr_init(&priv->attr) != 0)
+        return -1;
         
-    priv->frequency  = DEFAULT_FREQUENCY;
-    priv->ampltitude = DEFAULT_AMPLITUDE;
-    priv->angle = 0.0;
-    priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
-                    
+    /* get minimum buffersize */
+    priv->bufsize = AudioRecord_getMinBufferSize(AND_SAMPLERATE, 
+                                                 AND_CHANNELS, 
+                                                 AND_ENCODING);
+    if(priv->bufsize == ERROR || priv->bufsize == ERROR_BAD_VALUE)
+    {
+        __android_log_print(ANDROID_LOG_INFO, TAG, "Error getting PCM bufsize");
+        return -1;
+    }
+        
+    __android_log_print(ANDROID_LOG_INFO, TAG, "Using buffersize 2*%d", priv->bufsize);
 
+    /* use 2*minBufSize */
+    priv->bufsize *= 2;
+        
+    /* allocate pcm buffer */
+    if(!(priv->pcm = visual_mem_malloc0(priv->bufsize)))
+        return -1;
+        
+    /* create AudioRecorder */
+    priv->recorder = AudioRecord(MIC, 
+                                 AND_SAMPLERATE, 
+                                 AND_CHANNELS, 
+                                 AND_ENCODING, 
+                                 priv->bufsize/sizeof(jshort),
+                                 &priv->pcmArray);        
+
+    /* start recording */
+    priv->recording = TRUE;
+
+            
+    /* start reader thread */
+    if(pthread_create(&priv->id, &priv->attr, readThread, priv) != 0)
+    {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "pthread_create() failed");
+        return -1;
+    }
+        
     return 0;
 }
 
@@ -107,15 +151,30 @@ int audioRecord_cleanup (VisPluginData *plugin)
     visual_return_val_if_fail(plugin != NULL, -1);
 
 
-    /* free private structure */
-
+    /* get private structure */
     AudioRecordPriv *priv;
-    if((priv = visual_object_get_private (VISUAL_OBJECT (plugin))))
-        visual_mem_free (priv);
+    if(!(priv = visual_object_get_private (VISUAL_OBJECT (plugin))))
+        return 0;
+    
+    /* stop recording */
+    priv->recording = FALSE;
 
+    /* deinitialize pthreads */
+    pthread_attr_destroy(&priv->attr);
+        
+    /* join thread */
+    pthread_join(priv->id, 0);
+        
     /* destroy recorder */
     AudioRecord_destroy(priv->recorder);
-    
+
+    /* free PCM buffer */
+    if(priv->pcm)
+        visual_mem_free(priv->pcm);
+
+    /* free private descriptor */
+    visual_mem_free (priv);
+
     return 0;
 }
 
@@ -124,27 +183,21 @@ int audioRecord_cleanup (VisPluginData *plugin)
 int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
 {
     AudioRecordPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    
 
-    int16_t data[OUTPUT_SAMPLES];
-    int i;
-         
-    for(i = 0; i < VISUAL_TABLESIZE(data); i++) 
-    {
-	data[i] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
-                             
-        priv->angle += priv->angle_step;
-        if(priv->angle >= 2 * VISUAL_MATH_PI) 
-        {
-    	    priv->angle -= 2 * VISUAL_MATH_PI;
-        }
-    }
-                                                                                                                 
-    VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data));
+    int16_t *buf = AudioRecord_getArrayElements(priv->pcmArray);
+                        
+    VisBuffer *buffer = visual_buffer_new_wrap_data(priv->pcm, priv->bufsize);
                                                                                          
-    visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-    VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+    visual_audio_samplepool_input(audio->samplepool, 
+                                  buffer, 
+                                  LV_SAMPLERATE,
+                                  LV_ENCODING, 
+                                  LV_CHANNELS);
                                                                  
     visual_buffer_free(buffer);
+
+    AudioRecord_releaseArrayElements(priv->pcmArray, buf);
                                                                                                                                                                                                                                                                                                                                   
     return 0;
 }

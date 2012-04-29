@@ -41,18 +41,45 @@ typedef enum
 
 /* AudioFormat */
 #define	CHANNEL_IN_MONO     (0x10)
+#define CHANNEL_IN_STEREO   (0x0c)
 #define ENCODING_PCM_16BIT  (0x02)
 #define ENCODING_PCM_8BIT   (0x03)
 
 
+/*** AudioRecord constants ***/
 
+/* Denotes a generic operation failure. */
+#define ERROR	(-1)
+/* Denotes a failure due to the use of an invalid value. */
+#define ERROR_BAD_VALUE	(-2)
+/* Denotes a failure due to the improper use of a method. */
+#define ERROR_INVALID_OPERATION	(-3)
+/* indicates AudioRecord recording state is recording  */
+#define RECORDSTATE_RECORDING (3)
+/* indicates AudioRecord recording state is not recording */
+#define RECORDSTATE_STOPPED	(1)
+/* indicates AudioRecord state is ready to be used */
+#define STATE_INITIALIZED	(1)
+/* indicates AudioRecord state is not successfully initialized. */
+#define STATE_UNINITIALIZED	(0)
+/* Denotes a successful operation. */
+#define SUCCESS (0)
 
 
 typedef jobject AudioRecordJNI;
 
 
 
-AudioRecordJNI      AudioRecord(jint audioSource, jint sampleRateInHz, jint channelConfig, jint audioFormat, jint bufferSizeInBytes);
+AudioRecordJNI  AudioRecord(jint audioSource, jint sampleRateInHz, jint channelConfig, jint audioFormat, jint bufferSizeInBytes, jshortArray *pcm);
+void            AudioRecord_destroy(AudioRecordJNI r);
+jint            AudioRecord_read(AudioRecordJNI r, jshortArray pcm, jint samples);
+void            AudioRecord_startRecording(AudioRecordJNI r);
+void            AudioRecord_stop(AudioRecordJNI r);
+jint            AudioRecord_getState(AudioRecordJNI r);
+jint            AudioRecord_getMinBufferSize(jint sampleRateInHz, jint channelConfig, jint audioFormat);
+void            AudioRecord_readThread(AudioRecordJNI r, jshortArray pcm, jint samples, int *running);
+jshort *        AudioRecord_getArrayElements(jshortArray pcm);
+void            AudioRecord_releaseArrayElements(jshortArray pcm, jshort *buf);
 
 
 
