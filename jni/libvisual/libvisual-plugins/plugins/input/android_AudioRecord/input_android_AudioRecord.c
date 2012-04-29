@@ -46,8 +46,6 @@
 typedef struct 
 {
     AudioRecordJNI recorder;
-    jshortArray pcmArray;
-    int16_t *pcm;
     size_t bufsize;
     int recording;
     pthread_attr_t attr;
@@ -78,7 +76,7 @@ void *readThread(void *p)
     AudioRecordPriv *priv = p;
         
     /* record loop */
-    AudioRecord_readThread(priv->recorder, priv->pcm, priv->bufsize/sizeof(jshort), &priv->recording);
+    AudioRecord_readThread(priv->recorder, &priv->recording);
 
     pthread_exit(0);
     
@@ -117,18 +115,13 @@ int audioRecord_init (VisPluginData *plugin)
 
     /* use 2*minBufSize */
     priv->bufsize *= 2;
-        
-    /* allocate pcm buffer */
-    if(!(priv->pcm = visual_mem_malloc0(priv->bufsize)))
-        return -1;
-        
+                
     /* create AudioRecorder */
     priv->recorder = AudioRecord(MIC, 
                                  AND_SAMPLERATE, 
                                  AND_CHANNELS, 
                                  AND_ENCODING, 
-                                 priv->bufsize/sizeof(jshort),
-                                 &priv->pcmArray);        
+                                 priv->bufsize/sizeof(jshort));        
 
     /* start recording */
     priv->recording = TRUE;
@@ -168,10 +161,6 @@ int audioRecord_cleanup (VisPluginData *plugin)
     /* destroy recorder */
     AudioRecord_destroy(priv->recorder);
 
-    /* free PCM buffer */
-    if(priv->pcm)
-        visual_mem_free(priv->pcm);
-
     /* free private descriptor */
     visual_mem_free (priv);
 
@@ -185,9 +174,9 @@ int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
     AudioRecordPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     
 
-    int16_t *buf = AudioRecord_getArrayElements(priv->pcmArray);
+    int16_t *buf = AudioRecord_lockBuf();
                         
-    VisBuffer *buffer = visual_buffer_new_wrap_data(priv->pcm, priv->bufsize);
+    VisBuffer *buffer = visual_buffer_new_wrap_data(buf, priv->bufsize);
                                                                                          
     visual_audio_samplepool_input(audio->samplepool, 
                                   buffer, 
@@ -197,7 +186,7 @@ int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
                                                                  
     visual_buffer_free(buffer);
 
-    AudioRecord_releaseArrayElements(priv->pcmArray, buf);
+    AudioRecord_unlockBuf(buf);
                                                                                                                                                                                                                                                                                                                                   
     return 0;
 }

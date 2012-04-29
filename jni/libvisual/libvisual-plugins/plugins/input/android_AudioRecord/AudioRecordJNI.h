@@ -65,21 +65,24 @@ typedef enum
 /* Denotes a successful operation. */
 #define SUCCESS (0)
 
+#define THREAD_PRIORITY_AUDIO -16
+#define THREAD_PRIORITY_URGENT_AUDIO -19
+
 
 typedef jobject AudioRecordJNI;
 
 
 
-AudioRecordJNI  AudioRecord(jint audioSource, jint sampleRateInHz, jint channelConfig, jint audioFormat, jint bufferSizeInBytes, jshortArray *pcm);
+AudioRecordJNI  AudioRecord(jint audioSource, jint sampleRateInHz, jint channelConfig, jint audioFormat, jint bufferSizeInBytes);
 void            AudioRecord_destroy(AudioRecordJNI r);
-jint            AudioRecord_read(AudioRecordJNI r, jshortArray pcm, jint samples);
+jint            AudioRecord_read(AudioRecordJNI r);
 void            AudioRecord_startRecording(AudioRecordJNI r);
 void            AudioRecord_stop(AudioRecordJNI r);
 jint            AudioRecord_getState(AudioRecordJNI r);
 jint            AudioRecord_getMinBufferSize(jint sampleRateInHz, jint channelConfig, jint audioFormat);
-void            AudioRecord_readThread(AudioRecordJNI r, jshortArray pcm, jint samples, int *running);
-jshort *        AudioRecord_getArrayElements(jshortArray pcm);
-void            AudioRecord_releaseArrayElements(jshortArray pcm, jshort *buf);
+void            AudioRecord_readThread(AudioRecordJNI r, int *running);
+jshort *        AudioRecord_lockBuf();
+void            AudioRecord_unlockBuf(jshort *buf);
 
 
 

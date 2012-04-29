@@ -34,6 +34,7 @@
 JavaVM *m_vm;
 jclass AudioRecordClass;
 jmethodID readID, releaseID, startRecordingID, stopID, getStateID, getRecordingStateID, getMinBufferSizeID;
+jshortArray pcmA;
 
 
 
@@ -63,8 +64,7 @@ AudioRecordJNI AudioRecord(jint audioSource,
                            jint sampleRateInHz, 
                            jint channelConfig, 
                            jint audioFormat, 
-                           jint samples,
-                           jshortArray *pcm)
+                           jint samples)
 {
 
     /* get environment */
@@ -97,8 +97,7 @@ AudioRecordJNI AudioRecord(jint audioSource,
     AudioRecordJNI r = (*env)->NewObject(env, AudioRecordClass, initID, audioSource, sampleRateInHz, channelConfig, audioFormat, samples);
 
     /* create new shortArray */
-    *pcm = (*env)->NewShortArray(env, samples);
-
+    pcmA = (*env)->NewShortArray(env, samples);
         
     return r;
 }
@@ -123,13 +122,13 @@ void AudioRecord_destroy(AudioRecordJNI r)
 
 
 /** fill buffer with audio data */
-jint AudioRecord_read(AudioRecordJNI r, jshortArray pcm, jint samples)
+jint AudioRecord_read(AudioRecordJNI r)
 {
     /* get environment */
     JNIEnv *env;
     (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
         
-    return (*env)->CallIntMethod(env, r, readID, pcm, 0, samples);
+    return (*env)->CallIntMethod(env, r, readID, pcmA, 0, (*env)->GetArrayLength(env, pcmA));
 }
 
 
@@ -190,50 +189,35 @@ jint AudioRecord_getMinBufferSize(jint sampleRateInHz,
 }
 
 
-/** get short[] (don't forget to release) */
-jshort *AudioRecord_getArrayElements(jshortArray pcm)
-{
-        /* get environment */
-        JNIEnv *env;
-        (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
-        
-        return (*env)->GetShortArrayElements(env, pcm, NULL);
-}
-
-/** release elements */
-void AudioRecord_releaseArrayElements(jshortArray pcm, jshort *buf)
-{
-        /* get environment */
-        JNIEnv *env;
-        (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);    
-        
-        (*env)->ReleaseShortArrayElements(env, pcm, buf, JNI_ABORT);
-}
-
-
 /** PCM read thread */
-void AudioRecord_readThread(AudioRecordJNI r, jshortArray pcm, jint samples, int *running)
+void AudioRecord_readThread(AudioRecordJNI r, int *running)
 {
 
     /* attach thread */
     JNIEnv *env;
     (*m_vm)->AttachCurrentThread(m_vm, &env, 0);
 
+    /* change thread priority */
+    /*jclass ProcessClass;
+    ProcessClass = (*env)->FindClass(env, "android/os/Process");
+    jmethodID setThreadPriorityID = (*env)->GetStaticMethodID(env, ProcessClass, "setThreadPriority", "(I)V");
+    (*env)->CallStaticIntMethod(env, ProcessClass, setThreadPriorityID, THREAD_PRIORITY_URGENT_AUDIO);*/
+        
     /* wait until recorder is initialized */
     while(AudioRecord_getState(r) != STATE_INITIALIZED)
-                usleep(100);
+                usleep(1000);
         
     AudioRecord_startRecording(r);
 
     /* wait until we're recording */
     while(AudioRecord_getRecordingState(r) != RECORDSTATE_RECORDING)
-                usleep(100);
+                usleep(1000);
         
     while(*running)
     {
         /* read from recorder */
         jint input;
-        if((input = AudioRecord_read(r, pcm, samples)) < 0)
+        if((input = AudioRecord_read(r)) < 0)
         {
             switch(input)
             {
@@ -252,7 +236,7 @@ void AudioRecord_readThread(AudioRecordJNI r, jshortArray pcm, jint samples, int
             break;
         }
 
-        usleep(5);
+        usleep(1000);
     }
         
     /* exceptions? */
@@ -268,3 +252,24 @@ void AudioRecord_readThread(AudioRecordJNI r, jshortArray pcm, jint samples, int
     (*m_vm)->DetachCurrentThread(m_vm);
 }
 
+
+/** lock PCM buffer */
+jshort *AudioRecord_lockBuf()
+{    
+    /* get environment */
+    JNIEnv *env;
+    (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);
+        
+    return (*env)->GetShortArrayElements(env, pcmA, NULL);
+}
+
+
+/** unlock PCM buffer */
+void AudioRecord_unlockBuf(jshort *buf)
+{
+    /* get environment */
+    JNIEnv *env;
+    (*m_vm)->GetEnv(m_vm, (void **) &env, JNI_VERSION_1_4);
+        
+    (*env)->ReleaseShortArrayElements(env, pcmA, buf, 0);
+}
