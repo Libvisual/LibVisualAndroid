@@ -34,6 +34,7 @@
 #include <android/log.h>
 #include <libvisual/libvisual.h>
 #include "AudioRecordJNI.h"
+#include "AudioRecordThread.h"
 
 
 /** logging TAG */
@@ -76,7 +77,7 @@ void *readThread(void *p)
     AudioRecordPriv *priv = p;
         
     /* record loop */
-    AudioRecord_readThread(priv->recorder, &priv->recording);
+    AudioRecordThread_read(priv->recorder, &priv->recording);
 
     pthread_exit(0);
     
@@ -126,7 +127,14 @@ int audioRecord_init (VisPluginData *plugin)
     /* start recording */
     priv->recording = TRUE;
 
-            
+
+    /* allocate buffer */
+    if(AudioRecordThread_init(priv->bufsize/sizeof(jshort)) < 0)
+    {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "AudioRecordThread.init() failed");
+        return -1;
+    }
+        
     /* start reader thread */
     if(pthread_create(&priv->id, &priv->attr, readThread, priv) != 0)
     {
@@ -151,13 +159,7 @@ int audioRecord_cleanup (VisPluginData *plugin)
     
     /* stop recording */
     priv->recording = FALSE;
-
-    /* deinitialize pthreads */
-    pthread_attr_destroy(&priv->attr);
-        
-    /* join thread */
-    pthread_join(priv->id, 0);
-        
+       
     /* destroy recorder */
     AudioRecord_destroy(priv->recorder);
 
@@ -196,7 +198,7 @@ int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
 
         //~ visual_buffer_free (buffer);
 
-    int16_t *buf = AudioRecord_lockBuf();
+    jshort *buf = AudioRecordThread_lockBuf();
 
     VisBuffer *buffer = visual_buffer_new_wrap_data(buf, priv->bufsize);
     visual_audio_samplepool_input(audio->samplepool, 
@@ -207,7 +209,7 @@ int audioRecord_upload(VisPluginData *plugin, VisAudio *audio)
                                                                  
     visual_buffer_free(buffer);
 
-    AudioRecord_unlockBuf(buf);
+    AudioRecordThread_unlockBuf(buf);
                                                                                                                                                                                                                                                                                                                                   
     return 0;
 }

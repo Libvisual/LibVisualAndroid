@@ -109,11 +109,13 @@ public class LibVisual extends Activity
         /* set depth of bin */
         curBin.setSupportedDepth(VisVideo.VISUAL_VIDEO_DEPTH_ALL);
         curBin.setPreferredDepth(VisVideo.VISUAL_VIDEO_DEPTH_32BIT);
-    
             
         /* create new LibVisualBitmapView */
         v = new LibVisualBitmapView(this);
-        
+
+        /* connect actor & input to bin */
+        curBin.connect(curActor, curInput);
+            
         /* set our LibVisualBitmapView as contentView */
         setContentView(v);
             
@@ -170,7 +172,16 @@ public class LibVisual extends Activity
             
 
             /* input changed? */
-            
+            String newInputName = s.getString("prefs_input", defaultInput);
+            if(!curInput.plugin.getPlugname().equals(newInputName))
+            {
+                Log.i(TAG, "Changing input (\""+curInput.plugin.getPlugname()+"\" -> \""+newInputName+"\")");
+
+                curInput = new VisInput(newInputName);
+
+                /* connect actor & input to bin */
+                curBin.connect(curActor, curInput);
+            }
     }
 
     /** orientation changed */

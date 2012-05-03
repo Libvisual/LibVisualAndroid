@@ -80,6 +80,21 @@ namespace LV {
        */
       VisParamContainer* get_params () const;
 
+      /**
+       * sets a private pointer
+       *
+       * @param p arbitrary private pointer that can be fetched with @ref get_priv_ptr()
+       */
+      void set_priv_ptr(void *p);
+       
+       /**
+        * gets the private pointer
+        *
+        * @return pointer that was previously set @ref with get_priv_ptr()
+        */
+      void * get_priv_ptr();
+        
+        
   private:
 
       class Impl;
@@ -88,6 +103,9 @@ namespace LV {
 
       System (int& argc, char**& argv);
       System (System const&);
+      
+      /* arbitrary private pointer owned by the app */
+      void *priv_ptr;
   };
 
 } // LV namespace
@@ -108,6 +126,10 @@ LV_API const char *visual_get_version (void);
 LV_API int visual_get_api_version (void);
 
 LV_API VisParamContainer *visual_get_params (void);
+
+LV_API void visual_set_priv_ptr(void *);
+
+LV_API void *visual_get_priv_ptr(void);
 
 LV_END_DECLS
 

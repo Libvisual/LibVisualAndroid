@@ -75,14 +75,13 @@ typedef jobject AudioRecordJNI;
 
 AudioRecordJNI  AudioRecord(jint audioSource, jint sampleRateInHz, jint channelConfig, jint audioFormat, jint bufferSizeInBytes);
 void            AudioRecord_destroy(AudioRecordJNI r);
-jint            AudioRecord_read(AudioRecordJNI r);
+jint            AudioRecord_read(AudioRecordJNI r, jshortArray pcm, jint length);
 void            AudioRecord_startRecording(AudioRecordJNI r);
 void            AudioRecord_stop(AudioRecordJNI r);
 jint            AudioRecord_getState(AudioRecordJNI r);
+jint            AudioRecord_getRecordingState(AudioRecordJNI r);
 jint            AudioRecord_getMinBufferSize(jint sampleRateInHz, jint channelConfig, jint audioFormat);
-void            AudioRecord_readThread(AudioRecordJNI r, int *running);
-jshort *        AudioRecord_lockBuf();
-void            AudioRecord_unlockBuf(jshort *buf);
+
 
 
 

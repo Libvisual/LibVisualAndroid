@@ -130,6 +130,16 @@ namespace LV
       return m_impl->params;
   }
 
+  void System::set_priv_ptr(void *p)
+  {
+      priv_ptr = p;
+  }
+                                       
+  void *System::get_priv_ptr()
+  {
+      return priv_ptr;
+  }
+                                                                                    
   System::System (int& argc, char**& argv)
       : m_impl(new Impl)
   {

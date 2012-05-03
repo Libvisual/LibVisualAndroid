@@ -98,6 +98,9 @@ JNIEXPORT jboolean JNICALL Java_org_libvisual_android_LibVisual_init(JNIEnv * en
     int argc=1;
     visual_init(&argc,  &argv);
 
+    /* set our current JNIEnv as private pointer */
+    visual_set_priv_ptr(env);
+    
     /* add our plugin search path */
     visual_plugin_registry_add_path("/data/data/org.libvisual.android/lib");
 

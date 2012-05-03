@@ -19,6 +19,16 @@ extern "C" {
       return LV::System::instance()->get_params ();
   }
 
+  void visual_set_priv_ptr(void *p)
+  {
+      LV::System::instance()->set_priv_ptr(p);
+  }
+  
+  void *visual_get_priv_ptr()
+  {
+     return LV::System::instance()->get_priv_ptr();
+  }
+  
   int visual_init (int *argc, char ***argv)
   {
       LV::System::init(*argc, *argv);

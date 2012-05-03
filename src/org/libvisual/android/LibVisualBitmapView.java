@@ -176,9 +176,6 @@ class LibVisualBitmapView extends LibVisualView
         /* set video for bin */
         LibVisual.curBin.setVideo(curAVideo);
 
-        /* connect actor & input to bin */
-        LibVisual.curBin.connect(LibVisual.curActor, LibVisual.curInput);
-
     }
 
 }
